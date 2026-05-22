@@ -2,13 +2,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword,
     GoogleAuthProvider,
     signInWithPopup, 
     onAuthStateChanged, 
     signOut 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// ==========================================
+// ডাটাবেজ অ্যাডমিন কন্ট্রোল (শুধুমাত্র এই ইমেইলটি ডাটাবেজ এক্সেস পাবে)
+const ADMIN_EMAIL = "alfurkan128779@gmail.com"; 
+// ==========================================
 
 // ২. আপনার ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
@@ -29,61 +32,11 @@ const googleProvider = new GoogleAuthProvider();
 // ৪. এইচটিএমএল (DOM) এলিমেন্ট কানেকশন
 const authSection = document.getElementById('auth-section');
 const mainApp = document.getElementById('main-app');
-const authTitle = document.getElementById('auth-title');
-const authEmail = document.getElementById('auth-email');
-const authPassword = document.getElementById('auth-password');
-const authBtn = document.getElementById('auth-btn');
-const authToggleBtn = document.getElementById('auth-toggle-btn');
 const authError = document.getElementById('auth-error');
 const logoutBtn = document.getElementById('logout-btn');
-const googleLoginBtn = document.getElementById('google-login-btn'); // নতুন গুগল বাটন
+const googleLoginBtn = document.getElementById('google-login-btn'); 
 
-let isLoginMode = true; 
-
-// ৫. ইমেইল-পাসওয়ার্ড লগইন এবং রেজিস্ট্রেশন পেজ পরিবর্তন
-authToggleBtn.addEventListener('click', () => {
-    isLoginMode = !isLoginMode;
-    if (isLoginMode) {
-        authTitle.innerText = "আল ফুরকান - লগইন";
-        authBtn.innerHTML = 'লগইন করুন <i class="fas fa-sign-in-alt"></i>';
-        authToggleBtn.innerText = "অ্যাকাউন্ট নেই? নতুন অ্যাকাউন্ট খুলুন";
-    } else {
-        authTitle.innerText = "আল ফুরকান - রেজিস্ট্রেশন";
-        authBtn.innerHTML = 'অ্যাকাউন্ট তৈরি করুন <i class="fas fa-user-plus"></i>';
-        authToggleBtn.innerText = "আগে থেকে অ্যাকাউন্ট আছে? লগইন করুন";
-    }
-    authError.style.display = "none";
-    authEmail.value = "";
-    authPassword.value = "";
-});
-
-// ৬. ইমেইল-পাসওয়ার্ড দিয়ে সাবমিট বাটন লজিক
-authBtn.addEventListener('click', () => {
-    const email = authEmail.value.trim();
-    const password = authPassword.value.trim();
-
-    if (!email || !password) {
-        showError("ইমেইল এবং পাসওয়ার্ড প্রদান করুন!");
-        return;
-    }
-
-    authBtn.disabled = true;
-    authBtn.innerText = "অপেক্ষা করুন...";
-
-    if (isLoginMode) {
-        signInWithEmailAndPassword(auth, email, password)
-            .then(() => { authError.style.display = "none"; })
-            .catch((error) => { showError(getCustomErrorMessage(error.code)); })
-            .finally(() => { resetAuthBtn(); });
-    } else {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => { authError.style.display = "none"; })
-            .catch((error) => { showError(getCustomErrorMessage(error.code)); })
-            .finally(() => { resetAuthBtn(); });
-    }
-});
-
-// ৭. গুগল লগইন লজিক
+// ৫. গুগল দিয়ে লগইন করার ফাংশন
 googleLoginBtn.addEventListener('click', () => {
     googleLoginBtn.disabled = true;
     googleLoginBtn.innerHTML = 'অপেক্ষা করুন...';
@@ -93,53 +46,47 @@ googleLoginBtn.addEventListener('click', () => {
             authError.style.display = "none";
         })
         .catch((error) => {
-            showError(getCustomErrorMessage(error.code));
+            showError("একটি ত্রুটি হয়েছে, আবার চেষ্টা করুন।");
+            console.error(error);
         })
         .finally(() => {
             googleLoginBtn.disabled = false;
-            googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 20px;"> গুগল দিয়ে লগইন করুন';
+            googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> গুগল দিয়ে লগইন করুন';
         });
 });
 
-// ৮. লগআউট প্রসেস
+// ৬. লগআউট প্রসেস
 if(logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         signOut(auth).catch((error) => { console.error("লগআউট এরর: ", error); });
     });
 }
 
-// ৯. অথেনটিকেশন স্টেট ট্র্যাকার (ম্যাজিক লজিক)
+// ৭. অথেনটিকেশন ও অ্যাডমিন ট্র্যাকার (প্রধান লজিক)
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        // ইউজার লগইন অবস্থায় আছে, তাই মেইন অ্যাপ দেখাবে
         authSection.style.display = "none";
         mainApp.style.display = "block";
+
+        // অ্যাডমিন চেক লজিক
+        const dbMenu = document.getElementById('menu-database');
+        if (dbMenu) {
+            if (user.email === ADMIN_EMAIL) {
+                dbMenu.style.display = "flex"; // শুধুমাত্র অ্যাডমিন হলে ডাটাবেজ মেনু দেখাবে
+            } else {
+                dbMenu.style.display = "none"; // সাধারণ ইউজার হলে ডাটাবেজ মেনু লুকানো থাকবে
+            }
+        }
     } else {
+        // ইউজার লগআউট অবস্থায় আছে, তাই শুধু গুগল লগইন পেজ দেখাবে
         authSection.style.display = "flex";
         mainApp.style.display = "none";
     }
 });
 
-// ১০. হেল্পার ফাংশন
+// ৮. হেল্পার ফাংশন
 function showError(msg) {
     authError.innerText = msg;
     authError.style.display = "block";
-}
-
-function resetAuthBtn() {
-    authBtn.disabled = false;
-    authBtn.innerHTML = isLoginMode ? 'লগইন করুন <i class="fas fa-sign-in-alt"></i>' : 'অ্যাকাউন্ট তৈরি করুন <i class="fas fa-user-plus"></i>';
-}
-
-function getCustomErrorMessage(code) {
-    switch (code) {
-        case 'auth/invalid-email': return "ইমেইল এড্রেসটি সঠিক নয়।";
-        case 'auth/user-not-found': return "এই ইমেইলের কোনো অ্যাকাউন্ট নেই।";
-        case 'auth/wrong-password': return "পাসওয়ার্ড ভুল হয়েছে।";
-        case 'auth/invalid-credential': return "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে।";
-        case 'auth/email-already-in-use': return "এই ইমেইল দিয়ে আগে থেকেই অ্যাকাউন্ট আছে।";
-        case 'auth/weak-password': return "পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে।";
-        case 'auth/network-request-failed': return "ইন্টারনেট কানেকশন চেক করুন।";
-        case 'auth/popup-closed-by-user': return "গুগল লগইন পপ-আপটি বন্ধ করে দেওয়া হয়েছে।";
-        default: return "একটি ত্রুটি হয়েছে, আবার চেষ্টা করুন। (" + code + ")";
-    }
 }

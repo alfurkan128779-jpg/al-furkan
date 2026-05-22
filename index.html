@@ -19,17 +19,10 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kalpurush', sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 60px; }
 
-        /* Auth Container Styles */
+        /* Auth Container Styles - Updated for Google Only */
         #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); }
-        .auth-container { background: #fff; width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .auth-container input { margin-bottom: 15px; }
-        .auth-toggle { margin-top: 20px; color: var(--blue); cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
-        .auth-toggle:hover { text-decoration: underline; }
+        .auth-container { background: #fff; width: 100%; max-width: 400px; padding: 50px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
         #auth-error { color: var(--red); margin-top: 15px; font-size: 14px; display: none; font-weight: bold; background: #ffeaa7; padding: 10px; border-radius: 5px; }
-
-        .divider { display: flex; align-items: center; margin: 20px 0; }
-        .divider hr { flex: 1; border: 0; border-top: 1px solid var(--border); }
-        .divider span { padding: 0 10px; color: #7f8fa6; font-size: 14px; font-weight: bold; }
 
         header {
             background: #fff; padding: 12px 40px; display: flex;
@@ -142,30 +135,18 @@
 
 <div id="auth-section">
     <div class="auth-container">
-        <h2 style="color: var(--navy-blue); margin-bottom: 25px;">
-            <i class="fas fa-keyboard" style="font-size: 30px; margin-bottom: 10px; display: block;"></i> 
-            <span id="auth-title">আল ফুরকান - লগইন</span>
+        <h2 style="color: var(--navy-blue); margin-bottom: 10px;">
+            <i class="fas fa-keyboard" style="font-size: 36px; margin-bottom: 15px; display: block; color: var(--blue);"></i> 
+            <span>আল ফুরকান</span>
         </h2>
+        <p style="margin-bottom: 30px; color: #7f8fa6; font-size: 15px;">টেস্ট শুরু করতে আপনার গুগল অ্যাকাউন্ট দিয়ে লগইন করুন</p>
         
-        <input type="email" id="auth-email" placeholder="আপনার ইমেইল এড্রেস">
-        <input type="password" id="auth-password" placeholder="পাসওয়ার্ড">
-        
-        <button id="auth-btn" style="width: 100%;">লগইন করুন <i class="fas fa-sign-in-alt"></i></button>
-
-        <div class="divider">
-            <hr>
-            <span>অথবা</span>
-            <hr>
-        </div>
-
-        <button id="google-login-btn" style="width: 100%; background: #fff; color: var(--text); border: 1px solid var(--border); margin-bottom: 15px;">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 20px;">
+        <button id="google-login-btn" style="width: 100%; background: #fff; color: var(--text); border: 2px solid #eee; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
             গুগল দিয়ে লগইন করুন
         </button>
 
         <div id="auth-error"></div>
-        
-        <div class="auth-toggle" id="auth-toggle-btn">অ্যাকাউন্ট নেই? নতুন অ্যাকাউন্ট খুলুন</div>
     </div>
 </div>
 
@@ -180,9 +161,9 @@
             <div class="dropdown-menu" id="main-menu">
                 <div onclick="switchView('home-view')"><i class="fas fa-house-chimney"></i> হোম পেজ</div>
                 <div onclick="switchView('leaderboard-view')"><i class="fas fa-award"></i> লিডারবোর্ড</div>
-                <div onclick="switchView('database-view')"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
                 <div onclick="switchView('history-view')"><i class="fas fa-clock-rotate-left"></i> হিস্টোরি ও সময়</div>
                 <div onclick="switchView('error-view')"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</div>
+                <div id="menu-database" onclick="switchView('database-view')" style="display: none; background: #f1f2f6; border-left: 4px solid var(--blue);"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
                 <div id="logout-btn" style="color: var(--red); border-top: 1px solid #f5f5f5; margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
             </div>
         </div>
@@ -347,27 +328,15 @@
     const GS_CONFIG = {
         formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse",
         entries: {
-            lang: "entry.1297680054",
-            title: "entry.1063190250",
-            wpm: "entry.1750728196",
-            acc: "entry.1447012889",
-            dur: "entry.1811044011",
-            cns: "entry.1936188665",  
-            cws: "entry.485794403",   
-            tw: "entry.2044623366",   
-            bs: "entry.1306091940",   
-            errCount: "entry.1212502821" 
+            lang: "entry.1297680054", title: "entry.1063190250", wpm: "entry.1750728196", acc: "entry.1447012889",
+            dur: "entry.1811044011", cns: "entry.1936188665", cws: "entry.485794403", tw: "entry.2044623366",
+            bs: "entry.1306091940", errCount: "entry.1212502821" 
         }
     };
 
     function normalizeText(text) {
         if (!text) return "";
-        return text.normalize('NFC')
-            .replace(/[\u200B-\u200D\uFEFF]/g, '')
-            .replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'")
-            .replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"')
-            .replace(/\s+/g, ' ')
-            .trim();
+        return text.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'").replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"').replace(/\s+/g, ' ').trim();
     }
 
     function escapeHTML(str) {
