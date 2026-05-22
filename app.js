@@ -3,10 +3,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { 
     getAuth, 
     GoogleAuthProvider,
+    signInWithPopup,
     signInWithRedirect, 
     getRedirectResult,
     onAuthStateChanged, 
-    signOut 
+    signOut,
+    setPersistence,
+    browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, 
@@ -44,19 +47,20 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
+// ম্যানুয়ালি ডাটা সেভ থাকার পলিসি সেট করা (ক্রস-সাইট কুকি ব্লকিং এড়াতে)
+setPersistence(auth, browserLocalPersistence).catch(console.error);
+
 // ৪. গ্লোবাল ফাংশনসমূহ (index.html যাতে এগুলো ব্যবহার করতে পারে)
 window.currentUser = null;
 
-// লিডারবোর্ড সেভ এবং ফেচ
 window.saveGlobalLeaderboard = async (data) => {
-    try {
-        await addDoc(collection(db, "leaderboard"), data);
-    } catch(e) { console.error("Leaderboard Save Error:", e); }
+    try { await addDoc(collection(db, "leaderboard"), data); } 
+    catch(e) { console.error("Leaderboard Save Error:", e); }
 };
 
 window.getGlobalLeaderboard = async () => {
     try {
-        const q = query(collection(db, "leaderboard"), orderBy("wpm", "desc"), limit(100)); // টপ ১০০ এনে ফ্রন্টএন্ডে ২০ দেখানো হবে
+        const q = query(collection(db, "leaderboard"), orderBy("wpm", "desc"), limit(100)); 
         const snapshot = await getDocs(q);
         let results = [];
         snapshot.forEach(doc => results.push(doc.data()));
@@ -64,7 +68,6 @@ window.getGlobalLeaderboard = async () => {
     } catch(e) { console.error("Leaderboard Fetch Error:", e); return []; }
 };
 
-// ডাটাবেজ (অনুচ্ছেদ) সেভ, ফেচ এবং ডিলিট
 window.syncGlobalParagraphs = async () => {
     try {
         const snapshot = await getDocs(collection(db, "paragraphs"));
@@ -105,25 +108,41 @@ const authError = document.getElementById('auth-error');
 const logoutBtn = document.getElementById('logout-btn');
 const googleLoginBtn = document.getElementById('google-login-btn'); 
 
-// ৬. গুগল দিয়ে লগইন করার ফাংশন 
+// ৬. রিডাইরেক্ট হয়ে ফিরে আসার পর ডাটা রিকভারি হ্যান্ডেলিং
+if(googleLoginBtn) {
+    googleLoginBtn.disabled = true;
+    googleLoginBtn.innerHTML = 'অ্যাকাউন্ট চেক করা হচ্ছে...';
+}
+
+getRedirectResult(auth).then((result) => {
+    if(result) authError.style.display = "none";
+}).catch((error) => {
+    if (error.code !== 'auth/redirect-cancelled-by-user') {
+        showError("লগইন সম্পন্ন করা যায়নি। (" + error.message + ")");
+    }
+}).finally(() => {
+    if(googleLoginBtn && !window.currentUser) {
+        googleLoginBtn.disabled = false;
+        googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> গুগল দিয়ে লগইন করুন';
+    }
+});
+
+// ৭. হাইব্রিড (স্মার্ট) লগইন ফাংশন
 if(googleLoginBtn) {
     googleLoginBtn.addEventListener('click', () => {
-        googleLoginBtn.disabled = true;
-        googleLoginBtn.innerHTML = 'অপেক্ষা করুন...';
-        signInWithRedirect(auth, googleProvider).catch((error) => {
-            showError("লগইন পেজে যেতে সমস্যা হচ্ছে।");
-            googleLoginBtn.disabled = false;
-            googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> গুগল দিয়ে লগইন করুন';
+        // বাটন ডিসেবল বা HTML চেঞ্জ করা যাবে না, করলে ব্রাউজার পপ-আপ ব্লক করে দেয়!
+        signInWithPopup(auth, googleProvider).catch((error) => {
+            if (error.code === 'auth/popup-blocked') {
+                // পপ-আপ ব্লক হলে অটোমেটিক রিডাইরেক্ট মেথডে ট্রাই করবে
+                googleLoginBtn.innerHTML = 'রিডাইরেক্ট করা হচ্ছে...';
+                signInWithRedirect(auth, googleProvider);
+            } else {
+                showError("লগইন বাতিল করা হয়েছে।");
+                console.error(error);
+            }
         });
     });
 }
-
-// ৭. রিডাইরেক্ট হয়ে ফিরে আসার পর এরর হ্যান্ডেলিং
-getRedirectResult(auth).catch((error) => {
-    if (error.code !== 'auth/redirect-cancelled-by-user') {
-        showError("লগইন সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।");
-    }
-});
 
 // ৮. লগআউট প্রসেস
 if(logoutBtn) {
@@ -135,7 +154,7 @@ if(logoutBtn) {
 // ৯. অথেনটিকেশন ও অ্যাডমিন ট্র্যাকার (মেনু নিয়ন্ত্রণ)
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        window.currentUser = user; // লিডারবোর্ডে নাম দেখানোর জন্য
+        window.currentUser = user; 
         
         authSection.style.display = "none";
         mainApp.style.display = "block";
@@ -145,13 +164,11 @@ onAuthStateChanged(auth, (user) => {
             if (user.email === ADMIN_EMAIL) {
                 dbMenu.style.display = "flex"; 
             } else {
-                dbMenu.style.display = "none"; 
+                dbMenu.style.display = "none";  
             }
         }
         
-        // লগইন সফল হলে index.html কে ডাটাবেজ ফেচ করার সিগন্যাল দেওয়া
         window.dispatchEvent(new Event('app-ready'));
-
     } else {
         window.currentUser = null;
         authSection.style.display = "flex";
