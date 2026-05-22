@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আল ফুরকান - প্রো (Sync V5)</title>
+    <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f4f6f9; --border: #dcdde1; --text: #2f3640;
+            --blue: #0984e3; --navy-blue: #192a56; --red: #d63031; --green: #27ae60;
+            --orange: #e67e22; --purple: #8e44ad;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kalpurush', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 60px; }
+
+        /* Auth Container Styles */
+        #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); }
+        .auth-container { background: #fff; width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .auth-container input { margin-bottom: 15px; }
+        .auth-toggle { margin-top: 20px; color: var(--blue); cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
+        .auth-toggle:hover { text-decoration: underline; }
+        #auth-error { color: var(--red); margin-top: 15px; font-size: 14px; display: none; font-weight: bold; background: #ffeaa7; padding: 10px; border-radius: 5px; }
+
+        .divider { display: flex; align-items: center; margin: 20px 0; }
+        .divider hr { flex: 1; border: 0; border-top: 1px solid var(--border); }
+        .divider span { padding: 0 10px; color: #7f8fa6; font-size: 14px; font-weight: bold; }
+
+        header {
+            background: #fff; padding: 12px 40px; display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07); position: sticky; top: 0; z-index: 1000;
+        }
+        
+        .logo { 
+            display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 900; 
+            color: #fff; cursor: pointer; background: linear-gradient(135deg, var(--navy-blue), var(--blue));
+            padding: 8px 18px; border-radius: 50px 5px 50px 5px;
+            box-shadow: 2px 4px 10px rgba(9, 132, 227, 0.3); transition: 0.3s;
+        }
+        .logo:hover { transform: scale(1.02); }
+
+        .menu-container { position: relative; }
+        .three-dots { font-size: 24px; cursor: pointer; color: var(--navy-blue); padding: 8px 12px; border-radius: 50%; transition: 0.2s; }
+        .three-dots:hover { background: #f1f2f6; }
+
+        .dropdown-menu {
+            display: none; position: absolute; right: 0; top: 50px; background: #fff;
+            width: 260px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 12px; 
+            overflow: hidden; border: 1px solid #eee;
+        }
+        .dropdown-menu.active { display: block; }
+        .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid #f5f5f5; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .dropdown-menu div:hover { background: #f8f9fa; color: var(--blue); padding-left: 25px; }
+
+        .toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; }
+        .toast-msg {
+            background: #fff; color: var(--navy-blue); padding: 20px 45px; border-radius: 15px; 
+            font-size: 20px; font-weight: bold; box-shadow: 0 20px 60px rgba(0,0,0,0.25); 
+            border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px;
+            opacity: 0; transform: translate(-50%, -60%) scale(0.8);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: absolute; white-space: nowrap;
+        }
+        .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        .view-section { display: none; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .active-view { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .settings-card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
+        select:focus, input:focus, textarea:focus { border-color: var(--blue); }
+        
+        button {
+            padding: 12px 25px; border: none; border-radius: 8px; background: var(--navy-blue);
+            color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-danger { background: var(--red); }
+        .btn-warning { background: #f39c12; }
+        .btn-sm { font-size: 14px; padding: 6px 14px; }
+
+        .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; background: var(--bg); padding: 10px 0; z-index: 500; }
+        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 32px; font-weight: bold; color: var(--blue); }
+        .timer-danger { color: var(--red) !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        #source-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 19px; font-size: 19px; line-height: 1.4; height: 180px; position: relative; overflow-y: auto; margin-bottom: 25px; scroll-behavior: smooth; }
+        .word { display: inline-block; margin-right: 12px; transition: 0.2s; }
+        .active-word { background: rgba(9,132,227,0.15); color: var(--blue); border-radius: 6px; padding: 0 6px; font-weight: bold; }
+        #input-area { width: 100%; height: 200px; padding: 19px; font-size: 19px; line-height: 1.4; border: 2px solid var(--border); border-radius: 12px; outline: none; resize: none; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; text-align: center; }
+        .stat-box { padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .stat-box h3 { font-size: 13px; color: #7f8fa6; margin-bottom: 8px; }
+        .stat-box .value { font-size: 24px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
+        
+        #result-text-review {
+            background: #fff; padding: 25px; border-radius: 12px; line-height: 1.8; font-size: 19px;
+            border: 1px solid var(--border); margin-top: 15px; text-align: justify;
+            max-height: 400px; overflow-y: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .res-correct { color: var(--green); margin-right: 8px; display: inline-block; }
+        .res-error { color: var(--red); text-decoration: underline wavy var(--red); font-weight: bold; margin-right: 8px; display: inline-block; position: relative; }
+        .res-error small { display: block; font-size: 12px; color: #7f8fa6; font-weight: normal; text-decoration: none; line-height: 1; }
+        .res-missed { color: #bdc3c7; margin-right: 8px; display: inline-block; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: var(--navy-blue); color: white; }
+
+        .time-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .time-card { background: #fff; border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.07); border-top: 4px solid transparent; }
+        .time-card.today { border-top-color: var(--blue); }
+        .time-card.month { border-top-color: var(--green); }
+        .time-card.year  { border-top-color: var(--orange); }
+        .time-card.total { border-top-color: var(--purple); }
+        .time-card .tc-value { font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; color: var(--navy-blue); }
+
+        .error-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+        .error-card { background: #fff; border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.07); }
+        .error-bar-list { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); margin-bottom: 28px; }
+        .error-bar-bg { height: 10px; background: #f1f2f6; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+        .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff7675); transition: width 0.7s ease; }
+        
+        .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .filter-tab { padding: 8px 18px; border-radius: 20px; font-size: 14px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-weight: bold; }
+        .filter-tab.active { background: var(--navy-blue); color: #fff; border-color: var(--navy-blue); }
+    </style>
+</head>
+<body>
+
+<div class="toast-container" id="toast-container"></div>
+
+<div id="auth-section">
+    <div class="auth-container">
+        <h2 style="color: var(--navy-blue); margin-bottom: 25px;">
+            <i class="fas fa-keyboard" style="font-size: 30px; margin-bottom: 10px; display: block;"></i> 
+            <span id="auth-title">আল ফুরকান - লগইন</span>
+        </h2>
+        
+        <input type="email" id="auth-email" placeholder="আপনার ইমেইল এড্রেস">
+        <input type="password" id="auth-password" placeholder="পাসওয়ার্ড">
+        
+        <button id="auth-btn" style="width: 100%;">লগইন করুন <i class="fas fa-sign-in-alt"></i></button>
+
+        <div class="divider">
+            <hr>
+            <span>অথবা</span>
+            <hr>
+        </div>
+
+        <button id="google-login-btn" style="width: 100%; background: #fff; color: var(--text); border: 1px solid var(--border); margin-bottom: 15px;">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 20px;">
+            গুগল দিয়ে লগইন করুন
+        </button>
+
+        <div id="auth-error"></div>
+        
+        <div class="auth-toggle" id="auth-toggle-btn">অ্যাকাউন্ট নেই? নতুন অ্যাকাউন্ট খুলুন</div>
+    </div>
+</div>
+
+<div id="main-app" style="display: none;">
+    <header>
+        <div class="logo" onclick="switchView('home-view')">
+            <i class="fas fa-keyboard"></i>
+            <span>আল ফুরকান</span>
+        </div>
+        <div class="menu-container">
+            <i class="fas fa-ellipsis-v three-dots" onclick="toggleMenu()"></i>
+            <div class="dropdown-menu" id="main-menu">
+                <div onclick="switchView('home-view')"><i class="fas fa-house-chimney"></i> হোম পেজ</div>
+                <div onclick="switchView('leaderboard-view')"><i class="fas fa-award"></i> লিডারবোর্ড</div>
+                <div onclick="switchView('database-view')"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
+                <div onclick="switchView('history-view')"><i class="fas fa-clock-rotate-left"></i> হিস্টোরি ও সময়</div>
+                <div onclick="switchView('error-view')"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</div>
+                <div id="logout-btn" style="color: var(--red); border-top: 1px solid #f5f5f5; margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
+            </div>
+        </div>
+    </header>
+
+    <div id="home-view" class="view-section active-view">
+        <div class="settings-card">
+            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
+            <div class="form-group">
+                <label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label>
+                <select id="lang-select" onchange="loadParaList()"><option value="bn">বাংলা</option><option value="en">English</option></select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label>
+                <select id="para-select"></select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label>
+                <select id="time-select">
+                    <option value="180">৩ মিনিট</option>
+                    <option value="300">৫ মিনিট</option>
+                    <option value="600">১০ মিনিট</option>
+                    <option value="900">১৫ মিনিট</option>
+                    <option value="1200">২০ মিনিট</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-layer-group"></i> কঠিনতার স্তর</label>
+                <select id="difficulty-select"><option value="easy">সহজ (হাইলাইট)</option><option value="hard">কঠিন (স্বাভাবিক)</option></select>
+            </div>
+            <button style="width:100%;margin-top:10px;" onclick="initiateTyping()">শুরু করুন <i class="fas fa-play-circle"></i></button>
+        </div>
+    </div>
+
+    <div id="typing-view" class="view-section">
+        <div class="typing-header">
+            <div class="timer-display" id="timer-box">00:00</div>
+            <div class="timer-controls" style="display:flex;gap:10px;">
+                <button class="btn-warning" id="pause-btn" onclick="togglePause()"><i class="fas fa-pause"></i> পজ</button>
+                <button class="btn-danger" onclick="stopTest()"><i class="fas fa-circle-stop"></i> শেষ করুন</button>
+            </div>
+        </div>
+        <div id="source-box"></div>
+        <textarea id="input-area" placeholder="টাইপ শুরু করার সাথে সাথে সময় গণনা শুরু হবে..."></textarea>
+    </div>
+
+    <div id="result-view" class="view-section">
+        <div class="result-header" style="text-align:center; margin-bottom:30px;">
+            <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
+            <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3>Std. WPM</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
+            <div class="stat-box"><h3>Word WPM</h3><div class="value" id="res-wpm">0</div></div>
+            <div class="stat-box"><h3>মোট শব্দ</h3><div class="value" id="res-tw" style="color:var(--purple);">0</div></div>
+            <div class="stat-box"><h3>ভুল (%)</h3><div class="value" id="res-err" style="color:var(--red);">0%</div></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box"><h3>ক্যারেক্টার (স্পেসসহ)</h3><div class="value" id="res-cws">0</div></div>
+            <div class="stat-box"><h3>ক্যারেক্টার (স্পেসছাড়া)</h3><div class="value" id="res-cns">0</div></div>
+            <div class="stat-box"><h3>কনসিস্টেন্সি</h3><div class="value" id="res-pace" style="color:var(--green);">0%</div></div>
+            <div class="stat-box"><h3>ব্যাকস্পেস</h3><div class="value" id="res-bs">0</div></div>
+        </div>
+        
+        <div id="result-text-review-container" style="margin-top: 30px;">
+            <h3 style="margin-bottom:10px; color: var(--navy-blue);"><i class="fas fa-file-signature"></i> অনুচ্ছেদ পর্যালোচনা (ভুল সংশোধন)</h3>
+            <div id="result-text-review"></div>
+        </div>
+
+        <div style="text-align:center;margin-top:40px;"><button onclick="switchView('home-view')" style="padding:12px 40px;"><i class="fas fa-redo"></i> নতুন টেস্ট দিন</button></div>
+    </div>
+
+    <div id="leaderboard-view" class="view-section">
+        <h2 style="margin-bottom:16px;"><i class="fas fa-crown" style="color: #f1c40f;"></i> টপ ১০ রেকর্ড</h2>
+        <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+            <label>ভাষা নির্বাচন করুন</label>
+            <select id="leaderboard-lang-select" onchange="renderLeaderboard()">
+                <option value="bn">বাংলা</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <table id="leaderboard-table"></table>
+    </div>
+
+    <div id="database-view" class="view-section">
+        <h2 style="margin-bottom:16px;"><i class="fas fa-database"></i> ডাটাবেজ ম্যানেজমেন্ট</h2>
+        
+        <div class="settings-card" style="margin-bottom:20px; border: 1px dashed var(--blue);">
+            <h3><i class="fas fa-cloud-upload-alt" style="color:var(--blue)"></i> গুগল শিট সিঙ্ক (অটো-সেভ)</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">টেস্ট শেষ হওয়ার পর বিস্তারিত ফলাফল স্বয়ংক্রিয়ভাবে আপনার গুগল শিটে জমা হবে।</p>
+            <div style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <input type="checkbox" id="gs-sync-enabled" style="width: 22px; height: 22px; cursor: pointer;" onchange="toggleSync()">
+                <label for="gs-sync-enabled" style="margin-bottom: 0; cursor: pointer;">অনলাইন সিঙ্ক সক্রিয় করুন</label>
+                <span id="sync-status" style="margin-left: auto; font-size: 12px; font-weight: bold; color: var(--red);">বন্ধ</span>
+            </div>
+        </div>
+
+        <div class="settings-card" style="margin-bottom:20px;">
+            <input type="hidden" id="edit-original-title">
+            <select id="db-lang" style="margin-bottom:10px;"><option value="bn">বাংলা</option><option value="en">English</option></select>
+            <input type="text" id="db-title" placeholder="শিরোনাম" style="margin-bottom:10px;">
+            <textarea id="db-body" rows="5" placeholder="অনুচ্ছেদ পেস্ট করুন..." style="margin-bottom:10px;"></textarea>
+            <div style="display: flex; justify-content: flex-end;">
+                <button onclick="saveParagraph()"><i class="fas fa-save"></i> সংরক্ষণ করুন</button>
+            </div>
+        </div>
+        <div id="db-list"></div>
+    </div>
+
+    <div id="history-view" class="view-section">
+        <h2 style="margin-bottom:20px;"><i class="fas fa-chart-line"></i> হিস্টোরি ও সময়কাল</h2>
+        <div class="time-summary-grid" id="history-summary">
+            <div class="time-card today">
+                <div class="tc-icon">☀️</div><div class="tc-label">আজকের সময়</div>
+                <div class="tc-value" id="h-today-time">—</div><div class="tc-sub" id="h-today-sessions">০ টি সেশন</div>
+            </div>
+            <div class="time-card month">
+                <div class="tc-icon">📅</div><div class="tc-label">এই মাসে</div>
+                <div class="tc-value" id="h-month-time">—</div><div class="tc-sub" id="h-month-sessions">০ টি সেশন</div>
+            </div>
+            <div class="time-card year">
+                <div class="tc-icon">📆</div><div class="tc-label">এই বছরে</div>
+                <div class="tc-value" id="h-year-time">—</div><div class="tc-sub" id="h-year-sessions">০ টি সেশন</div>
+            </div>
+            <div class="time-card total">
+                <div class="tc-icon">🏅</div><div class="tc-label">সর্বমোট সময়</div>
+                <div class="tc-value" id="h-total-time">—</div><div class="tc-sub" id="h-total-sessions">০ টি সেশন</div>
+            </div>
+        </div>
+        <div class="filter-tabs">
+            <div class="filter-tab active" onclick="switchHistoryFilter(this, 7)">শেষ ৭ দিন</div>
+            <div class="filter-tab" onclick="switchHistoryFilter(this, 30)">শেষ ৩০ দিন</div>
+            <div class="filter-tab" onclick="switchHistoryFilter(this, 0)">এই বছর</div>
+        </div>
+        <div class="chart-container"><canvas id="historyChart"></canvas></div>
+        <div id="history-table-container"></div>
+    </div>
+
+    <div id="error-view" class="view-section">
+        <h2 style="margin-bottom:20px;"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</h2>
+        <div class="error-summary-grid">
+            <div class="error-card">🔢 <br><small>সর্বমোট ভুল</small><br><strong id="ea-total-errors">০</strong></div>
+            <div class="error-card">🎯 <br><small>টপ ভুল শব্দ</small><br><strong id="ea-top-word">—</strong></div>
+            <div class="error-card">📊 <br><small>ভুল করা ইউনিক শব্দ</small><br><strong id="ea-unique-words">০</strong></div>
+        </div>
+        <div class="error-bar-list" id="ea-bar-list"></div>
+        <div id="ea-detail-table"></div>
+    </div>
+</div>
+
+<script>
+    // ==================== STATE ====================
+    let paragraphs = {
+        "bn": {"নমুনা ১": "ঢাকা কলেজের গণিত বিভাগের ছাত্ররা অত্যন্ত পরিশ্রমী। টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।"},
+        "en": {"Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student."}
+    };
+    let timer, timeLeft, totalTime, isPaused = false, hasStarted = false;
+    let wordList = [], wpmSnapshots = [], timeLabels = [];
+    let lastKeystrokeTime = 0, idleTimeTotal = 0, backspaceCount = 0;
+    let historyChartInstance = null;
+
+    const GS_CONFIG = {
+        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse",
+        entries: {
+            lang: "entry.1297680054",
+            title: "entry.1063190250",
+            wpm: "entry.1750728196",
+            acc: "entry.1447012889",
+            dur: "entry.1811044011",
+            cns: "entry.1936188665",  
+            cws: "entry.485794403",   
+            tw: "entry.2044623366",   
+            bs: "entry.1306091940",   
+            errCount: "entry.1212502821" 
+        }
+    };
+
+    function normalizeText(text) {
+        if (!text) return "";
+        return text.normalize('NFC')
+            .replace(/[\u200B-\u200D\uFEFF]/g, '')
+            .replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'")
+            .replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function escapeHTML(str) {
+        if(!str) return "";
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(String(str)));
+        return d.innerHTML;
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 50);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 2500);
+    }
+
+    function formatDuration(sec) {
+        sec = Math.round(sec); if (sec <= 0) return '০ সেকেন্ড';
+        const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+        let res = [];
+        if (h > 0) res.push(`${h} ঘণ্টা`);
+        if (m > 0) res.push(`${m} মিনিট`);
+        if (s > 0 && h === 0) res.push(`${s} সেকেন্ড`);
+        return res.join(' ') || '০ সেকেন্ড';
+    }
+
+    const dateKey = (ts) => { const d = new Date(ts); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+    const monthKey = (ts) => { const d = new Date(ts); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+    const yearKey = (ts) => String(new Date(ts).getFullYear());
+    const bnDateShort = (ts) => new Date(ts).toLocaleDateString('bn-BD', { day:'numeric', month:'short' });
+
+    window.onload = () => {
+        const savedDB = localStorage.getItem('furqan_db_v2'); 
+        if (savedDB) paragraphs = JSON.parse(savedDB);
+        
+        const isSyncOn = localStorage.getItem('furqan_sync_on') === 'true';
+        document.getElementById('gs-sync-enabled').checked = isSyncOn;
+        updateSyncStatusUI(isSyncOn);
+
+        loadParaList();
+    };
+
+    function toggleMenu() { document.getElementById('main-menu').classList.toggle('active'); }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.menu-container')) document.getElementById('main-menu').classList.remove('active');
+    });
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+        document.getElementById('main-menu').classList.remove('active');
+        if (viewId === 'database-view') renderDatabaseList();
+        if (viewId === 'leaderboard-view') renderLeaderboard();
+        if (viewId === 'history-view') renderHistoryView(currentHistoryFilter);
+        if (viewId === 'error-view') renderErrorAnalysis();
+    }
+
+    function loadParaList() {
+        const lang = document.getElementById('lang-select').value;
+        const sel = document.getElementById('para-select');
+        sel.innerHTML = Object.keys(paragraphs[lang]).map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
+    }
+
+    function toggleSync() {
+        const isOn = document.getElementById('gs-sync-enabled').checked;
+        localStorage.setItem('furqan_sync_on', isOn);
+        updateSyncStatusUI(isOn);
+        showToast(isOn ? "অনলাইন সিঙ্ক চালু হয়েছে" : "অনলাইন সিঙ্ক বন্ধ হয়েছে");
+    }
+
+    function updateSyncStatusUI(isOn) {
+        const status = document.getElementById('sync-status');
+        status.innerText = isOn ? "সক্রিয়" : "বন্ধ";
+        status.style.color = isOn ? "var(--green)" : "var(--red)";
+    }
+
+    function initiateTyping() {
+        const lang = document.getElementById('lang-select').value, title = document.getElementById('para-select').value;
+        if (!title) return alert("অনুচ্ছেদ নির্বাচন করুন!");
+
+        const rawContent = paragraphs[lang][title];
+        const cleanContent = normalizeText(rawContent);
+        wordList = cleanContent.split(/\s+/);
+        
+        totalTime = parseInt(document.getElementById('time-select').value);
+        timeLeft = totalTime; isPaused = false; hasStarted = false;
+        wpmSnapshots = []; timeLabels = [];
+
+        document.getElementById('source-box').innerHTML = wordList.map((w, i) => `<span class="word" id="word-${i}">${escapeHTML(w)}</span>`).join('');
+        const ia = document.getElementById('input-area');
+        ia.value = ""; ia.disabled = false;
+        document.getElementById('pause-btn').innerHTML = '<i class="fas fa-pause"></i> পজ';
+        clearInterval(timer); updateTimerUI(); switchView('typing-view');
+        setTimeout(() => ia.focus(), 100);
+    }
+
+    document.getElementById('input-area').addEventListener('input', (e) => {
+        if (isPaused) return;
+        const val = e.target.value, now = Date.now();
+        if (!hasStarted && val.length > 0) { hasStarted = true; lastKeystrokeTime = now; startTimer(); }
+        if (hasStarted && (now - lastKeystrokeTime) > 2000) idleTimeTotal += (now - lastKeystrokeTime) / 1000;
+        lastKeystrokeTime = now;
+
+        let typedWords = val.trim() === "" ? [] : val.trim().split(/\s+/);
+        let activeIdx = (/\s$/.test(val) || val === "") ? typedWords.length : typedWords.length - 1;
+        
+        document.querySelectorAll('.word').forEach(el => el.classList.remove('active-word'));
+        const span = document.getElementById(`word-${activeIdx}`);
+        if (span) {
+            if (document.getElementById('difficulty-select').value === 'easy') span.classList.add('active-word');
+            const sb = document.getElementById('source-box');
+            sb.scrollTop = span.offsetTop - (sb.clientHeight / 2);
+        }
+    });
+
+    document.getElementById('input-area').addEventListener('keydown', (e) => { if (e.key === 'Backspace' && hasStarted && !isPaused) backspaceCount++; });
+
+    function startTimer() {
+        timer = setInterval(() => {
+            if (!isPaused) {
+                timeLeft--; updateTimerUI();
+                if (timeLeft <= 0) stopTest();
+            }
+        }, 1000);
+    }
+
+    function updateTimerUI() {
+        const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const s = (timeLeft % 60).toString().padStart(2, '0');
+        const timerBox = document.getElementById('timer-box');
+        timerBox.innerText = `${m}:${s}`;
+        if (timeLeft <= 60 && timeLeft > 0) timerBox.classList.add('timer-danger');
+        else timerBox.classList.remove('timer-danger');
+    }
+
+    function togglePause() {
+        if (!hasStarted) return;
+        isPaused = !isPaused;
+        document.getElementById('pause-btn').innerHTML = isPaused ? '<i class="fas fa-play"></i> চালু করুন' : '<i class="fas fa-pause"></i> পজ';
+        document.getElementById('input-area').disabled = isPaused;
+    }
+
+    function stopTest() {
+        clearInterval(timer);
+        const val = document.getElementById('input-area').value;
+        const typed = val.trim() === "" ? [] : val.trim().split(/\s+/);
+        let cChars = 0, cWords = 0, errs = 0, sErrs = [];
+
+        typed.forEach((w, i) => {
+            if (i < wordList.length) {
+                const nTyped = normalizeText(w);
+                const nExpected = normalizeText(wordList[i]);
+                if (nTyped === nExpected) { cChars += w.length; cWords++; }
+                else { errs++; sErrs.push({ expected: wordList[i], typed: w }); }
+            }
+        });
+
+        const sec = totalTime - timeLeft, min = sec / 60;
+        const swpm = min > 0 ? Math.round((cChars / 5) / min) : 0;
+        const rawErrPct = typed.length > 0 ? (errs / typed.length) * 100 : 0;
+        const accStr = (100 - rawErrPct).toFixed(1) + "%";
+
+        const results = {
+            wpm: swpm, wwpm: Math.round(cWords / min) || 0, tw: typed.length,
+            cws: val.length, cns: val.replace(/\s/g, "").length, err: rawErrPct.toFixed(1),
+            cons: Math.round(((sec - idleTimeTotal) / sec) * 100) || 0,
+            bs: backspaceCount, duration: sec, timestamp: Date.now(),
+            date: new Date().toLocaleDateString('bn-BD'), errors: sErrs,
+            lang: document.getElementById('lang-select').value, 
+            title: document.getElementById('para-select').value,
+            accuracy: accStr,
+            errCount: errs
+        };
+
+        saveResults(results);
+        displayResults(results, typed);
+    }
+
+    function saveResults(data) {
+        let history = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
+        history.push(data);
+        localStorage.setItem('furqan_history_v2', JSON.stringify(history));
+
+        if (localStorage.getItem('furqan_sync_on') === 'true') {
+            const formData = new FormData();
+            const langLabel = data.lang === 'bn' ? 'Bangla' : 'English';
+            
+            formData.append(GS_CONFIG.entries.lang, langLabel);
+            formData.append(GS_CONFIG.entries.title, data.title);
+            formData.append(GS_CONFIG.entries.wpm, data.wpm);
+            formData.append(GS_CONFIG.entries.acc, data.accuracy);
+            formData.append(GS_CONFIG.entries.dur, formatDuration(data.duration));
+            formData.append(GS_CONFIG.entries.cns, data.cns);
+            formData.append(GS_CONFIG.entries.cws, data.cws);
+            formData.append(GS_CONFIG.entries.tw, data.tw);
+            formData.append(GS_CONFIG.entries.bs, data.bs);
+            formData.append(GS_CONFIG.entries.errCount, data.errCount);
+
+            fetch(GS_CONFIG.formUrl, {
+                method: "POST",
+                mode: "no-cors",
+                body: formData
+            }).then(() => console.log("Synced to Google Sheet")).catch(e => console.error("Sync Error", e));
+        }
+    }
+
+    function displayResults(data, typedWords) {
+        switchView('result-view');
+        document.getElementById('res-swpm').innerText = data.wpm;
+        document.getElementById('res-wpm').innerText = data.wwpm;
+        document.getElementById('res-tw').innerText = data.tw;
+        document.getElementById('res-err').innerText = data.err + "%";
+        document.getElementById('res-cws').innerText = data.cws;
+        document.getElementById('res-cns').innerText = data.cns;
+        document.getElementById('res-pace').innerText = data.cons + "%";
+        document.getElementById('res-bs').innerText = data.bs;
+
+        const fbEl = document.getElementById('dynamic-feedback');
+        const benchmark = (data.lang === 'bn') ? 30 : 35;
+        if (data.wpm >= benchmark) { fbEl.innerText = "☀️চ্যাম্পিয়ন!☀️"; fbEl.style.color = "var(--green)"; confetti({ particleCount: 150 }); }
+        else if (data.wpm >= (benchmark - 10)) { fbEl.innerText = "চালিয়ে যাও"; fbEl.style.color = "var(--blue)"; }
+        else { fbEl.innerText = "পুনরায় চেষ্টা করো"; fbEl.style.color = "var(--red)"; }
+
+        const reviewBox = document.getElementById('result-text-review');
+        let reviewHTML = "";
+        wordList.forEach((original, idx) => {
+            if (idx < typedWords.length) {
+                if (normalizeText(typedWords[idx]) === normalizeText(original)) reviewHTML += `<span class="res-correct">${original}</span>`;
+                else reviewHTML += `<span class="res-error">${typedWords[idx] || '—'}<small>সঠিক: ${original}</small></span>`;
+            } else reviewHTML += `<span class="res-missed">${original}</span>`;
+        });
+        reviewBox.innerHTML = reviewHTML;
+    }
+
+    function saveParagraph() {
+        const lang = document.getElementById('db-lang').value;
+        const title = document.getElementById('db-title').value.trim();
+        const body = normalizeText(document.getElementById('db-body').value.trim());
+        const oldT = document.getElementById('edit-original-title').value;
+        if (!title || !body) return alert("সব তথ্য দিন!");
+        if (oldT && oldT !== title) delete paragraphs[lang][oldT];
+        paragraphs[lang][title] = body;
+        localStorage.setItem('furqan_db_v2', JSON.stringify(paragraphs));
+        document.getElementById('db-title').value = ""; document.getElementById('db-body').value = ""; document.getElementById('edit-original-title').value = "";
+        loadParaList(); renderDatabaseList(); showToast("সফলভাবে আপডেট করা হয়েছে!");
+    }
+
+    function renderDatabaseList() {
+        const list = document.getElementById('db-list'); list.innerHTML = "";
+        ['bn', 'en'].forEach(l => {
+            for (let t in paragraphs[l]) {
+                const item = document.createElement('div');
+                item.style.cssText = "padding:12px; background:#fff; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
+                item.innerHTML = `<div><small>${l.toUpperCase()}</small><br><strong>${t}</strong></div>
+                <div style='display:flex; gap:8px;'><button class='btn-sm' onclick="editPara('${l}', '${t.replace(/'/g, "\\'")}')">Edit</button><button class='btn-danger btn-sm' onclick="deletePara('${l}', '${t.replace(/'/g, "\\'")}')">Del</button></div>`;
+                list.appendChild(item);
+            }
+        });
+    }
+
+    function editPara(l, t) {
+        document.getElementById('db-lang').value = l; document.getElementById('db-title').value = t;
+        document.getElementById('db-body').value = paragraphs[l][t]; document.getElementById('edit-original-title').value = t;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deletePara(l, t) { if(confirm("ডিলিট করবেন?")) { delete paragraphs[l][t]; localStorage.setItem('furqan_db_v2', JSON.stringify(paragraphs)); renderDatabaseList(); loadParaList(); } }
+
+    function renderLeaderboard() {
+        const langVal = document.getElementById('leaderboard-lang-select').value;
+        const history = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
+        
+        const filtered = history.filter(h => {
+            if (langVal === 'bn') return h.lang === 'bn' || h.lang === 'Bangla';
+            if (langVal === 'en') return h.lang === 'en' || h.lang === 'English';
+            return false;
+        }).sort((a,b) => b.wpm - a.wpm);
+
+        const table = document.getElementById('leaderboard-table');
+        table.innerHTML = "<tr><th>র‍্যাংক</th><th>অনুচ্ছেদ</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" +
+        (filtered.length ? filtered.slice(0, 10).map((h, i) => `<tr><td>#${i+1}</td><td>${escapeHTML(h.title || "—")}</td><td><strong>${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5' style='text-align:center'>রেকর্ড নেই</td></tr>");
+    }
+
+    let currentHistoryFilter = 7;
+    function switchHistoryFilter(el, d) {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active'); currentHistoryFilter = d; renderHistoryView(d);
+    }
+
+    function renderHistoryView(d) {
+        const history = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
+        const now = new Date(), tk = dateKey(now), mk = monthKey(now), yk = yearKey(now);
+        let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0;
+        history.forEach(h => {
+            const hTs = h.timestamp || Date.now();
+            const dk = dateKey(hTs), mck = monthKey(hTs), yck = yearKey(hTs);
+            const dur = h.duration || 0; tt += dur;
+            if (dk === tk) { td += dur; ts++; }
+            if (mck === mk) { md += dur; ms++; }
+            if (yck === yk) { yd += dur; ys++; }
+        });
+        document.getElementById('h-today-time').innerText = formatDuration(td);
+        document.getElementById('h-today-sessions').innerText = `${ts} টি সেশন`;
+        document.getElementById('h-month-time').innerText = formatDuration(md);
+        document.getElementById('h-month-sessions').innerText = `${ms} টি সেশন`;
+        document.getElementById('h-year-time').innerText = formatDuration(yd);
+        document.getElementById('h-year-sessions').innerText = `${ys} টি সেশন`;
+        document.getElementById('h-total-time').innerText = formatDuration(tt);
+        document.getElementById('h-total-sessions').innerText = `${history.length} টি সেশন`;
+        renderHistoryChart(history, d);
+        renderHistoryTable(history);
+    }
+
+    function renderHistoryChart(h, days) {
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        if (historyChartInstance) historyChartInstance.destroy();
+        let labels = [], data = [];
+        if (days === 0) {
+            const mNames = ['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'];
+            let mD = Array(12).fill(0);
+            h.forEach(x => { if (new Date(x.timestamp).getFullYear() === new Date().getFullYear()) mD[new Date(x.timestamp).getMonth()] += (x.duration || 0); });
+            labels = mNames; data = mD.map(s => (s/60).toFixed(1));
+        } else {
+            for (let i = days-1; i >= 0; i--) {
+                const day = new Date(); day.setDate(day.getDate() - i);
+                labels.push(bnDateShort(day.getTime()));
+                let s = h.filter(x => dateKey(x.timestamp) === dateKey(day)).reduce((acc, curr) => acc + (curr.duration || 0), 0);
+                data.push((s/60).toFixed(1));
+            }
+        }
+        historyChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'মিনিট', data, backgroundColor: 'rgba(25,42,86,0.7)' }] } });
+    }
+
+    function renderHistoryTable(h) {
+        const box = document.getElementById('history-table-container');
+        if (!h.length) return box.innerHTML = "";
+        let html = "<h3>সাম্প্রতিক সেশনসমূহ</h3><table><tr><th>তারিখ</th><th>অনুচ্ছেদ</th><th>স্পিড</th><th>ভুল</th></tr>";
+        h.slice(-15).reverse().forEach(x => { html += `<tr><td>${x.date}</td><td>${escapeHTML(x.title || "—")}</td><td><strong>${x.wpm}</strong></td><td>${x.err}%</td></tr>`; });
+        box.innerHTML = html + "</table>";
+    }
+
+    function renderErrorAnalysis() {
+        const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
+        let eMap = {};
+        h.forEach(x => (x.errors || []).forEach(e => {
+            if(!eMap[e.expected]) eMap[e.expected] = { total: 0, typed: {} };
+            eMap[e.expected].total++;
+            eMap[e.expected].typed[e.typed] = (eMap[e.expected].typed[e.typed] || 0) + 1;
+        }));
+        const sorted = Object.entries(eMap).sort((a,b) => b[1].total - a[1].total);
+        document.getElementById('ea-total-errors').innerText = sorted.reduce((s, x) => s + x[1].total, 0);
+        document.getElementById('ea-top-word').innerText = sorted.length ? sorted[0][0] : "—";
+        document.getElementById('ea-unique-words').innerText = sorted.length;
+        const bl = document.getElementById('ea-bar-list');
+        if (!sorted.length) return bl.innerHTML = "<p style='text-align:center;padding:20px;'>রেকর্ড নেই</p>";
+        const max = sorted[0][1].total;
+        bl.innerHTML = "<h3>📊 সর্বাধিক ভুল করা শব্দ</h3>" + sorted.slice(0, 10).map(([w, d]) => {
+            const pct = (d.total / max) * 100;
+            return `<div class='error-bar-item'><div style='display:flex;justify-content:space-between;'><span>${escapeHTML(w)}</span><span>${d.total} বার</span></div><div class='error-bar-bg'><div class='error-bar-fill' style='width:${pct}%'></div></div></div>`;
+        }).join('');
+        let th = "<h3>📋 বিস্তারিত ভুল তালিকা</h3><table><tr><th>সঠিক</th><th>মোট ভুল</th><th>শীর্ষ ভুল টাইপ</th></tr>";
+        sorted.slice(0, 20).forEach(([w, d]) => {
+            const top = Object.entries(d.typed).sort((a,b) => b[1]-a[1])[0];
+            th += `<tr><td><strong>${escapeHTML(w)}</strong></td><td>${d.total}</td><td>${escapeHTML(top[0])} (${top[1]}×)</td></tr>`;
+        });
+        document.getElementById('ea-detail-table').innerHTML = th + "</table>";
+    }
+</script>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
