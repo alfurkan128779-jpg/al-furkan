@@ -107,6 +107,8 @@ const mainApp = document.getElementById('main-app');
 const authError = document.getElementById('auth-error');
 const logoutBtn = document.getElementById('logout-btn');
 const googleLoginBtn = document.getElementById('google-login-btn'); 
+// নতুন: ফলাফল পেজের প্রমোশনাল লগইন বাটন
+const promoLoginBtn = document.getElementById('promo-login-btn');
 
 // ৬. রিডাইরেক্ট হয়ে ফিরে আসার পর ডাটা রিকভারি হ্যান্ডেলিং
 if(googleLoginBtn) {
@@ -144,6 +146,21 @@ if(googleLoginBtn) {
     });
 }
 
+// নতুন: প্রমোশনাল লগইন বাটনের ইভেন্ট লিসেনার
+if(promoLoginBtn) {
+    promoLoginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, googleProvider).catch((error) => {
+            if (error.code === 'auth/popup-blocked') {
+                promoLoginBtn.innerHTML = 'রিডাইরেক্ট করা হচ্ছে...';
+                signInWithRedirect(auth, googleProvider);
+            } else {
+                showError("লগইন বাতিল করা হয়েছে।");
+                console.error(error);
+            }
+        });
+    });
+}
+
 // ৮. লগআউট প্রসেস
 if(logoutBtn) {
     logoutBtn.addEventListener('click', () => {
@@ -152,9 +169,10 @@ if(logoutBtn) {
 }
 
 // ৯. অথেনটিকেশন ও অ্যাডমিন ট্র্যাকার (মেনু নিয়ন্ত্রণ)
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         window.currentUser = user; 
+        window.isGuest = false; // লগইন সফল হলে গেস্ট মোড বাতিল
         
         authSection.style.display = "none";
         mainApp.style.display = "block";
@@ -167,12 +185,34 @@ onAuthStateChanged(auth, (user) => {
                 dbMenu.style.display = "none";  
             }
         }
+
+        // নতুন: যদি গেস্ট মোডে পরীক্ষা দিয়ে ডাটা জমা থাকে, তা লিডারবোর্ডে পাঠিয়ে দেওয়া
+        if (window.lastGuestResult) {
+            if (window.saveGlobalLeaderboard) {
+                await window.saveGlobalLeaderboard({
+                    ...window.lastGuestResult,
+                    userName: user.displayName || "অজ্ঞাত ইউজার",
+                    userEmail: user.email
+                });
+            }
+            window.lastGuestResult = null; // পাঠানো শেষ, ডাটা মুছে দেওয়া হলো
+            
+            // প্রমোশনাল সেকশনটি হাইড করা
+            const guestPromoSection = document.getElementById('guest-promo-section');
+            if(guestPromoSection) {
+                guestPromoSection.style.display = "none";
+            }
+        }
         
         window.dispatchEvent(new Event('app-ready'));
     } else {
         window.currentUser = null;
-        authSection.style.display = "flex";
-        mainApp.style.display = "none";
+        
+        // গেস্ট মোডে না থাকলে তবেই লগইন পেজে পাঠাবে
+        if (!window.isGuest) {
+            authSection.style.display = "flex";
+            mainApp.style.display = "none";
+        }
         
         if(googleLoginBtn) {
             googleLoginBtn.disabled = false;

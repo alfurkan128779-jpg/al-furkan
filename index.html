@@ -146,6 +146,10 @@
             গুগল দিয়ে লগইন করুন
         </button>
 
+        <button id="skip-login-btn" style="width: 100%; background: transparent; color: var(--blue); border: none; margin-top: 15px; cursor: pointer; font-size: 15px; font-weight: bold; text-decoration: underline; transition: 0.3s;">
+            লগইন ছাড়াই চালিয়ে যান (স্কিপ)
+        </button>
+
         <div id="auth-error"></div>
     </div>
 </div>
@@ -163,6 +167,7 @@
                 <div onclick="switchView('leaderboard-view')"><i class="fas fa-award"></i> লিডারবোর্ড</div>
                 <div onclick="switchView('history-view')"><i class="fas fa-clock-rotate-left"></i> হিস্টোরি ও সময়</div>
                 <div onclick="switchView('error-view')"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</div>
+                <div onclick="showContactModal()"><i class="fas fa-address-card"></i> যোগাযোগ</div>
                 <div id="menu-database" onclick="switchView('database-view')" style="display: none; background: #f1f2f6; border-left: 4px solid var(--blue);"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
                 <div id="logout-btn" style="color: var(--red); border-top: 1px solid #f5f5f5; margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
             </div>
@@ -231,6 +236,15 @@
         <div id="result-text-review-container" style="margin-top: 30px;">
             <h3 style="margin-bottom:10px; color: var(--navy-blue);"><i class="fas fa-file-signature"></i> অনুচ্ছেদ পর্যালোচনা (ভুল সংশোধন)</h3>
             <div id="result-text-review"></div>
+        </div>
+
+        <div id="guest-promo-section" style="display: none; background: #e3f2fd; padding: 25px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid #bbdefb; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h3 style="color: var(--navy-blue); margin-bottom: 10px;"><i class="fas fa-medal" style="color: #f1c40f;"></i> আপনার স্পিড অসাধারণ!</h3>
+            <p style="color: #555; margin-bottom: 20px; font-size: 15px;">গ্লোবাল লিডারবোর্ডে আপনার র‍্যাংক দেখতে এবং ফলাফল স্থায়ীভাবে সংরক্ষণ করতে এখনই লগইন করুন।</p>
+            <button id="promo-login-btn" style="background: #fff; color: var(--text); border: 2px solid #ccc; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
+                গুগল দিয়ে লগইন করুন
+            </button>
         </div>
 
         <div style="text-align:center;margin-top:40px;"><button onclick="switchView('home-view')" style="padding:12px 40px;"><i class="fas fa-redo"></i> নতুন টেস্ট দিন</button></div>
@@ -314,6 +328,25 @@
     </div>
 </div>
 
+<div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;">
+    <div style="background: #fff; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 22px; color: var(--red);" onclick="closeContactModal()"></i>
+        
+        <img src="https://drive.google.com/file/d/1v9jEqgXyvhHNXlqpBCCcXeWhq4qwtiXs/view?usp=drive_link" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid var(--blue);">
+        <h3 style="color: var(--navy-blue); margin-bottom: 5px; font-size: 22px;"> AL FURKAN </h3>
+        <p style="color: #666; margin-bottom: 20px; font-size: 15px;">Creator & Developer</p>
+        
+        <div style="text-align: left; margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <p style="margin-bottom: 10px; font-size: 16px;"><i class="fas fa-phone-alt" style="color: var(--green); width: 25px;"></i> 01611217002</p>
+            <p style="font-size: 16px;"><i class="fas fa-envelope" style="color: var(--red); width: 25px;"></i> alfurkan128779@gmail.com</p>
+        </div>
+        
+        <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: inline-block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s;">
+            <i class="fab fa-facebook-f" style="margin-right: 8px;"></i> ফেসবুকে যোগাযোগ করুন
+        </a>
+    </div>
+</div>
+
 <script>
     // ==================== STATE ====================
     let paragraphs = {
@@ -324,7 +357,38 @@
     let wordList = [], wpmSnapshots = [], timeLabels = [];
     let lastKeystrokeTime = 0, idleTimeTotal = 0, backspaceCount = 0;
     let historyChartInstance = null;
-    let isAppReady = false; // ক্লাউড ডাটা ফেচ ট্র্যাকার
+    let isAppReady = false; 
+
+    // মোবাইল পপ-আপ অ্যালার্ট
+    window.addEventListener('DOMContentLoaded', () => {
+        if(window.innerWidth <= 768) {
+            const mPopup = document.createElement('div');
+            mPopup.innerHTML = '<strong>For better result , Please use Laptop or Dextop</strong><br><button onclick="this.parentElement.remove()" style="margin-top:10px; padding:6px 15px; font-size:14px; background:#fff; color:#34495e; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">OK</button>';
+            mPopup.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#34495e; color:#fff; padding:15px; border-radius:8px; z-index:9999; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3); width:90%; border-bottom: 4px solid var(--orange);';
+            document.body.appendChild(mPopup);
+        }
+    });
+
+    // স্কিপ লগইন লজিক
+    document.getElementById('skip-login-btn').addEventListener('click', () => {
+        window.isGuest = true;
+        document.getElementById('auth-section').style.display = "none";
+        document.getElementById('main-app').style.display = "block";
+        alert("আপনি লগইন করেননি। তাই লিডারবোর্ডে আপনাকে দেখানো সম্ভব হবে না।");
+        
+        if (!isAppReady) {
+            window.dispatchEvent(new Event('app-ready'));
+        }
+    });
+
+    // যোগাযোগ মডাল কন্ট্রোল
+    function showContactModal() {
+        document.getElementById('contact-modal').style.display = 'flex';
+        document.getElementById('main-menu').classList.remove('active');
+    }
+    function closeContactModal() {
+        document.getElementById('contact-modal').style.display = 'none';
+    }
 
     const GS_CONFIG = {
         formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse",
@@ -361,14 +425,13 @@
         updateSyncStatusUI(isSyncOn);
     };
 
-    // Firebase অথেনটিকেশন সফল হলে ক্লাউড থেকে ডাটাবেজ ফেচ করবে
     window.addEventListener('app-ready', async () => {
         if(isAppReady) return;
         isAppReady = true;
         if(window.syncGlobalParagraphs) {
             const globalParas = await window.syncGlobalParagraphs();
             if (globalParas && (Object.keys(globalParas.bn).length > 0 || Object.keys(globalParas.en).length > 0)) {
-                paragraphs = globalParas; // ক্লাউড ডাটা দিয়ে রিপ্লেস
+                paragraphs = globalParas; 
             }
             loadParaList();
         }
@@ -466,20 +529,20 @@
     }
 
     function saveResults(data) {
-        // ইউজারের লোকাল হিস্টোরি (শুধু তার নিজের জন্য)
         let history = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
         history.push(data); localStorage.setItem('furqan_history_v2', JSON.stringify(history));
 
-        // গ্লোবাল লিডারবোর্ডে ফায়ারস্টোরে পাঠানো (সবার জন্য)
-        if(window.saveGlobalLeaderboard) {
+        if(!window.isGuest && window.saveGlobalLeaderboard) {
             window.saveGlobalLeaderboard({
                 ...data,
                 userName: window.currentUser ? (window.currentUser.displayName || "অজ্ঞাত ইউজার") : "অজ্ঞাত ইউজার",
                 userEmail: window.currentUser ? window.currentUser.email : ""
             });
+        } else if (window.isGuest) {
+            // গেস্টদের জন্য সাময়িক রেজাল্ট সেভ করে রাখা হলো যাতে লগইন করলে পুশ করা যায়
+            window.lastGuestResult = data;
         }
 
-        // গুগল শিটে সিঙ্ক
         if (localStorage.getItem('furqan_sync_on') === 'true') {
             const formData = new FormData(); const langLabel = data.lang === 'bn' ? 'Bangla' : 'English';
             formData.append(GS_CONFIG.entries.lang, langLabel); formData.append(GS_CONFIG.entries.title, data.title);
@@ -493,6 +556,14 @@
 
     function displayResults(data, typedWords) {
         switchView('result-view');
+        
+        // গেস্ট হলে প্রমোশন সেকশন দেখাবে, ইউজার হলে লুকাবে
+        if (window.isGuest) {
+            document.getElementById('guest-promo-section').style.display = "block";
+        } else {
+            document.getElementById('guest-promo-section').style.display = "none";
+        }
+
         document.getElementById('res-swpm').innerText = data.wpm; document.getElementById('res-wpm').innerText = data.wwpm;
         document.getElementById('res-tw').innerText = data.tw; document.getElementById('res-err').innerText = data.err + "%";
         document.getElementById('res-cws').innerText = data.cws; document.getElementById('res-cns').innerText = data.cns;
@@ -511,7 +582,6 @@
         }); reviewBox.innerHTML = reviewHTML;
     }
 
-    // অ্যাডমিন ডাটাবেজ ম্যানেজমেন্ট (ক্লাউড সিঙ্কসহ)
     async function saveParagraph() {
         const lang = document.getElementById('db-lang').value; const title = document.getElementById('db-title').value.trim();
         const body = normalizeText(document.getElementById('db-body').value.trim()); const oldT = document.getElementById('edit-original-title').value;
@@ -523,7 +593,7 @@
         }
         
         paragraphs[lang][title] = body;
-        if(window.saveGlobalParagraph) await window.saveGlobalParagraph(lang, title, body); // ক্লাউডে সেভ
+        if(window.saveGlobalParagraph) await window.saveGlobalParagraph(lang, title, body);
 
         document.getElementById('db-title').value = ""; document.getElementById('db-body').value = ""; document.getElementById('edit-original-title').value = "";
         loadParaList(); renderDatabaseList(); showToast("ক্লাউডে সফলভাবে আপডেট করা হয়েছে!");
@@ -551,12 +621,11 @@
     async function deletePara(l, t) { 
         if(confirm("ক্লাউড থেকে ডিলিট করবেন?")) { 
             delete paragraphs[l][t]; 
-            if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); // ক্লাউড থেকে ডিলিট
+            if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); 
             renderDatabaseList(); loadParaList(); showToast("ডিলিট করা হয়েছে!");
         } 
     }
 
-    // গ্লোবাল লিডারবোর্ড (ফায়ারস্টোর থেকে)
     async function renderLeaderboard() {
         const langVal = document.getElementById('leaderboard-lang-select').value;
         const table = document.getElementById('leaderboard-table');
@@ -577,7 +646,6 @@
         (filtered.length ? filtered.slice(0, 20).map((h, i) => `<tr><td>#${i+1}</td><td>${escapeHTML(h.userName)}</td><td><strong>${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5' style='text-align:center'>কোনো রেকর্ড নেই</td></tr>");
     }
 
-    // পার্সোনাল হিস্টোরি (ইউজারের নিজস্ব)
     let currentHistoryFilter = 7;
     function switchHistoryFilter(el, d) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
