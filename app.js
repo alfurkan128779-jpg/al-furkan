@@ -110,6 +110,95 @@ const googleLoginBtn = document.getElementById('google-login-btn');
 // নতুন: ফলাফল পেজের প্রমোশনাল লগইন বাটন
 const promoLoginBtn = document.getElementById('promo-login-btn');
 
+// =========================================================================
+// লগইন পেজের ল্যান্ডস্কেপ লেআউট ও ফিচার হাইলাইট (Glassmorphism-এর সাথে সিঙ্ক করা)
+// =========================================================================
+window.addEventListener('DOMContentLoaded', () => {
+    const authContainer = document.querySelector('.auth-container');
+    const skipBtn = document.getElementById('skip-login-btn');
+    
+    if (authContainer && googleLoginBtn && skipBtn) {
+        // পিসি ইউজারদের জন্য ল্যান্ডস্কেপ গ্রিড লেআউট 
+        authContainer.style.maxWidth = '850px';
+        authContainer.style.padding = '40px';
+        authContainer.style.display = 'flex';
+        authContainer.style.alignItems = 'center';
+        authContainer.style.justifyContent = 'space-between';
+        authContainer.style.gap = '40px';
+        authContainer.style.textAlign = 'left';
+
+        const leftSide = document.createElement('div');
+        leftSide.style.flex = '1';
+        leftSide.style.borderRight = '1px solid rgba(255,255,255,0.4)';
+        leftSide.style.paddingRight = '40px';
+
+        const rightSide = document.createElement('div');
+        rightSide.style.flex = '1';
+        rightSide.style.width = '100%';
+        rightSide.style.display = 'flex';
+        rightSide.style.flexDirection = 'column';
+        rightSide.style.justifyContent = 'center';
+
+        const mainHeading = authContainer.querySelector('h2');
+        const subHeading = authContainer.querySelector('p');
+        
+        if (mainHeading && subHeading) {
+            leftSide.appendChild(mainHeading);
+            leftSide.appendChild(subHeading);
+            mainHeading.style.textAlign = 'left';
+            subHeading.style.textAlign = 'left';
+        }
+
+        const featureBox = document.createElement('div');
+        featureBox.style.marginTop = '25px';
+        featureBox.innerHTML = `
+            <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
+                <i class="fas fa-id-card-alt" style="color: var(--blue); font-size: 20px; margin-top: 4px; text-shadow: 0 2px 4px rgba(255,255,255,0.5);"></i>
+                <div>
+                    <strong style="color: var(--navy-blue); font-size: 16px; display: block; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">BCC এক্সাম স্ট্যান্ডার্ড প্র্যাকটিস</strong>
+                    <span style="color: #4b6584; font-size: 14px; font-weight: bold;">বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ কঠিন ও নির্ভুল টেস্ট।</span>
+                </div>
+            </div>
+            <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px;">
+                <i class="fas fa-calendar-plus" style="color: var(--green); font-size: 20px; margin-top: 4px; text-shadow: 0 2px 4px rgba(255,255,255,0.5);"></i>
+                <div>
+                    <strong style="color: var(--navy-blue); font-size: 16px; display: block; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">দৈনিক নতুন অনুচ্ছেদ সংযোজন</strong>
+                    <span style="color: #4b6584; font-size: 14px; font-weight: bold;">চাকরির পরীক্ষার উপযোগী প্যারাগ্রাফের ক্লাউড লাইব্রেরি।</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <i class="fas fa-chart-line" style="color: var(--purple); font-size: 20px; margin-top: 4px; text-shadow: 0 2px 4px rgba(255,255,255,0.5);"></i>
+                <div>
+                    <strong style="color: var(--navy-blue); font-size: 16px; display: block; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">অ্যাডভান্সড অ্যানালিটিক্স ও হিস্টোরি</strong>
+                    <span style="color: #4b6584; font-size: 14px; font-weight: bold;">আপনার প্রতি মুহূর্তের গতি, নির্ভুলতা এবং ভুল বিশ্লেষণ।</span>
+                </div>
+            </div>
+        `;
+        leftSide.appendChild(featureBox);
+
+        // AppendChild ইভেন্ট লিসেনারগুলো অক্ষুণ্ণ রাখে
+        rightSide.appendChild(googleLoginBtn);
+        rightSide.appendChild(skipBtn);
+        if (authError) rightSide.appendChild(authError);
+
+        authContainer.innerHTML = '';
+        authContainer.appendChild(leftSide);
+        authContainer.appendChild(rightSide);
+
+        if (window.innerWidth <= 768) {
+            authContainer.style.flexDirection = 'column';
+            authContainer.style.gap = '20px';
+            leftSide.style.borderRight = 'none';
+            leftSide.style.paddingRight = '0px';
+            authContainer.style.textAlign = 'center';
+            mainHeading.style.textAlign = 'center';
+            subHeading.style.textAlign = 'center';
+        }
+    }
+});
+// =========================================================================
+
+
 // ৬. রিডাইরেক্ট হয়ে ফিরে আসার পর ডাটা রিকভারি হ্যান্ডেলিং
 if(googleLoginBtn) {
     googleLoginBtn.disabled = true;

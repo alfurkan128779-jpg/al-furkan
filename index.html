@@ -12,22 +12,33 @@
 
     <style>
         :root {
-            --bg: #f4f6f9; --border: #dcdde1; --text: #2f3640;
+            --bg: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); /* Glassmorphism Base Background */
+            --border: rgba(255, 255, 255, 0.6); 
+            --text: #2f3640;
             --blue: #0984e3; --navy-blue: #192a56; --red: #d63031; --green: #27ae60;
             --orange: #e67e22; --purple: #8e44ad;
+            
+            /* Glass properties reused */
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-blur: blur(12px);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kalpurush', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 60px; }
+        body { background: var(--bg); background-attachment: fixed; color: var(--text); padding-bottom: 60px; }
 
         /* Auth Container Styles */
-        #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); }
-        .auth-container { background: #fff; width: 100%; max-width: 400px; padding: 50px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        #auth-error { color: var(--red); margin-top: 15px; font-size: 14px; display: none; font-weight: bold; background: #ffeaa7; padding: 10px; border-radius: 5px; }
+        #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .auth-container { 
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border); width: 100%; max-width: 400px; padding: 50px 30px; 
+            border-radius: 16px; box-shadow: var(--glass-shadow); text-align: center; 
+        }
+        #auth-error { color: var(--red); margin-top: 15px; font-size: 14px; display: none; font-weight: bold; background: rgba(255, 234, 167, 0.8); padding: 10px; border-radius: 5px; border: 1px solid rgba(253, 203, 110, 0.5); }
 
         header {
-            background: #fff; padding: 12px 40px; display: flex;
-            justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07); position: sticky; top: 0; z-index: 1000;
+            background: rgba(255, 255, 255, 0.65); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            padding: 12px 40px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
         }
         
         .logo { 
@@ -40,21 +51,23 @@
 
         .menu-container { position: relative; }
         .three-dots { font-size: 24px; cursor: pointer; color: var(--navy-blue); padding: 8px 12px; border-radius: 50%; transition: 0.2s; }
-        .three-dots:hover { background: #f1f2f6; }
+        .three-dots:hover { background: rgba(0, 0, 0, 0.05); }
 
         .dropdown-menu {
-            display: none; position: absolute; right: 0; top: 50px; background: #fff;
-            width: 260px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 12px; 
-            overflow: hidden; border: 1px solid #eee;
+            display: none; position: absolute; right: 0; top: 50px; 
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            width: 260px; box-shadow: var(--glass-shadow); border-radius: 12px; 
+            overflow: hidden; border: 1px solid var(--border);
         }
         .dropdown-menu.active { display: block; }
-        .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid #f5f5f5; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .dropdown-menu div:hover { background: #f8f9fa; color: var(--blue); padding-left: 25px; }
+        .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .dropdown-menu div:hover { background: rgba(255, 255, 255, 0.8); color: var(--blue); padding-left: 25px; }
 
         .toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; }
         .toast-msg {
-            background: #fff; color: var(--navy-blue); padding: 20px 45px; border-radius: 15px; 
-            font-size: 20px; font-weight: bold; box-shadow: 0 20px 60px rgba(0,0,0,0.25); 
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+            color: var(--navy-blue); padding: 20px 45px; border-radius: 15px; 
+            font-size: 20px; font-weight: bold; box-shadow: var(--glass-shadow); border: 1px solid var(--border);
             border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px;
             opacity: 0; transform: translate(-50%, -60%) scale(0.8);
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: absolute; white-space: nowrap;
@@ -65,53 +78,57 @@
         .active-view { display: block; animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .settings-card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        .settings-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 30px; border-radius: 16px; box-shadow: var(--glass-shadow); border: 1px solid var(--border); }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
-        select:focus, input:focus, textarea:focus { border-color: var(--blue); }
+        select, input, textarea { width: 100%; padding: 12px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
+        select:focus, input:focus, textarea:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 8px rgba(9, 132, 227, 0.2); }
         
         button {
             padding: 12px 25px; border: none; border-radius: 8px; background: var(--navy-blue);
             color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 10px rgba(25, 42, 86, 0.2);
         }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-danger { background: var(--red); }
-        .btn-warning { background: #f39c12; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(25, 42, 86, 0.3); }
+        .btn-danger { background: var(--red); box-shadow: 0 4px 10px rgba(214, 48, 49, 0.2); }
+        .btn-warning { background: #f39c12; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.2); }
         .btn-sm { font-size: 14px; padding: 6px 14px; }
 
-        .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; background: var(--bg); padding: 10px 0; z-index: 500; }
-        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 32px; font-weight: bold; color: var(--blue); }
+        .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; padding: 10px 0; z-index: 500; }
+        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 32px; font-weight: bold; color: var(--blue); text-shadow: 0 2px 4px rgba(255,255,255,0.5); }
         .timer-danger { color: var(--red) !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        #source-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 19px; font-size: 19px; line-height: 1.4; height: 180px; position: relative; overflow-y: auto; margin-bottom: 25px; scroll-behavior: smooth; }
+        #source-box { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; padding: 19px; font-size: 19px; line-height: 1.4; height: 180px; position: relative; overflow-y: auto; margin-bottom: 25px; scroll-behavior: smooth; box-shadow: var(--glass-shadow); }
         .word { display: inline-block; margin-right: 12px; transition: 0.2s; }
-        .active-word { background: rgba(9,132,227,0.15); color: var(--blue); border-radius: 6px; padding: 0 6px; font-weight: bold; }
-        #input-area { width: 100%; height: 200px; padding: 19px; font-size: 19px; line-height: 1.4; border: 2px solid var(--border); border-radius: 12px; outline: none; resize: none; }
+        .active-word { background: rgba(9,132,227,0.15); color: var(--blue); border-radius: 6px; padding: 0 6px; font-weight: bold; box-shadow: 0 2px 5px rgba(9, 132, 227, 0.1); }
+        #input-area { width: 100%; height: 200px; padding: 19px; font-size: 19px; line-height: 1.4; border: 2px solid rgba(0,0,0,0.1); border-radius: 12px; outline: none; resize: none; background: rgba(255,255,255,0.7); box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); transition: 0.3s; }
+        #input-area:focus { background: rgba(255,255,255,0.9); border-color: var(--blue); box-shadow: 0 0 15px rgba(9, 132, 227, 0.15); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; text-align: center; }
-        .stat-box { padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-        .stat-box h3 { font-size: 13px; color: #7f8fa6; margin-bottom: 8px; }
-        .stat-box .value { font-size: 24px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
+        .stat-box { padding: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); transition: transform 0.3s; }
+        .stat-box:hover { transform: translateY(-3px); }
+        .stat-box h3 { font-size: 13px; color: #576574; margin-bottom: 8px; font-weight: bold; }
+        .stat-box .value { font-size: 26px; font-weight: bold; font-family: 'Roboto Mono', monospace; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); }
         
         #result-text-review {
-            background: #fff; padding: 25px; border-radius: 12px; line-height: 1.8; font-size: 19px;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 25px; border-radius: 12px; line-height: 1.8; font-size: 19px;
             border: 1px solid var(--border); margin-top: 15px; text-align: justify;
-            max-height: 400px; overflow-y: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            max-height: 400px; overflow-y: auto; box-shadow: var(--glass-shadow);
         }
         .res-correct { color: var(--green); margin-right: 8px; display: inline-block; }
         .res-error { color: var(--red); text-decoration: underline wavy var(--red); font-weight: bold; margin-right: 8px; display: inline-block; position: relative; }
         .res-error small { display: block; font-size: 12px; color: #7f8fa6; font-weight: normal; text-decoration: none; line-height: 1; }
         .res-missed { color: #bdc3c7; margin-right: 8px; display: inline-block; }
 
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-top: 15px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: var(--navy-blue); color: white; }
+        table { width: 100%; border-collapse: collapse; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--glass-shadow); margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        th { background: rgba(25, 42, 86, 0.85); color: white; backdrop-filter: blur(5px); }
 
         .time-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-        .time-card { background: #fff; border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.07); border-top: 4px solid transparent; }
+        .time-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); border-top: 4px solid transparent; transition: transform 0.3s; }
+        .time-card:hover { transform: translateY(-3px); }
         .time-card.today { border-top-color: var(--blue); }
         .time-card.month { border-top-color: var(--green); }
         .time-card.year  { border-top-color: var(--orange); }
@@ -119,14 +136,15 @@
         .time-card .tc-value { font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; color: var(--navy-blue); }
 
         .error-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-        .error-card { background: #fff; border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.07); }
-        .error-bar-list { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); margin-bottom: 28px; }
-        .error-bar-bg { height: 10px; background: #f1f2f6; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+        .error-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); transition: transform 0.3s; }
+        .error-card:hover { transform: translateY(-3px); }
+        .error-bar-list { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--glass-shadow); margin-bottom: 28px; }
+        .error-bar-bg { height: 10px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin-top: 5px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff7675); transition: width 0.7s ease; }
         
         .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .filter-tab { padding: 8px 18px; border-radius: 20px; font-size: 14px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-weight: bold; }
-        .filter-tab.active { background: var(--navy-blue); color: #fff; border-color: var(--navy-blue); }
+        .filter-tab { padding: 8px 18px; border-radius: 20px; font-size: 14px; border: 1px solid var(--border); background: var(--glass-bg); cursor: pointer; font-weight: bold; backdrop-filter: blur(5px); transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .filter-tab.active { background: var(--navy-blue); color: #fff; border-color: var(--navy-blue); box-shadow: 0 4px 10px rgba(25, 42, 86, 0.3); }
     </style>
 </head>
 <body>
@@ -136,17 +154,17 @@
 <div id="auth-section">
     <div class="auth-container">
         <h2 style="color: var(--navy-blue); margin-bottom: 10px;">
-            <i class="fas fa-keyboard" style="font-size: 36px; margin-bottom: 15px; display: block; color: var(--blue);"></i> 
+            <i class="fas fa-keyboard" style="font-size: 36px; margin-bottom: 15px; display: block; color: var(--blue); text-shadow: 0 2px 5px rgba(9, 132, 227, 0.3);"></i> 
             <span>আল ফুরকান</span>
         </h2>
-        <p style="margin-bottom: 30px; color: #7f8fa6; font-size: 15px;">টেস্ট শুরু করতে আপনার গুগল অ্যাকাউন্ট দিয়ে লগইন করুন</p>
+        <p style="margin-bottom: 30px; color: #576574; font-size: 15px; font-weight: bold;">টেস্ট শুরু করতে আপনার গুগল অ্যাকাউন্ট দিয়ে লগইন করুন</p>
         
-        <button id="google-login-btn" style="width: 100%; background: #fff; color: var(--text); border: 2px solid #eee; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <button id="google-login-btn" style="width: 100%; background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.05); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
             গুগল দিয়ে লগইন করুন
         </button>
 
-        <button id="skip-login-btn" style="width: 100%; background: transparent; color: var(--blue); border: none; margin-top: 15px; cursor: pointer; font-size: 15px; font-weight: bold; text-decoration: underline; transition: 0.3s;">
+        <button id="skip-login-btn" style="width: 100%; background: transparent; color: var(--blue); box-shadow: none; border: none; margin-top: 15px; cursor: pointer; font-size: 15px; font-weight: bold; text-decoration: underline; transition: 0.3s;">
             লগইন ছাড়াই চালিয়ে যান (স্কিপ)
         </button>
 
@@ -168,15 +186,15 @@
                 <div onclick="switchView('history-view')"><i class="fas fa-clock-rotate-left"></i> হিস্টোরি ও সময়</div>
                 <div onclick="switchView('error-view')"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</div>
                 <div onclick="showContactModal()"><i class="fas fa-address-card"></i> যোগাযোগ</div>
-                <div id="menu-database" onclick="switchView('database-view')" style="display: none; background: #f1f2f6; border-left: 4px solid var(--blue);"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
-                <div id="logout-btn" style="color: var(--red); border-top: 1px solid #f5f5f5; margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
+                <div id="menu-database" onclick="switchView('database-view')" style="display: none; background: rgba(241, 242, 246, 0.8); border-left: 4px solid var(--blue);"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
+                <div id="logout-btn" style="color: var(--red); border-top: 1px solid rgba(0,0,0,0.05); margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
             </div>
         </div>
     </header>
 
     <div id="home-view" class="view-section active-view">
         <div class="settings-card">
-            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
+            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
             <div class="form-group">
                 <label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label>
                 <select id="lang-select" onchange="loadParaList()"><option value="bn">বাংলা</option><option value="en">English</option></select>
@@ -217,7 +235,7 @@
 
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
-            <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
+            <h2 style="color: var(--navy-blue); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
             <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
         </div>
         <div class="stats-grid">
@@ -234,14 +252,14 @@
         </div>
         
         <div id="result-text-review-container" style="margin-top: 30px;">
-            <h3 style="margin-bottom:10px; color: var(--navy-blue);"><i class="fas fa-file-signature"></i> অনুচ্ছেদ পর্যালোচনা (ভুল সংশোধন)</h3>
+            <h3 style="margin-bottom:10px; color: var(--navy-blue); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-file-signature"></i> অনুচ্ছেদ পর্যালোচনা (ভুল সংশোধন)</h3>
             <div id="result-text-review"></div>
         </div>
 
-        <div id="guest-promo-section" style="display: none; background: #e3f2fd; padding: 25px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid #bbdefb; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div id="guest-promo-section" style="display: none; background: rgba(227, 242, 253, 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 25px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid rgba(187, 222, 251, 0.8); box-shadow: var(--glass-shadow);">
             <h3 style="color: var(--navy-blue); margin-bottom: 10px;"><i class="fas fa-medal" style="color: #f1c40f;"></i> আপনার স্পিড অসাধারণ!</h3>
-            <p style="color: #555; margin-bottom: 20px; font-size: 15px;">গ্লোবাল লিডারবোর্ডে আপনার র‍্যাংক দেখতে এবং ফলাফল স্থায়ীভাবে সংরক্ষণ করতে এখনই লগইন করুন।</p>
-            <button id="promo-login-btn" style="background: #fff; color: var(--text); border: 2px solid #ccc; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;">
+            <p style="color: #555; margin-bottom: 20px; font-size: 15px; font-weight: bold;">গ্লোবাল লিডারবোর্ডে আপনার র‍্যাংক দেখতে এবং ফলাফল স্থায়ীভাবে সংরক্ষণ করতে এখনই লগইন করুন।</p>
+            <button id="promo-login-btn" style="background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.1); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
                 গুগল দিয়ে লগইন করুন
             </button>
@@ -251,7 +269,7 @@
     </div>
 
     <div id="leaderboard-view" class="view-section">
-        <h2 style="margin-bottom:16px;"><i class="fas fa-crown" style="color: #f1c40f;"></i> গ্লোবাল টপ ২০ রেকর্ড</h2>
+        <h2 style="margin-bottom:16px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-crown" style="color: #f1c40f;"></i> গ্লোবাল টপ ২০ রেকর্ড</h2>
         <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
             <label>ভাষা নির্বাচন করুন</label>
             <select id="leaderboard-lang-select" onchange="renderLeaderboard()">
@@ -263,12 +281,12 @@
     </div>
 
     <div id="database-view" class="view-section">
-        <h2 style="margin-bottom:16px;"><i class="fas fa-database"></i> ডাটাবেজ ম্যানেজমেন্ট (ক্লাউড)</h2>
+        <h2 style="margin-bottom:16px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-database"></i> ডাটাবেজ ম্যানেজমেন্ট (ক্লাউড)</h2>
         
         <div class="settings-card" style="margin-bottom:20px; border: 1px dashed var(--blue);">
             <h3><i class="fas fa-cloud-upload-alt" style="color:var(--blue)"></i> গুগল শিট সিঙ্ক (অটো-সেভ)</h3>
-            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">টেস্ট শেষ হওয়ার পর বিস্তারিত ফলাফল স্বয়ংক্রিয়ভাবে আপনার গুগল শিটে জমা হবে।</p>
-            <div style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px; font-weight: bold;">টেস্ট শেষ হওয়ার পর বিস্তারিত ফলাফল স্বয়ংক্রিয়ভাবে আপনার গুগল শিটে জমা হবে।</p>
+            <div style="display: flex; align-items: center; gap: 15px; background: rgba(248, 249, 250, 0.5); padding: 15px; border-radius: 8px;">
                 <input type="checkbox" id="gs-sync-enabled" style="width: 22px; height: 22px; cursor: pointer;" onchange="toggleSync()">
                 <label for="gs-sync-enabled" style="margin-bottom: 0; cursor: pointer;">অনলাইন সিঙ্ক সক্রিয় করুন</label>
                 <span id="sync-status" style="margin-left: auto; font-size: 12px; font-weight: bold; color: var(--red);">বন্ধ</span>
@@ -288,7 +306,7 @@
     </div>
 
     <div id="history-view" class="view-section">
-        <h2 style="margin-bottom:20px;"><i class="fas fa-clock-rotate-left"></i> আমার নিজস্ব হিস্টোরি ও সময়</h2>
+        <h2 style="margin-bottom:20px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-clock-rotate-left"></i> আমার নিজস্ব হিস্টোরি ও সময়</h2>
         <div class="time-summary-grid" id="history-summary">
             <div class="time-card today">
                 <div class="tc-icon">☀️</div><div class="tc-label">আজকের সময়</div>
@@ -317,7 +335,7 @@
     </div>
 
     <div id="error-view" class="view-section">
-        <h2 style="margin-bottom:20px;"><i class="fas fa-shield-heart"></i> আমার ভুল বিশ্লেষণ</h2>
+        <h2 style="margin-bottom:20px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-shield-heart"></i> আমার ভুল বিশ্লেষণ</h2>
         <div class="error-summary-grid">
             <div class="error-card">🔢 <br><small>সর্বমোট ভুল</small><br><strong id="ea-total-errors">০</strong></div>
             <div class="error-card">🎯 <br><small>টপ ভুল শব্দ</small><br><strong id="ea-top-word">—</strong></div>
@@ -329,18 +347,18 @@
 </div>
 
 <div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;">
-    <div style="background: #fff; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-        <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 22px; color: var(--red);" onclick="closeContactModal()"></i>
+    <div style="background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3);">
+        <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 22px; color: var(--red); text-shadow: 0 1px 2px rgba(255,255,255,0.8);" onclick="closeContactModal()"></i>
         
-        <h3 style="color: var(--navy-blue); margin-bottom: 5px; font-size: 22px;"> AL FURKAN </h3>
-        <p style="color: #666; margin-bottom: 20px; font-size: 15px;">Creator & Developer</p>
+        <h3 style="color: var(--navy-blue); margin-bottom: 5px; font-size: 22px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"> AL FURKAN </h3>
+        <p style="color: #4b6584; margin-bottom: 20px; font-size: 15px; font-weight: bold;">Creator & Developer</p>
         
-        <div style="text-align: left; margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
-            <p style="margin-bottom: 10px; font-size: 16px;"><i class="fas fa-phone-alt" style="color: var(--green); width: 25px;"></i> 01611217002</p>
-            <p style="font-size: 16px;"><i class="fas fa-envelope" style="color: var(--red); width: 25px;"></i> alfurkan128779@gmail.com</p>
+        <div style="text-align: left; margin-bottom: 25px; background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.5);">
+            <p style="margin-bottom: 10px; font-size: 16px; font-weight: bold;"><i class="fas fa-phone-alt" style="color: var(--green); width: 25px;"></i> 01611217002</p>
+            <p style="font-size: 16px; font-weight: bold;"><i class="fas fa-envelope" style="color: var(--red); width: 25px;"></i> alfurkan128779@gmail.com</p>
         </div>
         
-        <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: inline-block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s;">
+        <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: inline-block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);">
             <i class="fab fa-facebook-f" style="margin-right: 8px;"></i> ফেসবুকে যোগাযোগ করুন
         </a>
     </div>
@@ -357,6 +375,31 @@
     let lastKeystrokeTime = 0, idleTimeTotal = 0, backspaceCount = 0;
     let historyChartInstance = null;
     let isAppReady = false; 
+
+    // ডাইনামিক নাম্বার রোল অ্যানিমেশন ফাংশন
+    function animateValue(obj, start, end, duration, suffix = "") {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeOut = progress * (2 - progress); // Smooth slow down at the end
+            const currentVal = (easeOut * (end - start) + start);
+            
+            // Decimal চেক করার জন্য
+            if(Number.isInteger(end)) {
+                obj.innerText = Math.floor(currentVal) + suffix;
+            } else {
+                obj.innerText = currentVal.toFixed(1) + suffix;
+            }
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                obj.innerText = end + suffix;
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
 
     // মোবাইল পপ-আপ অ্যালার্ট
     window.addEventListener('DOMContentLoaded', () => {
@@ -538,7 +581,6 @@
                 userEmail: window.currentUser ? window.currentUser.email : ""
             });
         } else if (window.isGuest) {
-            // গেস্টদের জন্য সাময়িক রেজাল্ট সেভ করে রাখা হলো যাতে লগইন করলে পুশ করা যায়
             window.lastGuestResult = data;
         }
 
@@ -556,17 +598,23 @@
     function displayResults(data, typedWords) {
         switchView('result-view');
         
-        // গেস্ট হলে প্রমোশন সেকশন দেখাবে, ইউজার হলে লুকাবে
         if (window.isGuest) {
             document.getElementById('guest-promo-section').style.display = "block";
         } else {
             document.getElementById('guest-promo-section').style.display = "none";
         }
 
-        document.getElementById('res-swpm').innerText = data.wpm; document.getElementById('res-wpm').innerText = data.wwpm;
-        document.getElementById('res-tw').innerText = data.tw; document.getElementById('res-err').innerText = data.err + "%";
-        document.getElementById('res-cws').innerText = data.cws; document.getElementById('res-cns').innerText = data.cns;
-        document.getElementById('res-pace').innerText = data.cons + "%"; document.getElementById('res-bs').innerText = data.bs;
+        // ডাইনামিক নাম্বার রোল ইফেক্ট কল করা হচ্ছে
+        const animDuration = 1500; // 1.5 Seconds 
+        animateValue(document.getElementById('res-swpm'), 0, data.wpm, animDuration);
+        animateValue(document.getElementById('res-wpm'), 0, data.wwpm, animDuration);
+        animateValue(document.getElementById('res-tw'), 0, data.tw, animDuration);
+        animateValue(document.getElementById('res-err'), 0, parseFloat(data.err), animDuration, "%");
+        animateValue(document.getElementById('res-cws'), 0, data.cws, animDuration);
+        animateValue(document.getElementById('res-cns'), 0, data.cns, animDuration);
+        animateValue(document.getElementById('res-pace'), 0, data.cons, animDuration, "%");
+        animateValue(document.getElementById('res-bs'), 0, data.bs, animDuration);
+        
         const fbEl = document.getElementById('dynamic-feedback'); const benchmark = (data.lang === 'bn') ? 30 : 35;
         if (data.wpm >= benchmark) { fbEl.innerText = "☀️চ্যাম্পিয়ন!☀️"; fbEl.style.color = "var(--green)"; confetti({ particleCount: 150 }); }
         else if (data.wpm >= (benchmark - 10)) { fbEl.innerText = "চালিয়ে যাও"; fbEl.style.color = "var(--blue)"; }
@@ -603,7 +651,7 @@
         ['bn', 'en'].forEach(l => {
             for (let t in paragraphs[l]) {
                 const item = document.createElement('div');
-                item.style.cssText = "padding:12px; background:#fff; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
+                item.style.cssText = "padding:12px; background:rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05); border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
                 item.innerHTML = `<div><small>${l.toUpperCase()}</small><br><strong>${t}</strong></div>
                 <div style='display:flex; gap:8px;'><button class='btn-sm' onclick="editPara('${l}', '${t.replace(/'/g, "\\'")}')">Edit</button><button class='btn-danger btn-sm' onclick="deletePara('${l}', '${t.replace(/'/g, "\\'")}')">Del</button></div>`;
                 list.appendChild(item);
