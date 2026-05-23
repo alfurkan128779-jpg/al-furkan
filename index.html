@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
 
     <style>
         :root {
@@ -107,11 +108,23 @@
         #input-area:focus { background: rgba(255,255,255,0.9); border-color: var(--blue); box-shadow: 0 0 15px rgba(9, 132, 227, 0.15); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; text-align: center; }
-        .stat-box { padding: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); transition: transform 0.3s; }
-        .stat-box:hover { transform: translateY(-3px); }
-        .stat-box h3 { font-size: 13px; color: #576574; margin-bottom: 8px; font-weight: bold; }
-        .stat-box .value { font-size: 26px; font-weight: bold; font-family: 'Roboto Mono', monospace; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); }
+        /* 3D Tilt and Spotlight attributes added below via data-tilt */
+        .stat-box { padding: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); transition: transform 0.3s; transform-style: preserve-3d; }
+        .stat-box h3 { font-size: 13px; color: #576574; margin-bottom: 8px; font-weight: bold; transform: translateZ(20px); }
+        .stat-box .value { font-size: 26px; font-weight: bold; font-family: 'Roboto Mono', monospace; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); transform: translateZ(30px); }
         
+        /* নতুন: হোভার টুলটিপ CSS */
+        .has-tooltip { position: relative; cursor: help; border-bottom: 1px dashed #95a5a6; display: inline-block; }
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: rgba(25, 42, 86, 0.95); color: #fff; padding: 8px 12px;
+            border-radius: 8px; font-size: 12px; white-space: nowrap;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 100; font-weight: normal; font-family: 'Kalpurush', sans-serif;
+        }
+        .has-tooltip:hover::after { opacity: 1; visibility: visible; bottom: 135%; }
+
         #result-text-review {
             background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 25px; border-radius: 12px; line-height: 1.8; font-size: 19px;
             border: 1px solid var(--border); margin-top: 15px; text-align: justify;
@@ -127,8 +140,8 @@
         th { background: rgba(25, 42, 86, 0.85); color: white; backdrop-filter: blur(5px); }
 
         .time-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-        .time-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); border-top: 4px solid transparent; transition: transform 0.3s; }
-        .time-card:hover { transform: translateY(-3px); }
+        .time-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); border-top: 4px solid transparent; transition: transform 0.3s; transform-style: preserve-3d;}
+        .time-card .tc-icon, .time-card .tc-label, .time-card .tc-value, .time-card .tc-sub { transform: translateZ(20px); }
         .time-card.today { border-top-color: var(--blue); }
         .time-card.month { border-top-color: var(--green); }
         .time-card.year  { border-top-color: var(--orange); }
@@ -136,8 +149,8 @@
         .time-card .tc-value { font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; color: var(--navy-blue); }
 
         .error-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-        .error-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); transition: transform 0.3s; }
-        .error-card:hover { transform: translateY(-3px); }
+        .error-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); transition: transform 0.3s; transform-style: preserve-3d; }
+        .error-card strong, .error-card small { transform: translateZ(20px); display: block; }
         .error-bar-list { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--glass-shadow); margin-bottom: 28px; }
         .error-bar-bg { height: 10px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin-top: 5px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff7675); transition: width 0.7s ease; }
@@ -239,16 +252,16 @@
             <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
         </div>
         <div class="stats-grid">
-            <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3>Std. WPM</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
-            <div class="stat-box"><h3>Word WPM</h3><div class="value" id="res-wpm">0</div></div>
-            <div class="stat-box"><h3>মোট শব্দ</h3><div class="value" id="res-tw" style="color:var(--purple);">0</div></div>
-            <div class="stat-box"><h3>ভুল (%)</h3><div class="value" id="res-err" style="color:var(--red);">0%</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="সরকারি মানদণ্ড অনুযায়ী হিসাবকৃত স্পিড (৫ ক্যারেক্টার = ১ শব্দ)">Std. WPM</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="সরাসরি টাইপ করা মোট সঠিক শব্দ সংখ্যা">Word WPM</h3><div class="value" id="res-wpm">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="আপনার টাইপ করা সর্বমোট শব্দ সংখ্যা">মোট শব্দ</h3><div class="value" id="res-tw" style="color:var(--purple);">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="টাইপ করা ভুল শব্দের শতকরা হার">ভুল (%)</h3><div class="value" id="res-err" style="color:var(--red);">0%</div></div>
         </div>
         <div class="stats-grid">
-            <div class="stat-box"><h3>ক্যারেক্টার (স্পেসসহ)</h3><div class="value" id="res-cws">0</div></div>
-            <div class="stat-box"><h3>ক্যারেক্টার (স্পেসছাড়া)</h3><div class="value" id="res-cns">0</div></div>
-            <div class="stat-box"><h3>কনসিস্টেন্সি</h3><div class="value" id="res-pace" style="color:var(--green);">0%</div></div>
-            <div class="stat-box"><h3>ব্যাকস্পেস</h3><div class="value" id="res-bs">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="স্পেসসহ টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসসহ)</h3><div class="value" id="res-cws">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="স্পেস বাদে টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসছাড়া)</h3><div class="value" id="res-cns">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="টাইপিংয়ের ধারাবাহিকতা বা ফোকাস লেভেল">কনসিস্টেন্সি</h3><div class="value" id="res-pace" style="color:var(--green);">0%</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="কতবার ব্যাকস্পেস ব্যবহার করা হয়েছে">ব্যাকস্পেস</h3><div class="value" id="res-bs">0</div></div>
         </div>
         
         <div id="result-text-review-container" style="margin-top: 30px;">
@@ -308,19 +321,19 @@
     <div id="history-view" class="view-section">
         <h2 style="margin-bottom:20px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-clock-rotate-left"></i> আমার নিজস্ব হিস্টোরি ও সময়</h2>
         <div class="time-summary-grid" id="history-summary">
-            <div class="time-card today">
+            <div class="time-card today" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
                 <div class="tc-icon">☀️</div><div class="tc-label">আজকের সময়</div>
                 <div class="tc-value" id="h-today-time">—</div><div class="tc-sub" id="h-today-sessions">০ টি সেশন</div>
             </div>
-            <div class="time-card month">
+            <div class="time-card month" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
                 <div class="tc-icon">📅</div><div class="tc-label">এই মাসে</div>
                 <div class="tc-value" id="h-month-time">—</div><div class="tc-sub" id="h-month-sessions">০ টি সেশন</div>
             </div>
-            <div class="time-card year">
+            <div class="time-card year" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
                 <div class="tc-icon">📆</div><div class="tc-label">এই বছরে</div>
                 <div class="tc-value" id="h-year-time">—</div><div class="tc-sub" id="h-year-sessions">০ টি সেশন</div>
             </div>
-            <div class="time-card total">
+            <div class="time-card total" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
                 <div class="tc-icon">🏅</div><div class="tc-label">সর্বমোট সময়</div>
                 <div class="tc-value" id="h-total-time">—</div><div class="tc-sub" id="h-total-sessions">০ টি সেশন</div>
             </div>
@@ -337,9 +350,9 @@
     <div id="error-view" class="view-section">
         <h2 style="margin-bottom:20px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-shield-heart"></i> আমার ভুল বিশ্লেষণ</h2>
         <div class="error-summary-grid">
-            <div class="error-card">🔢 <br><small>সর্বমোট ভুল</small><br><strong id="ea-total-errors">০</strong></div>
-            <div class="error-card">🎯 <br><small>টপ ভুল শব্দ</small><br><strong id="ea-top-word">—</strong></div>
-            <div class="error-card">📊 <br><small>ভুল করা ইউনিক শব্দ</small><br><strong id="ea-unique-words">০</strong></div>
+            <div class="error-card" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">🔢 <br><small>সর্বমোট ভুল</small><br><strong id="ea-total-errors">০</strong></div>
+            <div class="error-card" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">🎯 <br><small>টপ ভুল শব্দ</small><br><strong id="ea-top-word">—</strong></div>
+            <div class="error-card" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">📊 <br><small>ভুল করা ইউনিক শব্দ</small><br><strong id="ea-unique-words">০</strong></div>
         </div>
         <div class="error-bar-list" id="ea-bar-list"></div>
         <div id="ea-detail-table"></div>
@@ -423,7 +436,7 @@
         window.isGuest = true;
         document.getElementById('auth-section').style.display = "none";
         document.getElementById('main-app').style.display = "block";
-        alert("আপনি লগইন করেননি। তাই লিডারবোর্ডে আপনাকে দেখানো সম্ভব হবে না।");
+        alert("আপনি লগইন করেননি। তাই লিডারবোর্ডে আপনাকে দেখানো সম্ভব হবে উল্লেখযোগ্য না।");
         
         if (!isAppReady) {
             window.dispatchEvent(new Event('app-ready'));
