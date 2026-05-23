@@ -3,29 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আল ফুরকান </title>
+    <title>আল ফুরকান</title>
     <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
 
     <style>
         :root {
-            --bg: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); /* Glassmorphism Base Background */
             --border: rgba(255, 255, 255, 0.6); 
             --text: #2f3640;
             --blue: #0984e3; --navy-blue: #192a56; --red: #d63031; --green: #27ae60;
             --orange: #e67e22; --purple: #8e44ad;
             
-            /* Glass properties reused */
-            --glass-bg: rgba(255, 255, 255, 0.55);
-            --glass-blur: blur(12px);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-blur: blur(16px);
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kalpurush', sans-serif; }
-        body { background: var(--bg); background-attachment: fixed; color: var(--text); padding-bottom: 60px; }
+        body { background: #e0eafc; color: var(--text); padding-bottom: 60px; overflow-x: hidden; }
+
+        /* ডাইনামিক ফ্লোটিং অর্বস */
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.7; animation: floatOrb 15s infinite alternate ease-in-out; }
+        .orb-1 { width: 500px; height: 500px; background: #ff9a9e; top: -150px; left: -150px; }
+        .orb-2 { width: 600px; height: 600px; background: #a18cd1; bottom: -200px; right: -100px; animation-duration: 20s; animation-delay: -5s; }
+        .orb-3 { width: 400px; height: 400px; background: #84fab0; top: 30%; left: 30%; animation-duration: 25s; animation-delay: -10s; }
+        @keyframes floatOrb { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(100px, 100px) scale(1.2); } }
 
         /* Auth Container Styles */
         #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -42,13 +48,15 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
         }
         
+        /* 3D লোগো ডিজাইন */
         .logo { 
             display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 900; 
             color: #fff; cursor: pointer; background: linear-gradient(135deg, var(--navy-blue), var(--blue));
-            padding: 8px 18px; border-radius: 50px 5px 50px 5px;
-            box-shadow: 2px 4px 10px rgba(9, 132, 227, 0.3); transition: 0.3s;
+            padding: 8px 18px; border-radius: 12px;
+            box-shadow: 0 6px 0 #101c3d, 0 10px 20px rgba(9, 132, 227, 0.3); transition: all 0.2s ease; transform-style: preserve-3d;
         }
-        .logo:hover { transform: scale(1.02); }
+        .logo:active { transform: translateY(4px); box-shadow: 0 2px 0 #101c3d, 0 4px 10px rgba(9, 132, 227, 0.3); }
+        .logo i { transform: translateZ(20px); }
 
         .menu-container { position: relative; }
         .three-dots { font-size: 24px; cursor: pointer; color: var(--navy-blue); padding: 8px 12px; border-radius: 50%; transition: 0.2s; }
@@ -62,11 +70,11 @@
         }
         .dropdown-menu.active { display: block; }
         .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .dropdown-menu div:hover { background: rgba(255, 255, 255, 0.8); color: var(--blue); padding-left: 25px; }
+        .dropdown-menu div:hover { background: rgba(255, 255, 255, 0.9); color: var(--blue); padding-left: 25px; }
 
         .toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; }
         .toast-msg {
-            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
             color: var(--navy-blue); padding: 20px 45px; border-radius: 15px; 
             font-size: 20px; font-weight: bold; box-shadow: var(--glass-shadow); border: 1px solid var(--border);
             border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px;
@@ -75,9 +83,9 @@
         }
         .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        .view-section { display: none; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .active-view { display: block; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view-section { display: none; max-width: 900px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
+        .active-view { display: block; animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .settings-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 30px; border-radius: 16px; box-shadow: var(--glass-shadow); border: 1px solid var(--border); }
         .form-group { margin-bottom: 20px; }
@@ -85,16 +93,20 @@
         select, input, textarea { width: 100%; padding: 12px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
         select:focus, input:focus, textarea:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 8px rgba(9, 132, 227, 0.2); }
         
+        /* 3D কীবোর্ড বাটন ডিজাইন */
         button {
             padding: 12px 25px; border: none; border-radius: 8px; background: var(--navy-blue);
-            color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;
+            color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: all 0.2s ease;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 10px rgba(25, 42, 86, 0.2);
+            box-shadow: 0 6px 0 #101c3d, 0 10px 20px rgba(25, 42, 86, 0.2);
         }
-        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(25, 42, 86, 0.3); }
-        .btn-danger { background: var(--red); box-shadow: 0 4px 10px rgba(214, 48, 49, 0.2); }
-        .btn-warning { background: #f39c12; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.2); }
-        .btn-sm { font-size: 14px; padding: 6px 14px; }
+        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #101c3d, 0 4px 10px rgba(25, 42, 86, 0.2); }
+        .btn-danger { background: var(--red); box-shadow: 0 6px 0 #b32525, 0 10px 20px rgba(214, 48, 49, 0.2); }
+        .btn-danger:active { box-shadow: 0 2px 0 #b32525; transform: translateY(4px); }
+        .btn-warning { background: #f39c12; box-shadow: 0 6px 0 #c27d0e, 0 10px 20px rgba(243, 156, 18, 0.2); }
+        .btn-warning:active { box-shadow: 0 2px 0 #c27d0e; transform: translateY(4px); }
+        .btn-sm { font-size: 14px; padding: 6px 14px; box-shadow: 0 4px 0 #101c3d; }
+        .btn-sm:active { box-shadow: 0 1px 0 #101c3d; transform: translateY(3px); }
 
         .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; padding: 10px 0; z-index: 500; }
         .timer-display { font-family: 'Roboto Mono', monospace; font-size: 32px; font-weight: bold; color: var(--blue); text-shadow: 0 2px 4px rgba(255,255,255,0.5); }
@@ -108,22 +120,31 @@
         #input-area:focus { background: rgba(255,255,255,0.9); border-color: var(--blue); box-shadow: 0 0 15px rgba(9, 132, 227, 0.15); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; text-align: center; }
-        /* 3D Tilt and Spotlight attributes added below via data-tilt */
-        .stat-box { padding: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); transition: transform 0.3s; transform-style: preserve-3d; }
-        .stat-box h3 { font-size: 13px; color: #576574; margin-bottom: 8px; font-weight: bold; transform: translateZ(20px); }
+        .stat-box { padding: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); transform-style: preserve-3d; }
+        .stat-box h3 { font-size: 14px; color: #4b6584; margin-bottom: 12px; font-weight: bold; transform: translateZ(20px); }
         .stat-box .value { font-size: 26px; font-weight: bold; font-family: 'Roboto Mono', monospace; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); transform: translateZ(30px); }
         
-        /* নতুন: হোভার টুলটিপ CSS */
-        .has-tooltip { position: relative; cursor: help; border-bottom: 1px dashed #95a5a6; display: inline-block; }
+        /* রেডিয়াল প্রোগ্রেস রিং */
+        .circular-progress {
+            position: relative; width: 75px; height: 75px; border-radius: 50%;
+            background: conic-gradient(var(--blue) 0%, rgba(0,0,0,0.05) 0%);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: translateZ(30px);
+        }
+        .circular-progress::before { content: ""; position: absolute; width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
+        .circular-progress .circle-value { position: relative; z-index: 1; font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
+
+        /* হোভার টুলটিপ CSS */
+        .has-tooltip { position: relative; cursor: help; border-bottom: 2px dashed #95a5a6; display: inline-block; }
         .has-tooltip::after {
             content: attr(data-tooltip);
-            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
-            background: rgba(25, 42, 86, 0.95); color: #fff; padding: 8px 12px;
-            border-radius: 8px; font-size: 12px; white-space: nowrap;
+            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+            background: #192a56; color: #fff; padding: 10px 15px;
+            border-radius: 8px; font-size: 13px; white-space: nowrap;
             opacity: 0; visibility: hidden; transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 100; font-weight: normal; font-family: 'Kalpurush', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100; font-weight: normal; font-family: 'Kalpurush', sans-serif;
         }
-        .has-tooltip:hover::after { opacity: 1; visibility: visible; bottom: 135%; }
+        .has-tooltip:hover::after { opacity: 1; visibility: visible; bottom: 150%; }
 
         #result-text-review {
             background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 25px; border-radius: 12px; line-height: 1.8; font-size: 19px;
@@ -135,12 +156,12 @@
         .res-error small { display: block; font-size: 12px; color: #7f8fa6; font-weight: normal; text-decoration: none; line-height: 1; }
         .res-missed { color: #bdc3c7; margin-right: 8px; display: inline-block; }
 
-        table { width: 100%; border-collapse: collapse; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--glass-shadow); margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--glass-shadow); margin-top: 15px; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
         th { background: rgba(25, 42, 86, 0.85); color: white; backdrop-filter: blur(5px); }
 
         .time-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-        .time-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); border-top: 4px solid transparent; transition: transform 0.3s; transform-style: preserve-3d;}
+        .time-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); border-top: 4px solid transparent; transform-style: preserve-3d;}
         .time-card .tc-icon, .time-card .tc-label, .time-card .tc-value, .time-card .tc-sub { transform: translateZ(20px); }
         .time-card.today { border-top-color: var(--blue); }
         .time-card.month { border-top-color: var(--green); }
@@ -149,9 +170,9 @@
         .time-card .tc-value { font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; color: var(--navy-blue); }
 
         .error-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-        .error-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); transition: transform 0.3s; transform-style: preserve-3d; }
+        .error-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--glass-shadow); transform-style: preserve-3d; }
         .error-card strong, .error-card small { transform: translateZ(20px); display: block; }
-        .error-bar-list { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--glass-shadow); margin-bottom: 28px; }
+        .error-bar-list { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--glass-shadow); margin-bottom: 28px; }
         .error-bar-bg { height: 10px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin-top: 5px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff7675); transition: width 0.7s ease; }
         
@@ -161,6 +182,10 @@
     </style>
 </head>
 <body>
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
 
 <div class="toast-container" id="toast-container"></div>
 
@@ -172,7 +197,7 @@
         </h2>
         <p style="margin-bottom: 30px; color: #576574; font-size: 15px; font-weight: bold;">টেস্ট শুরু করতে আপনার গুগল অ্যাকাউন্ট দিয়ে লগইন করুন</p>
         
-        <button id="google-login-btn" style="width: 100%; background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.05); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <button id="google-login-btn" style="width: 100%; background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.05); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
             গুগল দিয়ে লগইন করুন
         </button>
@@ -187,7 +212,7 @@
 
 <div id="main-app" style="display: none;">
     <header>
-        <div class="logo" onclick="switchView('home-view')">
+        <div class="logo" onclick="switchView('home-view')" data-tilt data-tilt-max="15" data-tilt-glare data-tilt-max-glare="0.2">
             <i class="fas fa-keyboard"></i>
             <span>আল ফুরকান</span>
         </div>
@@ -206,7 +231,7 @@
     </header>
 
     <div id="home-view" class="view-section active-view">
-        <div class="settings-card">
+        <div class="settings-card" data-tilt data-tilt-max="2" data-tilt-glare data-tilt-max-glare="0.1">
             <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
             <div class="form-group">
                 <label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label>
@@ -251,17 +276,47 @@
             <h2 style="color: var(--navy-blue); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
             <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
         </div>
+        
         <div class="stats-grid">
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="সরকারি মানদণ্ড অনুযায়ী হিসাবকৃত স্পিড (৫ ক্যারেক্টার = ১ শব্দ)">Std. WPM</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="সরাসরি টাইপ করা মোট সঠিক শব্দ সংখ্যা">Word WPM</h3><div class="value" id="res-wpm">0</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="আপনার টাইপ করা সর্বমোট শব্দ সংখ্যা">মোট শব্দ</h3><div class="value" id="res-tw" style="color:var(--purple);">0</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="টাইপ করা ভুল শব্দের শতকরা হার">ভুল (%)</h3><div class="value" id="res-err" style="color:var(--red);">0%</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3" style="border-bottom:3px solid var(--blue);">
+                <h3 class="has-tooltip" data-tooltip="সরকারি মানদণ্ড (৫ ক্যারেক্টার = ১ শব্দ)">Std. WPM</h3>
+                <div class="value" id="res-swpm" style="color:var(--blue); font-size: 32px;">0</div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="সরাসরি টাইপ করা মোট সঠিক শব্দ">Word WPM</h3>
+                <div class="value" id="res-wpm" style="font-size: 32px;">0</div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="টাইপ করা মোট শব্দ">মোট শব্দ</h3>
+                <div class="value" id="res-tw" style="color:var(--purple); font-size: 32px;">0</div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="ভুল সংশোধন করে টাইপিং নির্ভুলতা">নির্ভুলতা (Acc.)</h3>
+                <div class="circular-progress" id="ring-acc">
+                    <div class="circle-value" id="res-acc" style="color:var(--green);">0%</div>
+                </div>
+            </div>
         </div>
+
         <div class="stats-grid">
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="স্পেসসহ টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসসহ)</h3><div class="value" id="res-cws">0</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="স্পেস বাদে টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসছাড়া)</h3><div class="value" id="res-cns">0</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="টাইপিংয়ের ধারাবাহিকতা বা ফোকাস লেভেল">কনসিস্টেন্সি</h3><div class="value" id="res-pace" style="color:var(--green);">0%</div></div>
-            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3"><h3 class="has-tooltip" data-tooltip="কতবার ব্যাকস্পেস ব্যবহার করা হয়েছে">ব্যাকস্পেস</h3><div class="value" id="res-bs">0</div></div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="স্পেসসহ টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসসহ)</h3>
+                <div class="value" id="res-cws">0</div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="স্পেস বাদে টাইপ করা মোট অক্ষর">ক্যারেক্টার (স্পেসছাড়া)</h3>
+                <div class="value" id="res-cns">0</div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="সময়ের সাথে টাইপিংয়ের ধারাবাহিকতা">কনসিস্টেন্সি</h3>
+                <div class="circular-progress" id="ring-pace">
+                    <div class="circle-value" id="res-pace" style="color:var(--blue);">0%</div>
+                </div>
+            </div>
+            <div class="stat-box" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+                <h3 class="has-tooltip" data-tooltip="কতবার ব্যাকস্পেস ব্যবহার করা হয়েছে">ব্যাকস্পেস</h3>
+                <div class="value" id="res-bs" style="color:var(--red);">0</div>
+            </div>
         </div>
         
         <div id="result-text-review-container" style="margin-top: 30px;">
@@ -272,7 +327,7 @@
         <div id="guest-promo-section" style="display: none; background: rgba(227, 242, 253, 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 25px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid rgba(187, 222, 251, 0.8); box-shadow: var(--glass-shadow);">
             <h3 style="color: var(--navy-blue); margin-bottom: 10px;"><i class="fas fa-medal" style="color: #f1c40f;"></i> আপনার স্পিড অসাধারণ!</h3>
             <p style="color: #555; margin-bottom: 20px; font-size: 15px; font-weight: bold;">গ্লোবাল লিডারবোর্ডে আপনার র‍্যাংক দেখতে এবং ফলাফল স্থায়ীভাবে সংরক্ষণ করতে এখনই লগইন করুন।</p>
-            <button id="promo-login-btn" style="background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.1); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;">
+            <button id="promo-login-btn" style="background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.1); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 6px 0 #dcdde1, 0 10px 20px rgba(0,0,0,0.1);">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
                 গুগল দিয়ে লগইন করুন
             </button>
@@ -367,16 +422,13 @@
         <p style="color: #4b6584; margin-bottom: 20px; font-size: 15px; font-weight: bold;">Creator & Developer</p>
         
         <div style="text-align: left; margin-bottom: 25px; background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.5);">
-    
-    <a href="tel:01611217002" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: var(--text); text-decoration: none; transition: 0.3s; cursor: pointer;">
-        <i class="fas fa-phone-alt" style="color: var(--green); width: 25px;"></i> 01611217002
-    </a>
-    
-    <a href="mailto:alfurkan128779@gmail.com" style="display: block; font-size: 16px; font-weight: bold; color: var(--text); text-decoration: none; transition: 0.3s; cursor: pointer;">
-        <i class="fas fa-envelope" style="color: var(--red); width: 25px;"></i> alfurkan128779@gmail.com
-    </a>
-
-</div>
+            <a href="tel:01611217002" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: var(--text); text-decoration: none; transition: 0.3s; cursor: pointer;">
+                <i class="fas fa-phone-alt" style="color: var(--green); width: 25px;"></i> 01611217002
+            </a>
+            <a href="mailto:alfurkan128779@gmail.com" style="display: block; font-size: 16px; font-weight: bold; color: var(--text); text-decoration: none; transition: 0.3s; cursor: pointer;">
+                <i class="fas fa-envelope" style="color: var(--red); width: 25px;"></i> alfurkan128779@gmail.com
+            </a>
+        </div>
         
         <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: inline-block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);">
             <i class="fab fa-facebook-f" style="margin-right: 8px;"></i> ফেসবুকে যোগাযোগ করুন
@@ -396,29 +448,42 @@
     let historyChartInstance = null;
     let isAppReady = false; 
 
-    // ডাইনামিক নাম্বার রোল অ্যানিমেশন ফাংশন
+    // ডাইনামিক নাম্বার রোল অ্যানিমেশন ফাংশন (আপডেটেড)
     function animateValue(obj, start, end, duration, suffix = "") {
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeOut = progress * (2 - progress); // Smooth slow down at the end
+            const easeOut = progress * (2 - progress); 
             const currentVal = (easeOut * (end - start) + start);
             
-            // Decimal চেক করার জন্য
             if(Number.isInteger(end)) {
                 obj.innerText = Math.floor(currentVal) + suffix;
             } else {
                 obj.innerText = currentVal.toFixed(1) + suffix;
             }
-            
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                obj.innerText = end + suffix;
-            }
+            if (progress < 1) window.requestAnimationFrame(step);
+            else obj.innerText = end + suffix;
         };
         window.requestAnimationFrame(step);
+    }
+
+    // রেডিয়াল প্রোগ্রেস রিং (গোল বৃত্ত) অ্যানিমেশন
+    function animateRadialProgress(elementId, targetValue, color, suffix = "%") {
+        let circle = document.getElementById(elementId);
+        let valElement = circle.querySelector('.circle-value');
+        let progress = 0;
+        let speed = targetValue / (1500 / 16); // 1.5 seconds target
+
+        let int = setInterval(() => {
+            progress += speed;
+            if (progress >= targetValue) {
+                progress = targetValue;
+                clearInterval(int);
+            }
+            circle.style.background = `conic-gradient(${color} ${progress}%, rgba(0,0,0,0.05) ${progress}%)`;
+            valElement.innerText = Math.floor(progress) + suffix;
+        }, 16);
     }
 
     // মোবাইল পপ-আপ অ্যালার্ট
@@ -431,26 +496,16 @@
         }
     });
 
-    // স্কিপ লগইন লজিক
     document.getElementById('skip-login-btn').addEventListener('click', () => {
         window.isGuest = true;
         document.getElementById('auth-section').style.display = "none";
         document.getElementById('main-app').style.display = "block";
-        alert("আপনি লগইন করেননি। তাই লিডারবোর্ডে আপনাকে দেখানো সম্ভব হবে উল্লেখযোগ্য না।");
-        
-        if (!isAppReady) {
-            window.dispatchEvent(new Event('app-ready'));
-        }
+        alert("আপনি লগইন করেননি। তাই লিডারবোর্ডে আপনাকে দেখানো সম্ভব হবে না।");
+        if (!isAppReady) window.dispatchEvent(new Event('app-ready'));
     });
 
-    // যোগাযোগ মডাল কন্ট্রোল
-    function showContactModal() {
-        document.getElementById('contact-modal').style.display = 'flex';
-        document.getElementById('main-menu').classList.remove('active');
-    }
-    function closeContactModal() {
-        document.getElementById('contact-modal').style.display = 'none';
-    }
+    function showContactModal() { document.getElementById('contact-modal').style.display = 'flex'; document.getElementById('main-menu').classList.remove('active'); }
+    function closeContactModal() { document.getElementById('contact-modal').style.display = 'none'; }
 
     const GS_CONFIG = {
         formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse",
@@ -488,13 +543,10 @@
     };
 
     window.addEventListener('app-ready', async () => {
-        if(isAppReady) return;
-        isAppReady = true;
+        if(isAppReady) return; isAppReady = true;
         if(window.syncGlobalParagraphs) {
             const globalParas = await window.syncGlobalParagraphs();
-            if (globalParas && (Object.keys(globalParas.bn).length > 0 || Object.keys(globalParas.en).length > 0)) {
-                paragraphs = globalParas; 
-            }
+            if (globalParas && (Object.keys(globalParas.bn).length > 0 || Object.keys(globalParas.en).length > 0)) paragraphs = globalParas; 
             loadParaList();
         }
     });
@@ -580,11 +632,12 @@
         });
         const sec = totalTime - timeLeft, min = sec / 60; const swpm = min > 0 ? Math.round((cChars / 5) / min) : 0;
         const rawErrPct = typed.length > 0 ? (errs / typed.length) * 100 : 0; const accStr = (100 - rawErrPct).toFixed(1) + "%";
+        const realAcc = 100 - rawErrPct;
 
         const results = {
             wpm: swpm, wwpm: Math.round(cWords / min) || 0, tw: typed.length, cws: val.length, cns: val.replace(/\s/g, "").length, err: rawErrPct.toFixed(1),
             cons: Math.round(((sec - idleTimeTotal) / sec) * 100) || 0, bs: backspaceCount, duration: sec, timestamp: Date.now(),
-            date: new Date().toLocaleDateString('bn-BD'), errors: sErrs, lang: document.getElementById('lang-select').value, title: document.getElementById('para-select').value, accuracy: accStr, errCount: errs
+            date: new Date().toLocaleDateString('bn-BD'), errors: sErrs, lang: document.getElementById('lang-select').value, title: document.getElementById('para-select').value, accuracy: accStr, realAcc: realAcc, errCount: errs
         };
 
         saveResults(results); displayResults(results, typed);
@@ -600,9 +653,7 @@
                 userName: window.currentUser ? (window.currentUser.displayName || "অজ্ঞাত ইউজার") : "অজ্ঞাত ইউজার",
                 userEmail: window.currentUser ? window.currentUser.email : ""
             });
-        } else if (window.isGuest) {
-            window.lastGuestResult = data;
-        }
+        } else if (window.isGuest) { window.lastGuestResult = data; }
 
         if (localStorage.getItem('furqan_sync_on') === 'true') {
             const formData = new FormData(); const langLabel = data.lang === 'bn' ? 'Bangla' : 'English';
@@ -618,22 +669,22 @@
     function displayResults(data, typedWords) {
         switchView('result-view');
         
-        if (window.isGuest) {
-            document.getElementById('guest-promo-section').style.display = "block";
-        } else {
-            document.getElementById('guest-promo-section').style.display = "none";
-        }
+        if (window.isGuest) document.getElementById('guest-promo-section').style.display = "block";
+        else document.getElementById('guest-promo-section').style.display = "none";
 
-        // ডাইনামিক নাম্বার রোল ইফেক্ট কল করা হচ্ছে
-        const animDuration = 1500; // 1.5 Seconds 
+        const animDuration = 1500; 
+        
+        // নাম্বার রোল অ্যানিমেশন
         animateValue(document.getElementById('res-swpm'), 0, data.wpm, animDuration);
         animateValue(document.getElementById('res-wpm'), 0, data.wwpm, animDuration);
         animateValue(document.getElementById('res-tw'), 0, data.tw, animDuration);
-        animateValue(document.getElementById('res-err'), 0, parseFloat(data.err), animDuration, "%");
         animateValue(document.getElementById('res-cws'), 0, data.cws, animDuration);
         animateValue(document.getElementById('res-cns'), 0, data.cns, animDuration);
-        animateValue(document.getElementById('res-pace'), 0, data.cons, animDuration, "%");
         animateValue(document.getElementById('res-bs'), 0, data.bs, animDuration);
+        
+        // রেডিয়াল গোল বৃত্ত (Ring) অ্যানিমেশন
+        animateRadialProgress('ring-acc', data.realAcc, 'var(--green)');
+        animateRadialProgress('ring-pace', data.cons, 'var(--blue)');
         
         const fbEl = document.getElementById('dynamic-feedback'); const benchmark = (data.lang === 'bn') ? 30 : 35;
         if (data.wpm >= benchmark) { fbEl.innerText = "☀️চ্যাম্পিয়ন!☀️"; fbEl.style.color = "var(--green)"; confetti({ particleCount: 150 }); }
@@ -654,11 +705,7 @@
         const body = normalizeText(document.getElementById('db-body').value.trim()); const oldT = document.getElementById('edit-original-title').value;
         if (!title || !body) return alert("সব তথ্য দিন!");
         
-        if (oldT && oldT !== title) {
-            delete paragraphs[lang][oldT];
-            if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(lang, oldT);
-        }
-        
+        if (oldT && oldT !== title) { delete paragraphs[lang][oldT]; if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(lang, oldT); }
         paragraphs[lang][title] = body;
         if(window.saveGlobalParagraph) await window.saveGlobalParagraph(lang, title, body);
 
@@ -679,105 +726,53 @@
         });
     }
 
-    function editPara(l, t) {
-        document.getElementById('db-lang').value = l; document.getElementById('db-title').value = t;
-        document.getElementById('db-body').value = paragraphs[l][t]; document.getElementById('edit-original-title').value = t;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    function editPara(l, t) { document.getElementById('db-lang').value = l; document.getElementById('db-title').value = t; document.getElementById('db-body').value = paragraphs[l][t]; document.getElementById('edit-original-title').value = t; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-    async function deletePara(l, t) { 
-        if(confirm("ক্লাউড থেকে ডিলিট করবেন?")) { 
-            delete paragraphs[l][t]; 
-            if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); 
-            renderDatabaseList(); loadParaList(); showToast("ডিলিট করা হয়েছে!");
-        } 
-    }
+    async function deletePara(l, t) { if(confirm("ক্লাউড থেকে ডিলিট করবেন?")) { delete paragraphs[l][t]; if(window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); renderDatabaseList(); loadParaList(); showToast("ডিলিট করা হয়েছে!"); } }
 
     async function renderLeaderboard() {
-        const langVal = document.getElementById('leaderboard-lang-select').value;
-        const table = document.getElementById('leaderboard-table');
+        const langVal = document.getElementById('leaderboard-lang-select').value; const table = document.getElementById('leaderboard-table');
         table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding: 20px;'>লোড হচ্ছে... দয়া করে অপেক্ষা করুন</td></tr>";
-
-        let globalData = [];
-        if(window.getGlobalLeaderboard) {
-            globalData = await window.getGlobalLeaderboard();
-        }
-
+        let globalData = []; if(window.getGlobalLeaderboard) globalData = await window.getGlobalLeaderboard();
         const filtered = globalData.filter(h => {
             if (langVal === 'bn') return h.lang === 'bn' || h.lang === 'Bangla';
-            if (langVal === 'en') return h.lang === 'en' || h.lang === 'English';
-            return false;
+            if (langVal === 'en') return h.lang === 'en' || h.lang === 'English'; return false;
         }).sort((a,b) => b.wpm - a.wpm);
-
         table.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" +
         (filtered.length ? filtered.slice(0, 20).map((h, i) => `<tr><td>#${i+1}</td><td>${escapeHTML(h.userName)}</td><td><strong>${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5' style='text-align:center'>কোনো রেকর্ড নেই</td></tr>");
     }
 
     let currentHistoryFilter = 7;
-    function switchHistoryFilter(el, d) {
-        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active'); currentHistoryFilter = d; renderHistoryView(d);
-    }
+    function switchHistoryFilter(el, d) { document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); currentHistoryFilter = d; renderHistoryView(d); }
     function renderHistoryView(d) {
         const history = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
-        const now = new Date(), tk = dateKey(now), mk = monthKey(now), yk = yearKey(now);
-        let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0;
-        history.forEach(h => {
-            const hTs = h.timestamp || Date.now(); const dk = dateKey(hTs), mck = monthKey(hTs), yck = yearKey(hTs);
-            const dur = h.duration || 0; tt += dur;
-            if (dk === tk) { td += dur; ts++; } if (mck === mk) { md += dur; ms++; } if (yck === yk) { yd += dur; ys++; }
-        });
-        document.getElementById('h-today-time').innerText = formatDuration(td); document.getElementById('h-today-sessions').innerText = `${ts} টি সেশন`;
-        document.getElementById('h-month-time').innerText = formatDuration(md); document.getElementById('h-month-sessions').innerText = `${ms} টি সেশন`;
-        document.getElementById('h-year-time').innerText = formatDuration(yd); document.getElementById('h-year-sessions').innerText = `${ys} টি সেশন`;
-        document.getElementById('h-total-time').innerText = formatDuration(tt); document.getElementById('h-total-sessions').innerText = `${history.length} টি সেশন`;
+        const now = new Date(), tk = dateKey(now), mk = monthKey(now), yk = yearKey(now); let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0;
+        history.forEach(h => { const hTs = h.timestamp || Date.now(); const dk = dateKey(hTs), mck = monthKey(hTs), yck = yearKey(hTs); const dur = h.duration || 0; tt += dur; if (dk === tk) { td += dur; ts++; } if (mck === mk) { md += dur; ms++; } if (yck === yk) { yd += dur; ys++; } });
+        document.getElementById('h-today-time').innerText = formatDuration(td); document.getElementById('h-today-sessions').innerText = `${ts} টি সেশন`; document.getElementById('h-month-time').innerText = formatDuration(md); document.getElementById('h-month-sessions').innerText = `${ms} টি সেশন`; document.getElementById('h-year-time').innerText = formatDuration(yd); document.getElementById('h-year-sessions').innerText = `${ys} টি সেশন`; document.getElementById('h-total-time').innerText = formatDuration(tt); document.getElementById('h-total-sessions').innerText = `${history.length} টি সেশন`;
         renderHistoryChart(history, d); renderHistoryTable(history);
     }
     function renderHistoryChart(h, days) {
-        const ctx = document.getElementById('historyChart').getContext('2d');
-        if (historyChartInstance) historyChartInstance.destroy(); let labels = [], data = [];
-        if (days === 0) {
-            const mNames = ['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে']; let mD = Array(12).fill(0);
-            h.forEach(x => { if (new Date(x.timestamp).getFullYear() === new Date().getFullYear()) mD[new Date(x.timestamp).getMonth()] += (x.duration || 0); });
-            labels = mNames; data = mD.map(s => (s/60).toFixed(1));
-        } else {
-            for (let i = days-1; i >= 0; i--) {
-                const day = new Date(); day.setDate(day.getDate() - i); labels.push(bnDateShort(day.getTime()));
-                let s = h.filter(x => dateKey(x.timestamp) === dateKey(day)).reduce((acc, curr) => acc + (curr.duration || 0), 0); data.push((s/60).toFixed(1));
-            }
-        }
+        const ctx = document.getElementById('historyChart').getContext('2d'); if (historyChartInstance) historyChartInstance.destroy(); let labels = [], data = [];
+        if (days === 0) { const mNames = ['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে']; let mD = Array(12).fill(0); h.forEach(x => { if (new Date(x.timestamp).getFullYear() === new Date().getFullYear()) mD[new Date(x.timestamp).getMonth()] += (x.duration || 0); }); labels = mNames; data = mD.map(s => (s/60).toFixed(1)); } 
+        else { for (let i = days-1; i >= 0; i--) { const day = new Date(); day.setDate(day.getDate() - i); labels.push(bnDateShort(day.getTime())); let s = h.filter(x => dateKey(x.timestamp) === dateKey(day)).reduce((acc, curr) => acc + (curr.duration || 0), 0); data.push((s/60).toFixed(1)); } }
         historyChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'মিনিট', data, backgroundColor: 'rgba(25,42,86,0.7)' }] } });
     }
     function renderHistoryTable(h) {
         const box = document.getElementById('history-table-container'); if (!h.length) return box.innerHTML = "";
         let html = "<h3>সাম্প্রতিক সেশনসমূহ</h3><table><tr><th>তারিখ</th><th>অনুচ্ছেদ</th><th>স্পিড</th><th>ভুল</th></tr>";
-        h.slice(-15).reverse().forEach(x => { html += `<tr><td>${x.date}</td><td>${escapeHTML(x.title || "—")}</td><td><strong>${x.wpm}</strong></td><td>${x.err}%</td></tr>`; });
-        box.innerHTML = html + "</table>";
+        h.slice(-15).reverse().forEach(x => { html += `<tr><td>${x.date}</td><td>${escapeHTML(x.title || "—")}</td><td><strong>${x.wpm}</strong></td><td>${x.err}%</td></tr>`; }); box.innerHTML = html + "</table>";
     }
 
     function renderErrorAnalysis() {
-        const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]");
-        let eMap = {};
-        h.forEach(x => (x.errors || []).forEach(e => {
-            if(!eMap[e.expected]) eMap[e.expected] = { total: 0, typed: {} };
-            eMap[e.expected].total++; eMap[e.expected].typed[e.typed] = (eMap[e.expected].typed[e.typed] || 0) + 1;
-        }));
+        const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); let eMap = {};
+        h.forEach(x => (x.errors || []).forEach(e => { if(!eMap[e.expected]) eMap[e.expected] = { total: 0, typed: {} }; eMap[e.expected].total++; eMap[e.expected].typed[e.typed] = (eMap[e.expected].typed[e.typed] || 0) + 1; }));
         const sorted = Object.entries(eMap).sort((a,b) => b[1].total - a[1].total);
-        document.getElementById('ea-total-errors').innerText = sorted.reduce((s, x) => s + x[1].total, 0);
-        document.getElementById('ea-top-word').innerText = sorted.length ? sorted[0][0] : "—";
-        document.getElementById('ea-unique-words').innerText = sorted.length;
-        const bl = document.getElementById('ea-bar-list');
-        if (!sorted.length) return bl.innerHTML = "<p style='text-align:center;padding:20px;'>রেকর্ড নেই</p>";
+        document.getElementById('ea-total-errors').innerText = sorted.reduce((s, x) => s + x[1].total, 0); document.getElementById('ea-top-word').innerText = sorted.length ? sorted[0][0] : "—"; document.getElementById('ea-unique-words').innerText = sorted.length;
+        const bl = document.getElementById('ea-bar-list'); if (!sorted.length) return bl.innerHTML = "<p style='text-align:center;padding:20px;'>রেকর্ড নেই</p>";
         const max = sorted[0][1].total;
-        bl.innerHTML = "<h3>📊 সর্বাধিক ভুল করা শব্দ</h3>" + sorted.slice(0, 10).map(([w, d]) => {
-            const pct = (d.total / max) * 100;
-            return `<div class='error-bar-item'><div style='display:flex;justify-content:space-between;'><span>${escapeHTML(w)}</span><span>${d.total} বার</span></div><div class='error-bar-bg'><div class='error-bar-fill' style='width:${pct}%'></div></div></div>`;
-        }).join('');
+        bl.innerHTML = "<h3>📊 সর্বাধিক ভুল করা শব্দ</h3>" + sorted.slice(0, 10).map(([w, d]) => { const pct = (d.total / max) * 100; return `<div class='error-bar-item'><div style='display:flex;justify-content:space-between;'><span>${escapeHTML(w)}</span><span>${d.total} বার</span></div><div class='error-bar-bg'><div class='error-bar-fill' style='width:${pct}%'></div></div></div>`; }).join('');
         let th = "<h3>📋 বিস্তারিত ভুল তালিকা</h3><table><tr><th>সঠিক</th><th>মোট ভুল</th><th>শীর্ষ ভুল টাইপ</th></tr>";
-        sorted.slice(0, 20).forEach(([w, d]) => {
-            const top = Object.entries(d.typed).sort((a,b) => b[1]-a[1])[0];
-            th += `<tr><td><strong>${escapeHTML(w)}</strong></td><td>${d.total}</td><td>${escapeHTML(top[0])} (${top[1]}×)</td></tr>`;
-        }); document.getElementById('ea-detail-table').innerHTML = th + "</table>";
+        sorted.slice(0, 20).forEach(([w, d]) => { const top = Object.entries(d.typed).sort((a,b) => b[1]-a[1])[0]; th += `<tr><td><strong>${escapeHTML(w)}</strong></td><td>${d.total}</td><td>${escapeHTML(top[0])} (${top[1]}×)</td></tr>`; }); document.getElementById('ea-detail-table').innerHTML = th + "</table>";
     }
 </script>
 
