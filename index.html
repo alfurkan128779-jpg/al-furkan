@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আল ফুরকান</title>
+    <title>আল ফুরকান - প্রো</title>
     <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,14 +24,7 @@
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kalpurush', sans-serif; }
-        body { background: #e0eafc; color: var(--text); padding-bottom: 60px; overflow-x: hidden; }
-
-        /* ডাইনামিক ফ্লোটিং অর্বস */
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.7; animation: floatOrb 15s infinite alternate ease-in-out; }
-        .orb-1 { width: 500px; height: 500px; background: #ff9a9e; top: -150px; left: -150px; }
-        .orb-2 { width: 600px; height: 600px; background: #a18cd1; bottom: -200px; right: -100px; animation-duration: 20s; animation-delay: -5s; }
-        .orb-3 { width: 400px; height: 400px; background: #84fab0; top: 30%; left: 30%; animation-duration: 25s; animation-delay: -10s; }
-        @keyframes floatOrb { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(100px, 100px) scale(1.2); } }
+        body { background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); background-attachment: fixed; color: var(--text); padding-bottom: 60px; overflow-x: hidden; }
 
         /* Auth Container Styles */
         #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -48,15 +41,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
         }
         
-        /* 3D লোগো ডিজাইন */
+        /* প্রিমিয়াম লোগো ডিজাইন (আগের অবস্থায় ফেরত) */
         .logo { 
             display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 900; 
             color: #fff; cursor: pointer; background: linear-gradient(135deg, var(--navy-blue), var(--blue));
-            padding: 8px 18px; border-radius: 12px;
-            box-shadow: 0 6px 0 #101c3d, 0 10px 20px rgba(9, 132, 227, 0.3); transition: all 0.2s ease; transform-style: preserve-3d;
+            padding: 8px 18px; border-radius: 50px 5px 50px 5px;
+            box-shadow: 2px 4px 10px rgba(9, 132, 227, 0.3); transition: 0.3s;
         }
-        .logo:active { transform: translateY(4px); box-shadow: 0 2px 0 #101c3d, 0 4px 10px rgba(9, 132, 227, 0.3); }
-        .logo i { transform: translateZ(20px); }
+        .logo:hover { transform: scale(1.02); }
 
         .menu-container { position: relative; }
         .three-dots { font-size: 24px; cursor: pointer; color: var(--navy-blue); padding: 8px 12px; border-radius: 50%; transition: 0.2s; }
@@ -83,7 +75,8 @@
         }
         .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        .view-section { display: none; max-width: 900px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
+        /* ম্যাক্স-উইডথ ১২৫০ পিক্সেল করা হয়েছে স্ক্রিনের প্রপার ব্যবহারের জন্য */
+        .view-section { display: none; max-width: 1250px; width: 95%; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
         .active-view { display: block; animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -93,20 +86,17 @@
         select, input, textarea { width: 100%; padding: 12px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
         select:focus, input:focus, textarea:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 8px rgba(9, 132, 227, 0.2); }
         
-        /* 3D কীবোর্ড বাটন ডিজাইন */
+        /* প্রিমিয়াম বাটন ডিজাইন (আগের অবস্থায় ফেরত) */
         button {
             padding: 12px 25px; border: none; border-radius: 8px; background: var(--navy-blue);
-            color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: all 0.2s ease;
+            color: #fff; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 6px 0 #101c3d, 0 10px 20px rgba(25, 42, 86, 0.2);
+            box-shadow: 0 4px 10px rgba(25, 42, 86, 0.2);
         }
-        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #101c3d, 0 4px 10px rgba(25, 42, 86, 0.2); }
-        .btn-danger { background: var(--red); box-shadow: 0 6px 0 #b32525, 0 10px 20px rgba(214, 48, 49, 0.2); }
-        .btn-danger:active { box-shadow: 0 2px 0 #b32525; transform: translateY(4px); }
-        .btn-warning { background: #f39c12; box-shadow: 0 6px 0 #c27d0e, 0 10px 20px rgba(243, 156, 18, 0.2); }
-        .btn-warning:active { box-shadow: 0 2px 0 #c27d0e; transform: translateY(4px); }
-        .btn-sm { font-size: 14px; padding: 6px 14px; box-shadow: 0 4px 0 #101c3d; }
-        .btn-sm:active { box-shadow: 0 1px 0 #101c3d; transform: translateY(3px); }
+        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(25, 42, 86, 0.3); }
+        .btn-danger { background: var(--red); box-shadow: 0 4px 10px rgba(214, 48, 49, 0.2); }
+        .btn-warning { background: #f39c12; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.2); }
+        .btn-sm { font-size: 14px; padding: 6px 14px; }
 
         .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; padding: 10px 0; z-index: 500; }
         .timer-display { font-family: 'Roboto Mono', monospace; font-size: 32px; font-weight: bold; color: var(--blue); text-shadow: 0 2px 4px rgba(255,255,255,0.5); }
@@ -183,10 +173,6 @@
 </head>
 <body>
 
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
-<div class="bg-orb orb-3"></div>
-
 <div class="toast-container" id="toast-container"></div>
 
 <div id="auth-section">
@@ -212,7 +198,7 @@
 
 <div id="main-app" style="display: none;">
     <header>
-        <div class="logo" onclick="switchView('home-view')" data-tilt data-tilt-max="15" data-tilt-glare data-tilt-max-glare="0.2">
+        <div class="logo" onclick="switchView('home-view')">
             <i class="fas fa-keyboard"></i>
             <span>আল ফুরকান</span>
         </div>
@@ -327,7 +313,7 @@
         <div id="guest-promo-section" style="display: none; background: rgba(227, 242, 253, 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 25px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid rgba(187, 222, 251, 0.8); box-shadow: var(--glass-shadow);">
             <h3 style="color: var(--navy-blue); margin-bottom: 10px;"><i class="fas fa-medal" style="color: #f1c40f;"></i> আপনার স্পিড অসাধারণ!</h3>
             <p style="color: #555; margin-bottom: 20px; font-size: 15px; font-weight: bold;">গ্লোবাল লিডারবোর্ডে আপনার র‍্যাংক দেখতে এবং ফলাফল স্থায়ীভাবে সংরক্ষণ করতে এখনই লগইন করুন।</p>
-            <button id="promo-login-btn" style="background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.1); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 6px 0 #dcdde1, 0 10px 20px rgba(0,0,0,0.1);">
+            <button id="promo-login-btn" style="background: rgba(255,255,255,0.9); color: var(--text); border: 1px solid rgba(0,0,0,0.1); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;">
                 গুগল দিয়ে লগইন করুন
             </button>
@@ -448,7 +434,6 @@
     let historyChartInstance = null;
     let isAppReady = false; 
 
-    // ডাইনামিক নাম্বার রোল অ্যানিমেশন ফাংশন (আপডেটেড)
     function animateValue(obj, start, end, duration, suffix = "") {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -468,12 +453,11 @@
         window.requestAnimationFrame(step);
     }
 
-    // রেডিয়াল প্রোগ্রেস রিং (গোল বৃত্ত) অ্যানিমেশন
     function animateRadialProgress(elementId, targetValue, color, suffix = "%") {
         let circle = document.getElementById(elementId);
         let valElement = circle.querySelector('.circle-value');
         let progress = 0;
-        let speed = targetValue / (1500 / 16); // 1.5 seconds target
+        let speed = targetValue / (1500 / 16);
 
         let int = setInterval(() => {
             progress += speed;
@@ -486,7 +470,6 @@
         }, 16);
     }
 
-    // মোবাইল পপ-আপ অ্যালার্ট
     window.addEventListener('DOMContentLoaded', () => {
         if(window.innerWidth <= 768) {
             const mPopup = document.createElement('div');
@@ -674,7 +657,6 @@
 
         const animDuration = 1500; 
         
-        // নাম্বার রোল অ্যানিমেশন
         animateValue(document.getElementById('res-swpm'), 0, data.wpm, animDuration);
         animateValue(document.getElementById('res-wpm'), 0, data.wwpm, animDuration);
         animateValue(document.getElementById('res-tw'), 0, data.tw, animDuration);
@@ -682,7 +664,6 @@
         animateValue(document.getElementById('res-cns'), 0, data.cns, animDuration);
         animateValue(document.getElementById('res-bs'), 0, data.bs, animDuration);
         
-        // রেডিয়াল গোল বৃত্ত (Ring) অ্যানিমেশন
         animateRadialProgress('ring-acc', data.realAcc, 'var(--green)');
         animateRadialProgress('ring-pace', data.cons, 'var(--blue)');
         
