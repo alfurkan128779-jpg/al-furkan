@@ -43,16 +43,32 @@
         body { background: var(--bg); background-attachment: fixed; color: var(--text); padding-bottom: 60px; transition: background 0.3s ease; }
         
         #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .auth-container, .settings-card, .stat-box, .time-card, .error-card, .error-bar-list { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--glass-shadow); padding: 30px; text-align: center; }
+        
+        /* 옵শন এবং কার্ডগুলোতে গ্লো ইফেক্ট */
+        .auth-container, .settings-card, .stat-box, .time-card, .error-card, .error-bar-list { 
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--glass-shadow); padding: 30px; text-align: center; 
+            transition: all 0.3s ease; 
+        }
+        .auth-container:hover, .settings-card:hover, .stat-box:hover, .time-card:hover, .error-card:hover, .error-bar-list:hover {
+            border-color: var(--blue);
+            box-shadow: 0 0 15px var(--blue), 0 0 30px rgba(218, 165, 32, 0.2);
+            transform: scale(1.02);
+            z-index: 10; position: relative;
+        }
+
         header { background: var(--header-bg); backdrop-filter: var(--glass-blur); padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 900; color: var(--logo-text); cursor: pointer; background: var(--logo-bg); padding: 8px 18px; border-radius: 50px 5px 50px 5px; box-shadow: 2px 4px 10px var(--logo-shadow); transition: 0.3s; }
-        .theme-switch { cursor: pointer; color: var(--blue); font-size: 22px; margin-right: 15px; transition: 0.3s; } .theme-switch:hover { transform: scale(1.1); }
-        .three-dots { font-size: 24px; cursor: pointer; color: var(--blue); padding: 8px; border-radius: 50%; }
+        .logo:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--blue); }
+        
+        .theme-switch { cursor: pointer; color: var(--blue); font-size: 22px; margin-right: 15px; transition: 0.3s; } 
+        .theme-switch:hover { transform: scale(1.2); text-shadow: 0 0 15px var(--blue); }
+        .three-dots { font-size: 24px; cursor: pointer; color: var(--blue); padding: 8px; border-radius: 50%; transition: 0.3s; }
+        .three-dots:hover { transform: scale(1.1); text-shadow: 0 0 10px var(--blue); }
         
         .dropdown-menu { display: none; position: absolute; right: 0; top: 50px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); width: 260px; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--glass-shadow); }
         .dropdown-menu.active { display: block; }
-        .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text); display: flex; align-items: center; gap: 10px; }
-        .dropdown-menu div:hover { background: var(--menu-hover); color: var(--blue); padding-left: 25px; }
+        .dropdown-menu div { padding: 14px 20px; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text); display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .dropdown-menu div:hover { background: var(--menu-hover); color: var(--blue); padding-left: 25px; text-shadow: 0 0 8px var(--blue); }
         
         .view-section { display: none; max-width: 1250px; width: 95%; margin: 40px auto; }
         .active-view { display: block; animation: fadeIn 0.4s ease-out; }
@@ -65,11 +81,14 @@
         @media (max-width: 768px) { .settings-grid, .stats-grid, .time-summary-grid, .error-summary-grid { grid-template-columns: 1fr; } }
         
         label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
-        select, input, textarea { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; outline: none; }
-        select:focus, input:focus, textarea:focus { border-color: var(--blue); background: var(--input-focus); }
         
-        button { padding: 12px 25px; border: none; border-radius: 8px; background: var(--btn-bg); color: var(--btn-text); cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s; box-shadow: 0 4px 10px var(--btn-shadow); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        button:hover { transform: translateY(-2px); opacity: 0.9; }
+        /* ইনপুট ফিল্ডে ক্লিক করলে গ্লো ইফেক্ট */
+        select, input, textarea { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; outline: none; transition: 0.3s; }
+        select:focus, input:focus, textarea:focus { border-color: var(--blue); background: var(--input-focus); box-shadow: 0 0 15px var(--blue); transform: scale(1.01); }
+        
+        /* বাটনে মাউস নিলে গ্লো ইফেক্ট */
+        button { padding: 12px 25px; border: 1px solid transparent; border-radius: 8px; background: var(--btn-bg); color: var(--btn-text); cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 10px var(--btn-shadow); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        button:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 0 15px var(--blue), 0 0 25px var(--blue); }
         .btn-danger { background: var(--red); color: #fff; } .btn-warning { background: #f39c12; color: #fff; }
         
         .typing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; position: sticky; top: 60px; z-index: 500; }
@@ -78,7 +97,8 @@
         .word { display: inline-block; margin-right: 12px; transition: 0.2s; } .active-word { background: var(--word-bg); color: var(--blue); border-radius: 6px; padding: 0 6px; font-weight: bold; }
         #input-area { height: 270px; resize: none; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); font-size: 19px; padding: 19px; line-height: 1.4; }
         
-        .circular-progress { position: relative; width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: conic-gradient(var(--blue) 0%, rgba(0,0,0,0.05) 0%); }
+        .circular-progress { position: relative; width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: conic-gradient(var(--blue) 0%, rgba(0,0,0,0.05) 0%); transition: 0.3s; }
+        .circular-progress:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--blue); }
         .circular-progress::before { content: ""; position: absolute; width: 60px; height: 60px; background: var(--circle-bg); border-radius: 50%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
         .circle-value { position: relative; z-index: 1; font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
         .stat-box h3 { font-size: 14px; color: var(--stat-head); margin-bottom: 12px; font-weight: bold; }
@@ -88,8 +108,10 @@
         th, td { padding: 12px 15px; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; }
         th { background: var(--th-bg); color: var(--th-text); }
         .res-correct { color: var(--green); margin-right: 8px; } .res-error { color: var(--red); text-decoration: underline wavy var(--red); margin-right: 8px; }
-        .filter-tab { padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; color: var(--text); font-weight: bold; background: var(--glass-bg); }
-        .filter-tab.active { background: var(--blue); color: var(--btn-text); border-color: var(--blue); }
+        
+        /* ট্যাব অপশনে গ্লো ইফেক্ট */
+        .filter-tab { padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; color: var(--text); font-weight: bold; background: var(--glass-bg); transition: 0.3s; }
+        .filter-tab:hover, .filter-tab.active { background: var(--blue); color: var(--btn-text); border-color: var(--blue); box-shadow: 0 0 15px var(--blue); transform: scale(1.05); }
         .has-tooltip { position: relative; cursor: help; border-bottom: 2px dashed #95a5a6; }
         
         .toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; }
@@ -159,7 +181,6 @@
         <div id="source-box"></div>
         <textarea id="input-area" placeholder="টাইপ শুরু করার সাথে সাথে সময় গণনা শুরু হবে..."></textarea>
     </div>
-
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
             <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
