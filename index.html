@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আল ফুরকান</title>
+    <title>ফ্রিতে টাইপ চর্চা</title>
     <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -140,7 +140,7 @@
 <div id="main-app" style="display: none;">
     <header>
         <div class="logo" onclick="_sV('home-view')" data-tilt data-tilt-max="15">
-            <i class="fas fa-keyboard"></i> <span>আল ফুরকান</span>
+            <i class="fas fa-keyboard"></i> <span>MAF Typing</span>
         </div>
         <div class="menu-container" style="display: flex; align-items: center;">
             <i class="fas fa-moon theme-switch" id="theme-icon" onclick="_tTh()" title="থিম পরিবর্তন করুন"></i>
@@ -255,7 +255,7 @@
             <a href="mailto:alfurkan128779@gmail.com" style="color: var(--text); text-decoration: none; font-weight:bold;"><i class="fas fa-envelope" style="color: var(--red); width:25px;"></i> alfurkan128779@gmail.com</a>
         </div>
         <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; text-align: center;">
-            <i class="fab fa-facebook-f"></i> ফেসবুকে যোগাযোগ করুন
+            <i class="fab fa-facebook-f"></i> ফেসবুক
         </a>
     </div>
 </div>
@@ -304,7 +304,22 @@
 
     function _iT() { const l = _g('lang-select').value, t = _g('para-select').value; if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); _wL = _nT(_p[l][t]).split(/\s+/); _t3 = parseInt(_g('time-select').value); _t2 = _t3; _iP = !1; _hS = !1; _bC = 0; _iTT = 0; _g('source-box').innerHTML = _wL.map((w, i) => `<span class="word" id="w-${i}">${_eH(w)}</span>`).join(''); const a = _g('input-area'); a.value = ""; a.disabled = !1; clearInterval(_t1); _uTUI(); _sV('typing-view'); setTimeout(() => a.focus(), 100); }
     
-    _g('input-area').addEventListener('input', e => { if (_iP) return; const v = e.target.value, n = Date.now(); if (!_hS && v.length > 0) { _hS = !0; _lK = n; _t1 = setInterval(() => { if (!_iP) { _t2--; _uTUI(); if (_t2 <= 0) _sT(); } }, 1000); } if (_hS && (n - _lK) > 2000) _iTT += (n - _lK) / 1000; _lK = n; let tw = v.trim() === "" ? [] : v.trim().split(/\s+/), ai = (/\s$/.test(v) || v === "") ? tw.length : tw.length - 1; document.querySelectorAll('.word').forEach(el => el.classList.remove('active-word')); const s = _g(`w-${ai}`); if (s) { if (_g('difficulty-select').value === 'easy') s.classList.add('active-word'); _g('source-box').scrollTop = s.offsetTop - 100; } });
+    _g('input-area').addEventListener('input', e => { 
+        if (_iP) return; 
+        const v = e.target.value, n = Date.now(); 
+        if (!_hS && v.length > 0) { _hS = !0; _lK = n; _t1 = setInterval(() => { if (!_iP) { _t2--; _uTUI(); if (_t2 <= 0) _sT(); } }, 1000); } 
+        if (_hS && (n - _lK) > 2000) _iTT += (n - _lK) / 1000; _lK = n; 
+        let tw = v.trim() === "" ? [] : v.trim().split(/\s+/), ai = (/\s$/.test(v) || v === "") ? tw.length : tw.length - 1; 
+        document.querySelectorAll('.word').forEach(el => el.classList.remove('active-word')); 
+        const s = _g(`w-${ai}`); 
+        if (s) { 
+            if (_g('difficulty-select').value === 'easy') s.classList.add('active-word'); 
+            const sb = _g('source-box');
+            // এই লাইনেই মূল সমাধান করা হয়েছে। ১৩০ পিক্সেল পার হওয়ার পর অটো স্ক্রল হবে।
+            sb.scrollTop = s.offsetTop > 130 ? s.offsetTop - 130 : 0; 
+        } 
+    });
+
     _g('input-area').addEventListener('keydown', e => { if (e.key === 'Backspace' && _hS && !_iP) _bC++; });
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
