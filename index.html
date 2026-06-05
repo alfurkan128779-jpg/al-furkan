@@ -339,7 +339,22 @@
     
     function _sR(d) { let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); h.push(d); localStorage.setItem('furqan_history_v2', JSON.stringify(h)); if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); if (localStorage.getItem('furqan_sync_on') === 'true') { const f = new FormData(); f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); } }
     
-    function _dR(d, t) { _sV('result-view'); _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); const f = _g('dynamic-feedback'), b = d.lang === 'bn' ? 30 : 35; if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } let rh = ""; _wL.forEach((o, i) => { if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${o}</span> ` : `<span class="res-error">${t[i] || '—'}<small>সঠিক: ${o}</small></span> `; else rh += `<span class="res-missed">${o}</span> `; }); _g('result-text-review').innerHTML = rh;
+    function _dR(d, t) { 
+        _sV('result-view'); _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
+        _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); 
+        _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); 
+        _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); 
+        const f = _g('dynamic-feedback'), b = d.lang === 'bn' ? 30 : 35; 
+        if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } 
+        else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
+        let rh = ""; 
+        _wL.forEach((o, i) => { 
+            // এই লাইনে স্পেস যুক্ত করা হয়েছে যাতে শব্দগুলো ভেঙে ভেঙে দেখায়
+            if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${o}</span> ` : `<span class="res-error">${t[i] || '—'}<small>সঠিক: ${o}</small></span> `; 
+            else rh += `<span class="res-missed">${o}</span> `; 
+        }); 
+        _g('result-text-review').innerHTML = rh; 
+    }
 
     async function _sP() { const l = _g('db-lang').value, t = _g('db-title').value.trim(), b = _nT(_g('db-body').value.trim()), o = _g('edit-original-title').value; if (!t || !b) return; if (o && o !== t) { delete _p[l][o]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, o); } _p[l][t] = b; if (window.saveGlobalParagraph) await window.saveGlobalParagraph(l, t, b); _g('db-title').value = ""; _g('db-body').value = ""; _g('edit-original-title').value = ""; _lPL(); _rDL(); _sTo("আপডেট সম্পন্ন!"); }
     function _rDL() { const ls = _g('db-list'); ls.innerHTML = ""; ['bn', 'en'].forEach(l => { for (let t in _p[l]) { const i = document.createElement('div'); i.style.cssText = "padding:12px;background:var(--glass-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;color:var(--text);"; i.innerHTML = `<div><small style="color:var(--blue)">${l.toUpperCase()}</small><br><strong>${t}</strong></div><div style='display:flex;gap:8px;'><button class='btn-sm' onclick="_eP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--blue); color:var(--btn-text); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button><button class='btn-sm' onclick="_dP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Del</button></div>`; ls.appendChild(i); } }); }
