@@ -79,21 +79,7 @@
     .error-summary-grid { grid-template-columns: repeat(3, 1fr); }
     @media (max-width: 768px) { .settings-grid, .stats-grid, .time-summary-grid, .error-summary-grid { grid-template-columns: 1fr; } }
     
-    /* লেবেল এবং আইকন অ্যানিমেশনের জন্য সিএসএস যোগ করা হলো */
-    label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
-    .form-group label i { font-size: 18px; color: var(--blue); transition: all 0.3s ease; }
-    
-    /* হোভার করলে আইকনের হালকা অ্যানিমেশন */
-    .form-group:hover label i.fa-language { animation: pulseLight 1s infinite; color: var(--purple); }
-    .form-group:hover label i.fa-file-alt { animation: bounceLight 1s infinite; color: var(--orange); }
-    .form-group:hover label i.fa-hourglass-half { animation: spinSlow 2s linear infinite; color: var(--red); }
-    .form-group:hover label i.fa-layer-group { animation: wobbleLight 1s infinite; color: var(--green); }
-    
-    /* লাইটওয়েট সিএসএস কীফ্রেম অ্যানিমেশন */
-    @keyframes pulseLight { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    @keyframes bounceLight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-    @keyframes spinSlow { 100% { transform: rotate(180deg); } }
-    @keyframes wobbleLight { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+    label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
     
     select, input, textarea { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; outline: none; transition: 0.3s; }
     select:focus, input:focus, textarea:focus { border-color: var(--blue); background: var(--input-focus); box-shadow: 0 0 15px var(--blue); transform: scale(1.01); }
@@ -113,7 +99,7 @@
         padding: 19px; 
         font-size: 19px; 
         height: 260px; 
-        position: relative; 
+        position: relative; /* <-- এই লাইনটি যুক্ত করা হয়েছে */
         overflow-y: auto; 
         margin-bottom: 25px; 
         color: var(--source-color); 
@@ -184,16 +170,17 @@
     </header>
 
     <div id="home-view" class="view-section active-view">
-        <div class="settings-card" data-tilt data-tilt-max="2">
+        <div class="settings-card" data-tilt data-tilt-max="2" style="max-width: 800px; margin: 0 auto;">
             <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
             <div class="settings-grid">
-                <!-- লেবেলগুলোতে আইকন যুক্ত করা হয়েছে -->
-                <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
-                <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
-                <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> কঠিনতার স্তর</label><select id="difficulty-select"><option value="easy">সহজ (হাইলাইট)</option><option value="hard">কঠিন (স্বাভাবিক)</option></select></div>
+                <div class="form-group"><label>ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
+                <div class="form-group"><label>অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
+                <div class="form-group"><label>সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
+                <div class="form-group"><label>কঠিনতার স্তর</label><select id="difficulty-select"><option value="easy">সহজ (হাইলাইট)</option><option value="hard">কঠিন (স্বাভাবিক)</option></select></div>
             </div>
-            <button style="width:100%;margin-top:10px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
+            <div style="text-align: center; margin-top: 30px;">
+                <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
+            </div>
         </div>
     </div>
 
@@ -318,7 +305,7 @@
     };
     window.addEventListener('app-ready', async () => { if (_iAR) return; _iAR = !0; if (window.syncGlobalParagraphs) { const g = await window.syncGlobalParagraphs(); if (g && (Object.keys(g.bn).length > 0 || Object.keys(g.en).length > 0)) _p = g; _lPL(); } });
 
-    _g('skip-login-btn').addEventListener('click', () => { window.isGuest = !0; _g('auth-section').style.display = "none"; _g('main-app').style.display = "block"; alert("লগইন ছাড়া হিস্টোরি সেভ হবে পণ্ডিত।"); if (!_iAR) window.dispatchEvent(new Event('app-ready')); });
+    _g('skip-login-btn').addEventListener('click', () => { window.isGuest = !0; _g('auth-section').style.display = "none"; _g('main-app').style.display = "block"; alert("লগইন ছাড়া হিস্টোরি সেভ হবে না।"); if (!_iAR) window.dispatchEvent(new Event('app-ready')); });
     function _tM() { _g('main-menu').classList.toggle('active'); }
     function _sCM() { _g('contact-modal').style.display = 'flex'; _g('main-menu').classList.remove('active'); }
     function _cCM() { _g('contact-modal').style.display = 'none'; }
@@ -364,6 +351,7 @@
         else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
         let rh = ""; 
         _wL.forEach((o, i) => { 
+            // এই লাইনে স্পেস যুক্ত করা হয়েছে যাতে শব্দগুলো ভেঙে ভেঙে দেখায়
             if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${o}</span> ` : `<span class="res-error">${t[i] || '—'}<small>সঠিক: ${o}</small></span> `; 
             else rh += `<span class="res-missed">${o}</span> `; 
         }); 
