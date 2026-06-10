@@ -185,7 +185,7 @@
 
     <div id="home-view" class="view-section active-view">
         <div class="settings-card" data-tilt data-tilt-max="2" style="max-width: 800px; margin: 0 auto;">
-            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
+            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট稳নফিগারেশন</h2>
             <div class="settings-grid">
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
@@ -351,7 +351,7 @@
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
-    function _sT() { clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); let cc = 0, cw = 0, e = 0, se = []; t.forEach((w, i) => { if (i < _wL.length) { if (_nT(w) === _nT(_wL[i])) { cc += w.length; cw++; } else { e++; se.push({ expected: _wL[i], typed: w }); } } }); const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp, res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: _g('lang-select').value, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; _sR(res); _dR(res, t); }
+    function _sT() { clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); let cc = 0, cw = 0, e = 0, se = []; t.forEach((w, i) => { if (i < _wL.length) { if (_nT(w) === _nT(_wL[i])) { cc += w.length; cw++; } else { e++; se.push({ expected: _wL[i], typed: w }); } } }); const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp, res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: _g('lang-select').value === 'bn' ? 'Bangla' : 'English', title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; _sR(res); _dR(res, t); }
     
     function _sR(d) { let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); h.push(d); localStorage.setItem('furqan_history_v2', JSON.stringify(h)); if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); if (localStorage.getItem('furqan_sync_on') === 'true') { const f = new FormData(); f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); } }
     
@@ -360,7 +360,7 @@
         _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); 
         _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); 
         _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); 
-        const f = _g('dynamic-feedback'), b = d.lang === 'bn' ? 30 : 35; 
+        const f = _g('dynamic-feedback'), b = d.lang === 'Bangla' ? 30 : 35; 
         if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } 
         else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
         let rh = ""; 
