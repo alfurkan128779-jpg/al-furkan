@@ -156,7 +156,7 @@
         </h2>
         <p style="margin-bottom: 30px; color: var(--text); font-size: 15px; font-weight: bold;">টেস্ট শুরু করতে গুগল অ্যাকাউন্ট দিয়ে লগইন করুন</p>
         <button id="google-login-btn" style="width: 100%; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: none;">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> গুগল দিয়ে লগইন করুন
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> Log in With Google
         </button>
         <button id="skip-login-btn" style="width: 100%; background: transparent; color: var(--blue); border: none; margin-top: 15px; cursor: pointer; font-size: 15px; font-weight: bold; text-decoration: underline; box-shadow: none;">লগইন ছাড়াই চালিয়ে যান (স্কিপ)</button>
         <div id="auth-error"></div>
@@ -185,12 +185,12 @@
 
     <div id="home-view" class="view-section active-view">
         <div class="settings-card" data-tilt data-tilt-max="2" style="max-width: 800px; margin: 0 auto;">
-            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট稳নফিগারেশন</h2>
+            <h2 style="margin-bottom:25px;text-align:center; color: var(--navy-blue);"><i class="fas fa-sliders-h"></i> টেস্ট কনফিগারেশন</h2>
             <div class="settings-grid">
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
                 <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> কঠিনতার স্তর</label><select id="difficulty-select"><option value="easy">সহজ (হাইলাইট)</option><option value="hard">কঠিন (স্বাভাবিক)</option></select></div>
+                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option></select></div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
@@ -215,7 +215,7 @@
             <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
         </div>
         <div class="stats-grid">
-            <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="৫ ক্যারেক্টার = ১ শব্দ">Std. WPM</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
+            <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="৫ ক্যারেক্টার = ১ শব্দ">স্পেস ছাড়া প্রতি ৫ ক্যারেক্টারে ১ স্ট্রোক</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
             <div class="stat-box"><h3>Word WPM</h3><div class="value" id="res-wpm">0</div></div>
             <div class="stat-box"><h3>মোট শব্দ</h3><div class="value" id="res-tw" style="color:var(--purple);">0</div></div>
             <div class="stat-box"><h3>নির্ভুলতা (Acc.)</h3><div class="circular-progress" id="ring-acc"><div class="circle-value" id="res-acc" style="color:var(--green);">0%</div></div></div>
@@ -223,7 +223,7 @@
         <div class="stats-grid">
             <div class="stat-box"><h3>ক্যারেক্টার (স্পেসসহ)</h3><div class="value" id="res-cws">0</div></div>
             <div class="stat-box"><h3>ক্যারেক্টার (স্পেসছাড়া)</h3><div class="value" id="res-cns">0</div></div>
-            <div class="stat-box"><h3>কনসিস্টেন্সি</h3><div class="circular-progress" id="ring-pace"><div class="circle-value" id="res-pace" style="color:var(--blue);">0%</div></div></div>
+            <div class="stat-box"><h3>ধারাবাহিকতা</h3><div class="circular-progress" id="ring-pace"><div class="circle-value" id="res-pace" style="color:var(--blue);">0%</div></div></div>
             <div class="stat-box"><h3>ব্যাকস্পেস</h3><div class="value" id="res-bs" style="color:var(--red);">0</div></div>
         </div>
         <div id="result-text-review-container" style="margin-top: 30px;"><h3 style="color: var(--navy-blue);"><i class="fas fa-file-signature"></i> ভুল সংশোধন</h3><div id="result-text-review" style="background:var(--glass-bg); padding:25px; border-radius:12px; border:1px solid var(--border); margin-top:15px; font-size:19px; line-height:1.8;"></div></div>
@@ -277,19 +277,19 @@
 <div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
     <div style="background: var(--glass-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 400px; position: relative; text-align:center;">
         <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size:22px;" onclick="_cCM()"></i>
-        <h3 style="color: var(--navy-blue);">AL FURKAN</h3><p style="color: var(--text); margin-bottom: 20px;">Creator & Developer</p>
+        <h3 style="color: var(--navy-blue);"> MD: AL FURKAN</h3><p style="color: var(--text); margin-bottom: 20px;">Creator & Developer</p>
         <div style="text-align: left; margin-bottom: 25px; background: var(--input-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <a href="tel:01611217002" style="color: var(--text); display: block; margin-bottom: 10px; text-decoration: none; font-weight:bold;"><i class="fas fa-phone-alt" style="color: var(--green); width:25px;"></i> 01611217002</a>
             <a href="mailto:alfurkan128779@gmail.com" style="color: var(--text); text-decoration: none; font-weight:bold;"><i class="fas fa-envelope" style="color: var(--red); width:25px;"></i> alfurkan128779@gmail.com</a>
         </div>
         <a href="https://www.facebook.com/al.furkan.900388/" target="_blank" style="display: block; background: #1877F2; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; text-align: center;">
-            <i class="fab fa-facebook-f"></i> ফেসবুক
+            <i class="fab fa-facebook-f"></i> Facebook
         </a>
     </div>
 </div>
 <script>
     const _g = i => document.getElementById(i), _GC = { u: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse", e: { l: "entry.1297680054", t: "entry.1063190250", w: "entry.1750728196", a: "entry.1447012889", d: "entry.1811044011", c: "entry.1936188665", cw: "entry.485794403", tw: "entry.2044623366", b: "entry.1306091940", ec: "entry.1212502821" } };
-    let _p = { "bn": { "নমুনা ১": "ঢাকা কলেজের গণিত বিভাগের ছাত্ররা অত্যন্ত পরিশ্রমী। টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।" }, "en": { "Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student." } };
+    let _p = { "bn": { "নমুনা ১": "টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।" }, "en": { "Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student." } };
     let _t1, _t2, _t3, _iP = !1, _hS = !1, _wL = [], _lK = 0, _iTT = 0, _bC = 0, _hC = null, _iAR = !1, _cHF = 7;
 
     const _nT = t => !t ? "" : t.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'").replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"').replace(/\s+/g, ' ').trim();
