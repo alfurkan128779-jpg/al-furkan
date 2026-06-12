@@ -94,6 +94,7 @@
     
     select, input, textarea { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; outline: none; transition: 0.3s; }
     select:focus, input:focus, textarea:focus { border-color: var(--blue); background: var(--input-focus); box-shadow: 0 0 15px var(--blue); transform: scale(1.01); }
+    select:disabled { opacity: 0.5; cursor: not-allowed; }
     
     button { padding: 12px 25px; border: 1px solid transparent; border-radius: 8px; background: var(--btn-bg); color: var(--btn-text); cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 10px var(--btn-shadow); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     button:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 0 15px var(--blue), 0 0 25px var(--blue); }
@@ -141,6 +142,7 @@
     .toast-msg { background: var(--toast-bg); backdrop-filter: blur(16px); color: var(--blue); padding: 20px 45px; border-radius: 15px; font-size: 20px; font-weight: bold; box-shadow: var(--glass-shadow); border: 1px solid var(--border); border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px; opacity: 0; transform: translate(-50%, -60%) scale(0.8); transition: all 0.5s; position: absolute; white-space: nowrap; }
     .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
+    /* CSS Specificity Fix for Bijoy */
     .bijoy-font, .bijoy-font * { font-family: 'SutonnyMJ', 'SutonnyOMJ', sans-serif !important; font-size: 24px !important; }
 </style>
 </head>
@@ -189,7 +191,7 @@
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
                 <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফট ওয়ার্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
+                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select" onchange="_lPL()"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফট ওয়ার্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
@@ -208,6 +210,7 @@
         <div id="source-box"></div>
         <textarea id="input-area" placeholder="টাইপ শুরু করার সাথে সাথে সময় গণনা শুরু হবে..."></textarea>
     </div>
+
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
             <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
@@ -229,9 +232,10 @@
         <div id="guest-promo-section" style="display: none; padding: 25px; text-align: center; border: 1px solid var(--border); background: var(--glass-bg); margin-top:30px; border-radius:12px;"><h3 style="color: var(--blue); margin-bottom:15px;">আপনার স্পিড অসাধারণ!</h3><button id="promo-login-btn" style="background:var(--input-bg); color:var(--text); border:1px solid var(--border);"><img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:24px;"> গুগল দিয়ে লগইন করুন</button></div>
         <div style="text-align:center;margin-top:40px;"><button onclick="_sV('home-view')" style="padding:12px 40px;"><i class="fas fa-redo"></i> নতুন টেস্ট দিন</button></div>
     </div>
+    
     <div id="leaderboard-view" class="view-section">
         <h2 style="color: var(--navy-blue); margin-bottom:16px;"><i class="fas fa-crown" style="color: var(--blue);"></i> গ্লোবাল টপ ২০</h2>
-        <select id="leaderboard-lang-select" onchange="_rL()" style="max-width:300px; margin-bottom:20px;"><option value="bn">বাংলা</option><option value="en">English</option></select>
+        <select id="leaderboard-lang-select" onchange="_rL()" style="max-width:300px; margin-bottom:20px;"><option value="bn">বাংলা</option><option value="en">English</option><option value="bj">বিজয় (ANSI)</option></select>
         <table id="leaderboard-table"></table>
     </div>
 
@@ -242,7 +246,7 @@
         </div>
         <div class="settings-card" style="margin-bottom:20px;">
             <input type="hidden" id="edit-original-title">
-            <select id="db-lang"><option value="bn">বাংলা</option><option value="en">English</option></select>
+            <select id="db-lang"><option value="bn">বাংলা</option><option value="en">English</option><option value="bj">বিজয় (ANSI)</option></select>
             <input type="text" id="db-title" placeholder="শিরোনাম" style="margin-top:10px;">
             <textarea id="db-body" rows="5" placeholder="অনুচ্ছেদ..." style="margin-top:10px; margin-bottom:10px;"></textarea>
             <div style="text-align:right;"><button onclick="_sP()">সংরক্ষণ করুন</button></div>
@@ -272,7 +276,6 @@
         <div class="error-bar-list" id="ea-bar-list"></div><div id="ea-detail-table"></div>
     </div>
 </div>
-
 <div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
     <div style="background: var(--glass-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 400px; position: relative; text-align:center;">
         <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size:22px;" onclick="_cCM()"></i>
@@ -288,7 +291,14 @@
 </div>
 <script>
     const _g = i => document.getElementById(i), _GC = { u: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse", e: { l: "entry.1297680054", t: "entry.1063190250", w: "entry.1750728196", a: "entry.1447012889", d: "entry.1811044011", c: "entry.1936188665", cw: "entry.485794403", tw: "entry.2044623366", b: "entry.1306091940", ec: "entry.1212502821" } };
-    let _p = { "bn": { "নমুনা ১": "টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।" }, "en": { "Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student." } };
+    
+    // Database 'bj' is added for Bijoy
+    let _p = { 
+        "bn": { "নমুনা ১": "টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।" }, 
+        "en": { "Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student." },
+        "bj": { "বিজয় নমুনা": "UvBwcs `ÿZv eZ©gvb hy‡M miKvwi PvKwii Rb¨ Ab¨Zg cÖavb kZ©|" } 
+    };
+    
     let _t1, _t2, _t3, _iP = !1, _hS = !1, _wL = [], _lK = 0, _iTT = 0, _bC = 0, _hC = null, _iAR = !1, _cHF = 7;
 
     const _nT = t => !t ? "" : t.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'").replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"').replace(/\s+/g, ' ').trim();
@@ -298,42 +308,6 @@
     const _mK = t => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
     const _yK = t => String(new Date(t).getFullYear());
     const _bD = t => new Date(t).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
-
-    function _u2b(str) {
-        if (!str) return "";
-        let t = str.replace(/য়/g,'য়').replace(/ড়/g,'ড়').replace(/ঢ়/g,'ঢ়')
-                 .replace(/০/g,'0').replace(/১/g,'1').replace(/২/g,'2').replace(/৩/g,'3').replace(/৪/g,'4')
-                 .replace(/৫/g,'5').replace(/৬/g,'6').replace(/৭/g,'7').replace(/৮/g,'8').replace(/৯/g,'9');
-        t = t.replace(/ো/g,'ো').replace(/ৌ/g,'ৌ');
-        let c = '[ক-হড়ঢ়য়ৎংঃঁ]';
-        let cl = '((?:' + c + '্)*' + c + ')(?![্])';
-        t = t.replace(new RegExp(cl + 'ে', 'g'), 'ে$1')
-             .replace(new RegExp(cl + 'ৈ', 'g'), 'ৈ$1')
-             .replace(new RegExp(cl + 'ি', 'g'), 'ি$1')
-             .replace(new RegExp('র্' + cl, 'g'), 'র্$1');
-        
-        let d = {
-            'ক্ষ':'ÿ','জ্ঞ':'Á','ঞ্জ':'Ä','ঞ্চ':'Â','ঙ্গ':'½','ঙ্ক':'¼','ষ্ঠ':'ô','স্থ':'¯’',
-            'স্প':'¯ú','স্ফ':'¯—','স্ক':'¯‹','স্খ':'¯Œ','স্ট':'÷','স্ন':'¯œ','স্ম':'¯§','স্ল':'¯ø','স্ব':'¯^',
-            'ন্ত':'š—','ন্দ':'›`','ন্ধ':'Ü','ম্প':'¤ú','ম্ব':'¤^','ম্ম':'¤§','ন্ট':'›U','ন্ড':'Û',
-            'ত্ত':'Ë','ত্ব':'Z¡','থ্ব':'_¡','দ্ব':'Ø','দ্ধ':'×','দ্ম':'Ù','ধ্ব':'aŸ','ব্দ':'ã','ব্ধ':'ä',
-            'ক্ট':'±','ক্র':'µ','ক্ল':'K¬','ক্ক':'°','ক্স':'·','গ্ল':'M¬','গ্র':'MÖ',
-            'ট্ট':'Æ','ড্ড':'Ç','প্ন':'cœ','প্প':'à','প্ল':'cø','প্র':'cÖ','ফ্ল':'d¬','ফ্র':'d«',
-            'ব্ল':'eø','ব্র':'e«','ভ্র':'å','ম্ল':'gø','ম্ন':'gœ','ল্ক':'é','ল্গ':'ê','ল্ট':'ë','ল্ড':'ì','ল্প':'í','ল্ম':'¥','ল্ল':'jø',
-            'শু':'ï','শ্র':'kÖ','শ্ব':'k¦','ষ্ণ':'ò','ষ্ট':'ó','হু':'û','হৃ':'ü','হ্ন':'ý','হ্ম':'þ','হ্য':'n¨',
-            'ত্র':'Î','রু':'iæ','রূ':'iƒ','গু':'¸','শ্ন':'kœ','শ্ল':'kø','শ্ম':'k§','ষ্প':'®ú','ষ্ফ':'®—','ষ্ক':'®‹','ষ্ম':'®§',
-            'ঙ্খ':'L•','ঙ্ঘ':'N•','চ্চ':'”P','চ্ছ':'”Q','জ্জ':'¾','জ্ঝ':'T¨','ত্থ':'त्থ','দ্দ':'Ï','ন্ন':'bœ','ব্ব':'eŸ','য্য':'h¨',
-            'র্':'©','্য':'¨','্র':'Ö',
-            'া':'v','ি':'w','ী':'x','ু':'y','ূ':'z','ৃ':'{','ে':'†','ৈ':'‡','ৗ':'Š','্':'`',
-            'অ':'A','আ':'Av','ই':'B','ঈ':'C','উ':'D','ঊ':'E','ঋ':'F','এ':'G','ঐ':'H','ও':'I','ঔ':'J',
-            'ক':'K','খ':'L','গ':'M','ঘ':'N','ঙ':'O','চ':'P','ছ':'Q','জ':'R','ঝ':'S','ঞ':'T',
-            'ট':'U','ঠ':'V','ড':'W','ঢ':'X','ণ':'Y','ত':'Z','থ':'_','দ':'`','ধ':'a','ন':'b',
-            'প':'c','ফ':'d','ব':'e','ভ':'f','ম':'g','য':'h','র':'i','ল':'j','শ':'k','ষ':'l','স':'m','হ':'n',
-            'ড়':'o','ঢ়':'p','য়':'q','ৎ':'r','ং':'s','ঃ':'t','ঁ':'u'
-        };
-        for (let k in d) t = t.split(k).join(d[k]);
-        return t;
-    }
 
     function _sTo(m) { const c = _g('toast-container'), t = document.createElement('div'); t.className = 'toast-msg'; t.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> ${m}`; c.appendChild(t); setTimeout(() => t.classList.add('show'), 50); setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 500); }, 2500); }
     function _aV(o, s, e, d, x = "") { let t = null; const p = m => { if (!t) t = m; const r = Math.min((m - t) / d, 1), c = (r * (2 - r) * (e - s) + s); o.innerText = Number.isInteger(e) ? Math.floor(c) + x : c.toFixed(1) + x; if (r < 1) window.requestAnimationFrame(p); else o.innerText = e + x; }; window.requestAnimationFrame(p); }
@@ -352,30 +326,63 @@
         if (savedTheme === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); _g('theme-icon').className = 'fas fa-sun theme-switch'; }
         const i = localStorage.getItem('furqan_sync_on') === 'true'; _g('gs-sync-enabled').checked = i; _uSS(i); 
     };
-    window.addEventListener('app-ready', async () => { if (_iAR) return; _iAR = !0; if (window.syncGlobalParagraphs) { const g = await window.syncGlobalParagraphs(); if (g && (Object.keys(g.bn).length > 0 || Object.keys(g.en).length > 0)) _p = g; _lPL(); } });
+    
+    window.addEventListener('app-ready', async () => { 
+        if (_iAR) return; _iAR = !0; 
+        if (window.syncGlobalParagraphs) { 
+            const g = await window.syncGlobalParagraphs(); 
+            if (g) {
+                if(g.bn) _p.bn = g.bn;
+                if(g.en) _p.en = g.en;
+                if(g.bj) _p.bj = g.bj;
+            } 
+            _lPL(); 
+        } 
+    });
 
-    _g('skip-login-btn').addEventListener('click', () => { window.isGuest = !0; _g('auth-section').style.display = "none"; _g('main-app').style.display = "block"; alert("লগইন ছাড়া হিস্টোরি সেভ হবে না।"); if (!_iAR) window.dispatchEvent(new Event('app-ready')); });
+    _g('skip-login-btn').addEventListener('click', () => { window.isGuest = !0; _g('auth-section').style.display = "none"; _g('main-app').style.display = "block"; alert("লগইন ছাড়া হিস্টোরি সেভ হবে উল্লেখযোগ্য না।"); if (!_iAR) window.dispatchEvent(new Event('app-ready')); });
     function _tM() { _g('main-menu').classList.toggle('active'); }
     function _sCM() { _g('contact-modal').style.display = 'flex'; _g('main-menu').classList.remove('active'); }
     function _cCM() { _g('contact-modal').style.display = 'none'; }
     document.addEventListener('click', e => { if (!e.target.closest('.menu-container')) _g('main-menu').classList.remove('active'); });
 
     function _sV(v) { document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active-view')); _g(v).classList.add('active-view'); _g('main-menu').classList.remove('active'); if (v === 'database-view') _rDL(); if (v === 'leaderboard-view') _rL(); if (v === 'history-view') _rHV(_cHF); if (v === 'error-view') _rEA(); }
-    function _lPL() { const l = _g('lang-select').value, s = _g('para-select'); s.innerHTML = Object.keys(_p[l]).map(t => `<option value="${_eH(t)}">${_eH(t)}</option>`).join(''); }
+    
+    // Dynamic Paragraph Loader Logic (Separates Bijoy and Unicode)
+    function _lPL() { 
+        const diff = _g('difficulty-select').value;
+        const l = diff === 'word' ? 'bj' : _g('lang-select').value;
+        
+        if (diff === 'word') {
+            _g('lang-select').disabled = true;
+        } else {
+            _g('lang-select').disabled = false;
+        }
+        
+        const s = _g('para-select'); 
+        s.innerHTML = Object.keys(_p[l] || {}).map(t => `<option value="${_eH(t)}">${_eH(t)}</option>`).join(''); 
+    }
+
     function _tS() { const i = _g('gs-sync-enabled').checked; localStorage.setItem('furqan_sync_on', i); _uSS(i); _sTo(i ? "অনলাইন সিঙ্ক চালু হয়েছে" : "বন্ধ হয়েছে"); }
     function _uSS(i) { const s = _g('sync-status'); s.innerText = i ? "সক্রিয়" : "বন্ধ"; s.style.color = i ? "var(--green)" : "var(--red)"; }
 
     function _iT() { 
-        const l = _g('lang-select').value, t = _g('para-select').value; 
+        const diff = _g('difficulty-select').value;
+        const l = diff === 'word' ? 'bj' : _g('lang-select').value;
+        const t = _g('para-select').value; 
+        
         if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); 
-        let rw = _nT(_p[l][t]).split(/\s+/);
-        const isWord = _g('difficulty-select').value === 'word';
-        _wL = isWord ? rw.map(w => _u2b(w)) : rw;
+        
+        _wL = _nT(_p[l][t]).split(/\s+/); // No Converter! Direct String Match
+        const isWord = diff === 'word';
+        
         _t3 = parseInt(_g('time-select').value); _t2 = _t3; _iP = !1; _hS = !1; _bC = 0; _iTT = 0; 
         _g('source-box').innerHTML = _wL.map((w, i) => `<span class="word" id="w-${i}">${_eH(w)}</span>`).join(''); 
         const a = _g('input-area'); a.value = ""; a.disabled = !1; clearInterval(_t1); _uTUI(); 
+        
         if(isWord) { _g('source-box').classList.add('bijoy-font'); a.classList.add('bijoy-font'); } 
         else { _g('source-box').classList.remove('bijoy-font'); a.classList.remove('bijoy-font'); }
+        
         _sV('typing-view'); setTimeout(() => a.focus(), 100); 
     }
     
@@ -398,7 +405,22 @@
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
-    function _sT() { clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); let cc = 0, cw = 0, e = 0, se = []; t.forEach((w, i) => { if (i < _wL.length) { if (_nT(w) === _nT(_wL[i])) { cc += w.length; cw++; } else { e++; se.push({ expected: _wL[i], typed: w }); } } }); const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp, res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: _g('lang-select').value === 'bn' ? 'Bangla' : 'English', title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; _sR(res); _dR(res, t); }
+    function _sT() { 
+        clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
+        let cc = 0, cw = 0, e = 0, se = []; 
+        t.forEach((w, i) => { 
+            if (i < _wL.length) { 
+                if (_nT(w) === _nT(_wL[i])) { cc += w.length; cw++; } 
+                else { e++; se.push({ expected: _wL[i], typed: w }); } 
+            } 
+        }); 
+        const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp;
+        
+        let rLang = _g('difficulty-select').value === 'word' ? 'Bijoy (ANSI)' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
+        
+        const res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: rLang, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; 
+        _sR(res); _dR(res, t); 
+    }
     
     function _sR(d) { let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); h.push(d); localStorage.setItem('furqan_history_v2', JSON.stringify(h)); if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); if (localStorage.getItem('furqan_sync_on') === 'true') { const f = new FormData(); f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); } }
     
@@ -407,7 +429,7 @@
         _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); 
         _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); 
         _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); 
-        const f = _g('dynamic-feedback'), b = d.lang === 'Bangla' ? 30 : 35; 
+        const f = _g('dynamic-feedback'), b = d.lang === 'Bangla' || d.lang === 'Bijoy (ANSI)' ? 30 : 35; 
         if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } 
         else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
         
@@ -423,10 +445,10 @@
     }
 
     async function _sP() { const l = _g('db-lang').value, t = _g('db-title').value.trim(), b = _nT(_g('db-body').value.trim()), o = _g('edit-original-title').value; if (!t || !b) return; if (o && o !== t) { delete _p[l][o]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, o); } _p[l][t] = b; if (window.saveGlobalParagraph) await window.saveGlobalParagraph(l, t, b); _g('db-title').value = ""; _g('db-body').value = ""; _g('edit-original-title').value = ""; _lPL(); _rDL(); _sTo("আপডেট সম্পন্ন!"); }
-    function _rDL() { const ls = _g('db-list'); ls.innerHTML = ""; ['bn', 'en'].forEach(l => { for (let t in _p[l]) { const i = document.createElement('div'); i.style.cssText = "padding:12px;background:var(--glass-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;color:var(--text);"; i.innerHTML = `<div><small style="color:var(--blue)">${l.toUpperCase()}</small><br><strong>${t}</strong></div><div style='display:flex;gap:8px;'><button class='btn-sm' onclick="_eP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--blue); color:var(--btn-text); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button><button class='btn-sm' onclick="_dP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Del</button></div>`; ls.appendChild(i); } }); }
+    function _rDL() { const ls = _g('db-list'); ls.innerHTML = ""; ['bn', 'en', 'bj'].forEach(l => { if(!_p[l]) return; for (let t in _p[l]) { const i = document.createElement('div'); i.style.cssText = "padding:12px;background:var(--glass-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;color:var(--text);"; i.innerHTML = `<div><small style="color:var(--blue)">${l.toUpperCase()}</small><br><strong class="${l === 'bj' ? 'bijoy-font' : ''}">${t}</strong></div><div style='display:flex;gap:8px;'><button class='btn-sm' onclick="_eP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--blue); color:var(--btn-text); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button><button class='btn-sm' onclick="_dP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Del</button></div>`; ls.appendChild(i); } }); }
     function _eP(l, t) { _g('db-lang').value = l; _g('db-title').value = t; _g('db-body').value = _p[l][t]; _g('edit-original-title').value = t; window.scrollTo({ top: 0, behavior: 'smooth' }); }
     async function _dP(l, t) { if (confirm("ডিলিট করবেন?")) { delete _p[l][t]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); _rDL(); _lPL(); _sTo("ডিলিট করা হয়েছে!"); } }
-    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : h.lang === 'en' || h.lang === 'English')).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকর্ড নেই</td></tr>"); }
+    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : (l === 'en' ? h.lang === 'en' || h.lang === 'English' : h.lang === 'Bijoy (ANSI)'))).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকর্ড নেই</td></tr>"); }
 
     function _sHF(e, d) { document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); e.classList.add('active'); _cHF = d; _rHV(d); }
     function _rHV(d) { const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"), n = new Date(), tk = _dK(n), mk = _mK(n), yk = _yK(n); let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0; h.forEach(x => { const ht = x.timestamp || Date.now(), dk = _dK(ht), mck = _mK(ht), yck = _yK(ht), du = x.duration || 0; tt += du; if (dk === tk) { td += du; ts++; } if (mck === mk) { md += du; ms++; } if (yck === yk) { yd += du; ys++; } }); _g('h-today-time').innerText = _fD(td); _g('h-today-sessions').innerText = `${ts} টি সেশন`; _g('h-month-time').innerText = _fD(md); _g('h-month-sessions').innerText = `${ms} টি সেশন`; _g('h-year-time').innerText = _fD(yd); _g('h-year-sessions').innerText = `${ys} টি সেশন`; _g('h-total-time').innerText = _fD(tt); _g('h-total-sessions').innerText = `${h.length} টি সেশন`; _rHC(h, d); _rHT(h); }
