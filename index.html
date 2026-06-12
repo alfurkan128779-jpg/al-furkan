@@ -79,17 +79,14 @@
     .error-summary-grid { grid-template-columns: repeat(3, 1fr); }
     @media (max-width: 768px) { .settings-grid, .stats-grid, .time-summary-grid, .error-summary-grid { grid-template-columns: 1fr; } }
     
-    /* লেবেল এবং আইকন অ্যানিমেশনের জন্য সিএসএস */
     label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: bold; color: var(--navy-blue); }
     .form-group label i { font-size: 18px; color: var(--blue); transition: all 0.3s ease; }
     
-    /* হোভার করলে আইকনের হালকা অ্যানিমেশন */
     .form-group:hover label i.fa-language { animation: pulseLight 1s infinite; color: var(--purple); }
     .form-group:hover label i.fa-file-alt { animation: bounceLight 1s infinite; color: var(--orange); }
     .form-group:hover label i.fa-hourglass-half { animation: spinSlow 2s linear infinite; color: var(--red); }
     .form-group:hover label i.fa-layer-group { animation: wobbleLight 1s infinite; color: var(--green); }
     
-    /* লাইটওয়েট সিএসএস কীফ্রেম অ্যানিমেশন */
     @keyframes pulseLight { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     @keyframes bounceLight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
     @keyframes spinSlow { 100% { transform: rotate(180deg); } }
@@ -143,6 +140,8 @@
     .toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; }
     .toast-msg { background: var(--toast-bg); backdrop-filter: blur(16px); color: var(--blue); padding: 20px 45px; border-radius: 15px; font-size: 20px; font-weight: bold; box-shadow: var(--glass-shadow); border: 1px solid var(--border); border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px; opacity: 0; transform: translate(-50%, -60%) scale(0.8); transition: all 0.5s; position: absolute; white-space: nowrap; }
     .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    .bijoy-font { font-family: 'SutonnyMJ', 'SutonnyOMJ', sans-serif !important; font-size: 24px !important; }
 </style>
 </head>
 <body>
@@ -190,7 +189,7 @@
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
                 <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option></select></div>
+                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফট ওয়ার্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
@@ -300,6 +299,42 @@
     const _yK = t => String(new Date(t).getFullYear());
     const _bD = t => new Date(t).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
 
+    function _u2b(str) {
+        if (!str) return "";
+        let t = str.replace(/য়/g,'য়').replace(/ড়/g,'ড়').replace(/ঢ়/g,'ঢ়')
+                 .replace(/০/g,'0').replace(/১/g,'1').replace(/২/g,'2').replace(/৩/g,'3').replace(/৪/g,'4')
+                 .replace(/৫/g,'5').replace(/৬/g,'6').replace(/৭/g,'7').replace(/৮/g,'8').replace(/৯/g,'9');
+        t = t.replace(/ো/g,'ো').replace(/ৌ/g,'ৌ');
+        let c = '[ক-হড়ঢ়য়ৎংঃঁ]';
+        let cl = '((?:' + c + '্)*' + c + ')(?![্])';
+        t = t.replace(new RegExp(cl + 'ে', 'g'), 'ে$1')
+             .replace(new RegExp(cl + 'ৈ', 'g'), 'ৈ$1')
+             .replace(new RegExp(cl + 'ি', 'g'), 'ি$1')
+             .replace(new RegExp('র্' + cl, 'g'), 'র্$1');
+        
+        let d = {
+            'ক্ষ':'ÿ','জ্ঞ':'Á','ঞ্জ':'Ä','ঞ্চ':'Â','ঙ্গ':'½','ঙ্ক':'¼','ষ্ঠ':'ô','স্থ':'¯’',
+            'স্প':'¯ú','স্ফ':'¯—','স্ক':'¯‹','স্খ':'¯Œ','স্ট':'÷','স্ন':'¯œ','স্ম':'¯§','স্ল':'¯ø','স্ব':'¯^',
+            'ন্ত':'š—','ন্দ':'›`','ন্ধ':'Ü','ম্প':'¤ú','ম্ব':'¤^','ম্ম':'¤§','ন্ট':'›U','ন্ড':'Û',
+            'ত্ত':'Ë','ত্ব':'Z¡','থ্ব':'_¡','দ্ব':'Ø','দ্ধ':'×','দ্ম':'Ù','ধ্ব':'aŸ','ব্দ':'ã','ব্ধ':'ä',
+            'ক্ট':'±','ক্র':'µ','ক্ল':'K¬','ক্ক':'°','ক্স':'·','গ্ল':'M¬','গ্র':'MÖ',
+            'ট্ট':'Æ','ড্ড':'Ç','প্ন':'cœ','প্প':'à','প্ল':'cø','প্র':'cÖ','ফ্ল':'d¬','ফ্র':'d«',
+            'ব্ল':'eø','ব্র':'e«','ভ্র':'å','ম্ল':'gø','ম্ন':'gœ','ল্ক':'é','ল্গ':'ê','ল্ট':'ë','ল্ড':'ì','ল্প':'í','ল্ম':'¥','ল্ল':'jø',
+            'শু':'ï','শ্র':'kÖ','শ্ব':'k¦','ষ্ণ':'ò','ষ্ট':'ó','হু':'û','হৃ':'ü','হ্ন':'ý','হ্ম':'þ','হ্য':'n¨',
+            'ত্র':'Î','রু':'iæ','রূ':'iƒ','গু':'¸','শ্ন':'kœ','শ্ল':'kø','শ্ম':'k§','ষ্প':'®ú','ষ্ফ':'®—','ষ্ক':'®‹','ষ্ম':'®§',
+            'ঙ্খ':'L•','ঙ্ঘ':'N•','চ্চ':'”P','চ্ছ':'”Q','জ্জ':'¾','জ্ঝ':'T¨','ত্থ':'त्থ','দ্দ':'Ï','ন্ন':'bœ','ব্ব':'eŸ','য্য':'h¨',
+            'র্':'©','্য':'¨','্র':'Ö',
+            'া':'v','ি':'w','ী':'x','ু':'y','ূ':'z','ৃ':'{','ে':'†','ৈ':'‡','ৗ':'Š','্':'`',
+            'অ':'A','আ':'Av','ই':'B','ঈ':'C','উ':'D','ঊ':'E','ঋ':'F','এ':'G','ঐ':'H','ও':'I','ঔ':'J',
+            'ক':'K','খ':'L','গ':'M','ঘ':'N','ঙ':'O','চ':'P','ছ':'Q','জ':'R','ঝ':'S','ঞ':'T',
+            'ট':'U','ঠ':'V','ড':'W','ঢ':'X','ণ':'Y','ত':'Z','থ':'_','দ':'`','ধ':'a','ন':'b',
+            'প':'c','ফ':'d','ব':'e','ভ':'f','ম':'g','য':'h','র':'i','ল':'j','শ':'k','ষ':'l','স':'m','হ':'n',
+            'ড়':'o','ঢ়':'p','য়':'q','ৎ':'r','ং':'s','ঃ':'t','ঁ':'u'
+        };
+        for (let k in d) t = t.split(k).join(d[k]);
+        return t;
+    }
+
     function _sTo(m) { const c = _g('toast-container'), t = document.createElement('div'); t.className = 'toast-msg'; t.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> ${m}`; c.appendChild(t); setTimeout(() => t.classList.add('show'), 50); setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 500); }, 2500); }
     function _aV(o, s, e, d, x = "") { let t = null; const p = m => { if (!t) t = m; const r = Math.min((m - t) / d, 1), c = (r * (2 - r) * (e - s) + s); o.innerText = Number.isInteger(e) ? Math.floor(c) + x : c.toFixed(1) + x; if (r < 1) window.requestAnimationFrame(p); else o.innerText = e + x; }; window.requestAnimationFrame(p); }
     function _aR(i, t, c, s = "%") { let r = _g(i), v = r.querySelector('.circle-value'), p = 0, d = t / (1500 / 16); let n = setInterval(() => { p += d; if (p >= t) { p = t; clearInterval(n); } r.style.background = `conic-gradient(${c} ${p}%, rgba(128,128,128,0.1) ${p}%)`; v.innerText = Math.floor(p) + s; }, 16); }
@@ -330,7 +365,19 @@
     function _tS() { const i = _g('gs-sync-enabled').checked; localStorage.setItem('furqan_sync_on', i); _uSS(i); _sTo(i ? "অনলাইন সিঙ্ক চালু হয়েছে" : "বন্ধ হয়েছে"); }
     function _uSS(i) { const s = _g('sync-status'); s.innerText = i ? "সক্রিয়" : "বন্ধ"; s.style.color = i ? "var(--green)" : "var(--red)"; }
 
-    function _iT() { const l = _g('lang-select').value, t = _g('para-select').value; if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); _wL = _nT(_p[l][t]).split(/\s+/); _t3 = parseInt(_g('time-select').value); _t2 = _t3; _iP = !1; _hS = !1; _bC = 0; _iTT = 0; _g('source-box').innerHTML = _wL.map((w, i) => `<span class="word" id="w-${i}">${_eH(w)}</span>`).join(''); const a = _g('input-area'); a.value = ""; a.disabled = !1; clearInterval(_t1); _uTUI(); _sV('typing-view'); setTimeout(() => a.focus(), 100); }
+    function _iT() { 
+        const l = _g('lang-select').value, t = _g('para-select').value; 
+        if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); 
+        let rw = _nT(_p[l][t]).split(/\s+/);
+        const isWord = _g('difficulty-select').value === 'word';
+        _wL = isWord ? rw.map(w => _u2b(w)) : rw;
+        _t3 = parseInt(_g('time-select').value); _t2 = _t3; _iP = !1; _hS = !1; _bC = 0; _iTT = 0; 
+        _g('source-box').innerHTML = _wL.map((w, i) => `<span class="word" id="w-${i}">${_eH(w)}</span>`).join(''); 
+        const a = _g('input-area'); a.value = ""; a.disabled = !1; clearInterval(_t1); _uTUI(); 
+        if(isWord) { _g('source-box').classList.add('bijoy-font'); a.classList.add('bijoy-font'); } 
+        else { _g('source-box').classList.remove('bijoy-font'); a.classList.remove('bijoy-font'); }
+        _sV('typing-view'); setTimeout(() => a.focus(), 100); 
+    }
     
     _g('input-area').addEventListener('input', e => { 
         if (_iP) return; 
@@ -363,10 +410,14 @@
         const f = _g('dynamic-feedback'), b = d.lang === 'Bangla' ? 30 : 35; 
         if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } 
         else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
+        
         let rh = ""; 
+        const isWordLvl = _g('difficulty-select').value === 'word';
+        let wrap = txt => isWordLvl ? `<span class="bijoy-font">${txt}</span>` : txt;
+
         _wL.forEach((o, i) => { 
-            if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${o}</span> ` : `<span class="res-error">${t[i] || '—'}<small>সঠিক: ${o}</small></span> `; 
-            else rh += `<span class="res-missed">${o}</span> `; 
+            if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${wrap(o)}</span> ` : `<span class="res-error">${wrap(t[i] || '—')}<small>সঠিক: ${wrap(o)}</small></span> `; 
+            else rh += `<span class="res-missed">${wrap(o)}</span> `; 
         }); 
         _g('result-text-review').innerHTML = rh; 
     }
