@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফ্রিতে টাইপ চর্চা</title>
+    <title>প্রো—টাইপ চর্চা</title>
     <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -191,7 +191,7 @@
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
                 <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select" onchange="_lPL()"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফট ওয়ার্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
+                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select" onchange="_lPL()"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফটোর্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
@@ -213,7 +213,7 @@
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
             <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
-            <div id="dynamic-feedback" style="font-size:32px; font-weight:bold; margin:10px 0;"></div>
+            <div id="dynamic-feedback" style="font-size:24px; font-weight:bold; margin:10px 0; line-height: 1.5;"></div>
         </div>
         <div class="stats-grid">
             <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="৫ ক্যারেক্টার = ১ শব্দ">স্পেস ছাড়া প্রতি ৫ ক্যারেক্টারে ১ স্ট্রোক</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
@@ -282,13 +282,13 @@
         </div>
         <table id="telemetry-table"></table>
     </div>
-
 </div>
 
 <div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
     <div style="background: var(--glass-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 400px; position: relative; text-align:center;">
         <i class="fas fa-times" style="position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size:22px;" onclick="_cCM()"></i>
-        <h3 style="color: var(--navy-blue);"> MD: AL FURKAN</h3><p style="color: var(--text); margin-bottom: 20px;">Creator & Developer</p>
+        <h3 style="color: var(--navy-blue);"> MD: AL FURKAN</h3>
+        <p style="color: var(--text); margin-bottom: 20px; font-weight: bold; color: var(--blue);">Designer and Administrator</p>
         <div style="text-align: left; margin-bottom: 25px; background: var(--input-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <a href="tel:01611217002" style="color: var(--text); display: block; margin-bottom: 10px; text-decoration: none; font-weight:bold;"><i class="fas fa-phone-alt" style="color: var(--green); width:25px;"></i> 01611217002</a>
             <a href="mailto:alfurkan128779@gmail.com" style="color: var(--text); text-decoration: none; font-weight:bold;"><i class="fas fa-envelope" style="color: var(--red); width:25px;"></i> alfurkan128779@gmail.com</a>
@@ -369,9 +369,7 @@
         window.isGuest = !0; 
         if(!localStorage.getItem('furqan_guest_id')) localStorage.setItem('furqan_guest_id', 'Guest_' + Math.floor(Math.random()*10000));
         window.guestId = localStorage.getItem('furqan_guest_id');
-        
         if(window.logUserEvent) window.logUserEvent("লগইন স্কিপ করে প্রবেশ করেছে");
-        
         _g('auth-section').style.display = "none"; 
         _g('main-app').style.display = "block"; 
         alert("লগইন ছাড়া হিস্টোরি সেভ হবে না।"); 
@@ -407,29 +405,21 @@
 
     function _iT(fB = !1) { 
         const diff = _g('difficulty-select').value;
-        
         if (diff === 'word' && !fB) {
             _g('bijoy-warning-modal').style.display = 'flex';
             return;
         }
-
         const l = diff === 'word' ? 'bj' : _g('lang-select').value;
         const t = _g('para-select').value; 
-        
         if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); 
-        
         if(window.logUserEvent) window.logUserEvent("টেস্ট শুরু করেছে", `লেভেল: ${diff}, অনুচ্ছেদ: ${t}`);
-
         _wL = _nT(_p[l][t]).split(/\s+/); 
         const isWord = diff === 'word';
-        
         _t3 = parseInt(_g('time-select').value); _t2 = _t3; _iP = !1; _hS = !1; _bC = 0; _iTT = 0; 
         _g('source-box').innerHTML = _wL.map((w, i) => `<span class="word" id="w-${i}">${_eH(w)}</span>`).join(''); 
         const a = _g('input-area'); a.value = ""; a.disabled = !1; clearInterval(_t1); _uTUI(); 
-        
         if(isWord) { _g('source-box').classList.add('bijoy-font'); a.classList.add('bijoy-font'); } 
         else { _g('source-box').classList.remove('bijoy-font'); a.classList.remove('bijoy-font'); }
-        
         _sV('typing-view'); setTimeout(() => a.focus(), 100); 
     }
     
@@ -438,7 +428,6 @@
     _g('input-area').addEventListener('cut', e => e.preventDefault());
     _g('input-area').addEventListener('drop', e => e.preventDefault());
 
-    // অ্যান্টি-ট্যাব চিট ব্লক
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && _hS && !_iP) {
             _tP();
@@ -447,7 +436,6 @@
         }
     });
 
-    // রাইট ক্লিক ও সোর্স কোড ব্লক
     document.addEventListener('contextmenu', e => { e.preventDefault(); _sTo("রাইট ক্লিক করা নিষেধ!"); });
 
     _g('input-area').addEventListener('input', e => { 
@@ -471,38 +459,91 @@
 
     function _sT() { 
         clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
-        let cc = 0, cw = 0, e = 0, se = []; 
+        let cc = 0, cw = 0, e = 0, se = [], consecutiveMiss = 0, maxConsecutiveMiss = 0; 
+        
         t.forEach((w, i) => { 
             if (i < _wL.length) { 
-                if (_nT(w) === _nT(_wL[i])) { cc += w.length; cw++; } 
-                else { e++; se.push({ expected: _wL[i], typed: w }); } 
+                if (_nT(w) === _nT(_wL[i])) { 
+                    cc += w.length; cw++; 
+                    consecutiveMiss = 0;
+                } 
+                else { 
+                    e++; 
+                    se.push({ expected: _wL[i], typed: w }); 
+                    consecutiveMiss++;
+                    if(consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
+                } 
             } 
         }); 
-        const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp;
         
-        let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
-        
-        if(window.logUserEvent) window.logUserEvent("টেস্ট শেষ করেছে", `স্পিড: ${sw} WPM, নির্ভুলতা: ${ra.toFixed(1)}%`);
+        if(_wL.length > t.length) {
+            let extraMiss = _wL.length - t.length;
+            if(consecutiveMiss + extraMiss > maxConsecutiveMiss) {
+                maxConsecutiveMiss = consecutiveMiss + extraMiss;
+            }
+        }
 
+        const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp;
+        let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
+        if(window.logUserEvent) window.logUserEvent("টেস্ট শেষ করেছে", `স্পিড: ${sw} WPM, নির্ভুলতা: ${ra.toFixed(1)}%`);
         const res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: rLang, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; 
-        _sR(res); _dR(res, t); 
+        _sR(res); 
+        _dR(res, t, maxConsecutiveMiss); 
     }
     
     function _sR(d) { let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); h.push(d); localStorage.setItem('furqan_history_v2', JSON.stringify(h)); if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); if (localStorage.getItem('furqan_sync_on') === 'true') { const f = new FormData(); f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); } }
     
-    function _dR(d, t) { 
+    function _dR(d, t, maxMiss) { 
         _sV('result-view'); _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
         _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); 
         _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); 
         _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); 
-        const f = _g('dynamic-feedback'), b = d.lang === 'Bangla' || d.lang === 'Bijoy (ANSI)' ? 30 : 35; 
-        if (d.wpm >= b) { f.innerText = "☀️চ্যাম্পিয়ন!☀️"; f.style.color = "var(--green)"; confetti({ particleCount: 150 }); } 
-        else { f.innerText = d.wpm >= b - 10 ? "চালিয়ে যাও" : "পুনরায় চেষ্টা করো"; f.style.color = d.wpm >= b - 10 ? "var(--blue)" : "var(--red)"; } 
+        
+        const f = _g('dynamic-feedback');
+        let feedbackHTML = "";
+        let totalErrorPercent = parseFloat(d.err);
+        
+        // পাস-ফেল এবং অ্যানিমেশন কন্ডিশন নির্ধারণ লজিক
+        let hasFailed = (d.wpm < 20 || totalErrorPercent > 5.0);
+
+        if (hasFailed) {
+            // যদি ফেইল করে (গতি ২০ এর কম অথবা ভুল ৫% এর বেশি), কোনো অ্যানিমেশন হবে না, সাধারণ টেক্সট আসবে
+            if (d.wpm >= 20) {
+                feedbackHTML += `<span style="color: var(--blue);">আপনার টাইপিং গতি: ${d.wpm} WPM।</span>`;
+            } else {
+                feedbackHTML += `<span style="color: #7f8fa6;">আপনার টাইপিং গতি: ${d.wpm} WPM (গতি বৃদ্ধির জন্য আরও চর্চা প্রয়োজন)।</span>`;
+            }
+            
+            if (totalErrorPercent > 5.0) {
+                feedbackHTML += `<br><span style="color: var(--red); font-size: 18px; display:block; margin-top:8px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল! (সর্বোচ্চ ৫% ভুল গ্রহণযোগ্য)</span>`;
+            }
+        } else {
+            // যদি পাশ করে (গতি ২০+ এবং ভুল সর্বোচ্চ ৫%), শুধুমাত্র তখনই কাগজ ওড়ার ডাইনামিক অ্যানিমেশন আসবে
+            if (d.wpm >= 35) {
+                feedbackHTML += `<span style="color: var(--green);">☀️ Congratulation, You obtain speed ${d.wpm} WPM! ☀️</span>`;
+                confetti({ particleCount: 150, spread: 80 });
+            } else if (d.wpm >= 30) {
+                feedbackHTML += `<span style="color: var(--blue);">🎉 Congratulation, You obtain speed ${d.wpm} WPM! 🎉</span>`;
+                confetti({ particleCount: 90, spread: 60 });
+            } else if (d.wpm >= 25) {
+                feedbackHTML += `<span style="color: var(--orange);">✨ Congratulation, You obtain speed ${d.wpm} WPM! ✨</span>`;
+                confetti({ particleCount: 60, spread: 45 });
+            } else if (d.wpm >= 20) {
+                feedbackHTML += `<span style="color: var(--purple);">👍 Congratulation, You obtain speed ${d.wpm} WPM! 👍</span>`;
+                confetti({ particleCount: 40, spread: 35 });
+            }
+        }
+
+        // রিকোয়েস্ট অনুযায়ী লাইন গ্যাপ নোটিশটি শুধুমাত্র রেজাল্ট পেজে যুক্ত করা হয়েছে
+        if (maxMiss >= 3) {
+            feedbackHTML += `<br><span style="color: var(--orange); font-size: 16px; display:block; margin-top:5px;"><i class="fas fa-exclamation-circle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার লাইন গ্যাপ লক্ষ করা যাচ্ছে!</span>`;
+        }
+
+        f.innerHTML = feedbackHTML;
         
         let rh = ""; 
         const isWordLvl = _g('difficulty-select').value === 'word';
         let wrap = txt => isWordLvl ? `<span class="bijoy-font">${txt}</span>` : txt;
-
         _wL.forEach((o, i) => { 
             if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${wrap(o)}</span> ` : `<span class="res-error">${wrap(t[i] || '—')}<small>সঠিক: ${wrap(o)}</small></span> `; 
             else rh += `<span class="res-missed">${wrap(o)}</span> `; 
@@ -514,7 +555,7 @@
     function _rDL() { const ls = _g('db-list'); ls.innerHTML = ""; ['bn', 'en', 'bj'].forEach(l => { if(!_p[l]) return; for (let t in _p[l]) { const i = document.createElement('div'); i.style.cssText = "padding:12px;background:var(--glass-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;color:var(--text);"; i.innerHTML = `<div><small style="color:var(--blue)">${l.toUpperCase()}</small><br><strong class="${l === 'bj' ? 'bijoy-font' : ''}">${t}</strong></div><div style='display:flex;gap:8px;'><button class='btn-sm' onclick="_eP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--blue); color:var(--btn-text); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button><button class='btn-sm' onclick="_dP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Del</button></div>`; ls.appendChild(i); } }); }
     function _eP(l, t) { _g('db-lang').value = l; _g('db-title').value = t; _g('db-body').value = _p[l][t]; _g('edit-original-title').value = t; window.scrollTo({ top: 0, behavior: 'smooth' }); }
     async function _dP(l, t) { if (confirm("ডিলিট করবেন?")) { delete _p[l][t]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); _rDL(); _lPL(); _sTo("ডিলিট করা হয়েছে!"); } }
-    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : (l === 'en' ? h.lang === 'en' || h.lang === 'English' : h.lang === 'Bijoy (ANSI)'))).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকর্ড নেই</td></tr>"); }
+    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : (l === 'en' ? h.lang === 'en' || h.lang === 'English' : h.lang === 'Bijoy (ANSI)'))).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকርድ নেই</td></tr>"); }
 
     function _sHF(e, d) { document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); e.classList.add('active'); _cHF = d; _rHV(d); }
     function _rHV(d) { const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"), n = new Date(), tk = _dK(n), mk = _mK(n), yk = _yK(n); let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0; h.forEach(x => { const ht = x.timestamp || Date.now(), dk = _dK(ht), mck = _mK(ht), yck = _yK(ht), du = x.duration || 0; tt += du; if (dk === tk) { td += du; ts++; } if (mck === mk) { md += du; ms++; } if (yck === yk) { yd += du; ys++; } }); _g('h-today-time').innerText = _fD(td); _g('h-today-sessions').innerText = `${ts} টি সেশন`; _g('h-month-time').innerText = _fD(md); _g('h-month-sessions').innerText = `${ms} টি সেশন`; _g('h-year-time').innerText = _fD(yd); _g('h-year-sessions').innerText = `${ys} টি সেশন`; _g('h-total-time').innerText = _fD(tt); _g('h-total-sessions').innerText = `${h.length} টি সেশন`; _rHC(h, d); _rHT(h); }
@@ -523,7 +564,6 @@
 
     function _rEA() { const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); let m = {}; h.forEach(x => (x.errors || []).forEach(e => { if (!m[e.expected]) m[e.expected] = { t: 0, ty: {} }; m[e.expected].t++; m[e.expected].ty[e.typed] = (m[e.expected].ty[e.typed] || 0) + 1; })); const s = Object.entries(m).sort((a, b) => b[1].t - a[1].t); _g('ea-total-errors').innerText = s.reduce((c, x) => c + x[1].t, 0); _g('ea-top-word').innerText = s.length ? s[0][0] : "—"; _g('ea-unique-words').innerText = s.length; const b = _g('ea-bar-list'); if (!s.length) return b.innerHTML = "<p>রেকর্ড নেই</p>"; const mx = s[0][1].t; b.innerHTML = "<h3 style='color:var(--blue);margin-bottom:15px'>সর্বাধিক ভুল করা শব্দ</h3>" + s.slice(0, 10).map(([w, d]) => `<div style='margin-bottom:10px; color:var(--text)'><span>${_eH(w)}</span> - <span style='color:var(--blue)'>${d.t} বার</span><div style='height:8px; background:rgba(0,0,0,0.1); border-radius:4px; overflow:hidden;'><div style='width:${(d.t / mx) * 100}%; height:100%; background:var(--red);'></div></div></div>`).join(''); let t = "<table><tr><th>সঠিক</th><th>মোট ভুল</th><th>কী টাইপ করেছেন</th></tr>"; s.slice(0, 20).forEach(([w, d]) => { const tp = Object.entries(d.ty).sort((a, b) => b[1] - a[1])[0]; t += `<tr><td><strong style="color:var(--navy-blue)">${_eH(w)}</strong></td><td>${d.t}</td><td><span style="color:var(--red)">${_eH(tp[0])}</span></td></tr>`; }); _g('ea-detail-table').innerHTML = t + "</table>"; }
     
-    // টেলিমেট্রি রিফ্রেশ লজিক
     async function _rTM() { 
         const t = _g('telemetry-table'); 
         t.innerHTML = "<tr><td colspan='4'>লোড হচ্ছে...</td></tr>"; 
