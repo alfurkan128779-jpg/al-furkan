@@ -419,6 +419,40 @@
     });
 
     _g('input-area').addEventListener('keydown', e => { if (e.key === 'Backspace' && _hS && !_iP) _bC++; });
+    // চিটিং প্রতিরোধ লজিক: কপি, কাট, পেস্ট এবং ড্রপ সম্পূর্ণ ব্লক করা
+    _g('input-area').addEventListener('paste', e => { e.preventDefault(); _sTo("পেস্ট করা সম্পূর্ণ নিষেধ!"); });
+    _g('input-area').addEventListener('copy', e => e.preventDefault());
+    _g('input-area').addEventListener('cut', e => e.preventDefault());
+    _g('input-area').addEventListener('drop', e => e.preventDefault());
+    // ==========================================
+    // অ্যাডভান্সড এক্সাম সিকিউরিটি ও অ্যান্টি-চিট লজিক
+    // ==========================================
+
+    // ১. রাইট ক্লিক সম্পূর্ণ বন্ধ করা
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        _sTo("রাইট ক্লিক করা নিষেধ!");
+    });
+
+    // ২. সোর্স কোড ও ডেভেলপার টুলস দেখার শর্টকাট ব্লক করা
+    document.addEventListener('keydown', e => {
+        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) || 
+           (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+            e.preventDefault();
+            _sTo("সিকিউরিটি এলার্ট: সোর্স কোড অ্যাক্সেস নিষেধ!");
+        }
+    });
+
+    // ৩. অ্যান্টি-ট্যাব সুইচিং (Tab Visibility API)
+    document.addEventListener('visibilitychange', () => {
+        // যদি ইউজার পরীক্ষা চলাকালীন অন্য ট্যাবে বা অ্যাপে যায়
+        if (document.hidden && _hS && !_iP) {
+            _tP(); // টেস্ট স্বয়ংক্রিয়ভাবে পজ হয়ে যাবে
+            alert("⚠️ অ্যান্টি-চিট সতর্কতা ⚠️\n\nআপনি পরীক্ষার উইন্ডো থেকে বের হয়েছিলেন। আপনার পরীক্ষা সাময়িকভাবে পজ করা হয়েছে!");
+        }
+    });
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
