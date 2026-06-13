@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>প্রো—টাইপ চর্চা</title>
+    <title>ফ্রিতে টাইপ চর্চা</title>
     <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -213,7 +213,9 @@
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
             <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
-            <div id="dynamic-feedback" style="font-size:24px; font-weight:bold; margin:10px 0; line-height: 1.5;"></div>
+            <div id="dynamic-feedback-container" style="min-height: 90px; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 10px; border-radius: 12px; margin-bottom: 15px;">
+                <div id="dynamic-feedback"></div>
+            </div>
         </div>
         <div class="stats-grid">
             <div class="stat-box" style="border-bottom:3px solid var(--blue);"><h3 class="has-tooltip" data-tooltip="৫ ক্যারেক্টার = ১ শব্দ">স্পেস ছাড়া প্রতি ৫ ক্যারেক্টারে ১ স্ট্রোক</h3><div class="value" id="res-swpm" style="color:var(--blue);">0</div></div>
@@ -458,88 +460,117 @@
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
     function _sT() { 
-        clearInterval(_t1); const v = _g('input-area').value, t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
-        let cc = 0, cw = 0, e = 0, se = [], consecutiveMiss = 0, maxConsecutiveMiss = 0; 
+        clearInterval(_t1); 
+        const v = _g('input-area').value;
+        const t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
         
-        t.forEach((w, i) => { 
-            if (i < _wL.length) { 
-                if (_nT(w) === _nT(_wL[i])) { 
-                    cc += w.length; cw++; 
-                    consecutiveMiss = 0;
-                } 
-                else { 
+        let cc = 0, cw = 0, e = 0, se = []; 
+        let consecutiveSkip = 0;
+        let maxConsecutiveSkip = 0;
+        
+        _wL.forEach((w, i) => { 
+            if (i < t.length) { 
+                if (_nT(t[i]) === _nT(w)) { 
+                    cc += t[i].length; 
+                    cw++; 
+                    if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
+                    consecutiveSkip = 0;
+                } else { 
                     e++; 
-                    se.push({ expected: _wL[i], typed: w }); 
-                    consecutiveMiss++;
-                    if(consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
+                    se.push({ expected: w, typed: t[i] }); 
+                    if (!t[i] || t[i].trim() === "") {
+                        consecutiveSkip++;
+                    } else {
+                        if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
+                        consecutiveSkip = 0;
+                    }
                 } 
-            } 
+            } else {
+                consecutiveSkip++;
+                e++; 
+            }
         }); 
         
-        if(_wL.length > t.length) {
-            let extraMiss = _wL.length - t.length;
-            if(consecutiveMiss + extraMiss > maxConsecutiveMiss) {
-                maxConsecutiveMiss = consecutiveMiss + extraMiss;
-            }
-        }
+        if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
 
-        const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp;
+        const s = _t3 - _t2, m = s / 60;
+        const sw = m > 0 ? Math.round((cc / 5) / m) : 0;
+        
+        const rp = _wL.length > 0 ? (e / _wL.length) * 100 : 0; 
+        const ra = Math.max(0, 100 - rp);
+        
         let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
-        if(window.logUserEvent) window.logUserEvent("টেস্ট শেষ করেছে", `স্পিড: ${sw} WPM, নির্ভুলতা: ${ra.toFixed(1)}%`);
-        const res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: rLang, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; 
+        
+        const res = { 
+            wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, 
+            cws: v.length, cns: v.replace(/\s/g, "").length, 
+            err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, 
+            bs: _bC, duration: s, timestamp: Date.now(), 
+            date: new Date().toLocaleDateString('bn-BD'), errors: se, 
+            lang: rLang, title: _g('para-select').value, 
+            accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e 
+        }; 
+        
         _sR(res); 
-        _dR(res, t, maxConsecutiveMiss); 
+        _dR(res, t, maxConsecutiveSkip); 
     }
-    
-    function _sR(d) { let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); h.push(d); localStorage.setItem('furqan_history_v2', JSON.stringify(h)); if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); if (localStorage.getItem('furqan_sync_on') === 'true') { const f = new FormData(); f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); } }
-    
-    function _dR(d, t, maxMiss) { 
-        _sV('result-view'); _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
-        _aV(_g('res-swpm'), 0, d.wpm, 1500); _aV(_g('res-wpm'), 0, d.wwpm, 1500); _aV(_g('res-tw'), 0, d.tw, 1500); 
-        _aV(_g('res-cws'), 0, d.cws, 1500); _aV(_g('res-cns'), 0, d.cns, 1500); _aV(_g('res-bs'), 0, d.bs, 1500); 
-        _aR('ring-acc', d.realAcc, 'var(--green)'); _aR('ring-pace', d.cons, 'var(--blue)'); 
+
+    function _dR(d, t, maxSkip) { 
+        _sV('result-view'); 
+        _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
+        
+        _aV(_g('res-swpm'), 0, d.wpm, 1500); 
+        _aV(_g('res-wpm'), 0, d.wwpm, 1500); 
+        _aV(_g('res-tw'), 0, d.tw, 1500); 
+        _aV(_g('res-cws'), 0, d.cws, 1500); 
+        _aV(_g('res-cns'), 0, d.cns, 1500); 
+        _aV(_g('res-bs'), 0, d.bs, 1500); 
+        
+        _aR('ring-acc', d.realAcc, 'var(--green)'); 
+        _aR('ring-pace', d.cons, 'var(--blue)'); 
         
         const f = _g('dynamic-feedback');
-        let feedbackHTML = "";
         let totalErrorPercent = parseFloat(d.err);
-        
-        // পাস-ফেল এবং অ্যানিমেশন কন্ডিশন নির্ধারণ লজিক
         let hasFailed = (d.wpm < 20 || totalErrorPercent > 5.0);
 
-        if (hasFailed) {
-            // যদি ফেইল করে (গতি ২০ এর কম অথবা ভুল ৫% এর বেশি), কোনো অ্যানিমেশন হবে না, সাধারণ টেক্সট আসবে
-            if (d.wpm >= 20) {
-                feedbackHTML += `<span style="color: var(--blue);">আপনার টাইপিং গতি: ${d.wpm} WPM।</span>`;
-            } else {
-                feedbackHTML += `<span style="color: #7f8fa6;">আপনার টাইপিং গতি: ${d.wpm} WPM (গতি বৃদ্ধির জন্য আরও চর্চা প্রয়োজন)।</span>`;
-            }
+        // সিএসএস স্কেল ও অপাসিটি অ্যানিমেশন ইনিশিয়েট
+        f.innerHTML = ""; 
+        f.style.opacity = "0"; 
+        f.style.transform = "scale(0.7)";
+        
+        setTimeout(() => {
+            f.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            f.style.opacity = "1"; 
+            f.style.transform = "scale(1)";
             
-            if (totalErrorPercent > 5.0) {
-                feedbackHTML += `<br><span style="color: var(--red); font-size: 18px; display:block; margin-top:8px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল! (সর্বোচ্চ ৫% ভুল গ্রহণযোগ্য)</span>`;
+            let html = "";
+            if (hasFailed) {
+                html = `<div style="color: #7f8fa6; font-size: 20px; font-weight: bold;">আপনার টাইপিং গতি: ${d.wpm} WPM</div>`;
+                if (totalErrorPercent > 5.0) {
+                    html += `<div style="color: var(--red); font-size: 16px; font-weight: bold; margin-top:5px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল!</div>`;
+                }
+            } else {
+                // স্পিড অনুযায়ী গ্লোয়িং নিয়ন ও মেডেল ব্যাজ ইফেক্ট
+                if (d.wpm >= 40) {
+                    html = `<div style="font-size: 30px; font-weight: 900; color: #DAA520; text-shadow: 0 0 15px rgba(218,165,32,0.7); animation: glowGold 1.5s ease-in-out infinite alternate; letter-spacing: 1px;">🏆 LEGENDARY EXPERT: ${d.wpm} WPM 🏆</div>`;
+                    _fireworks(); 
+                } else if (d.wpm >= 30) {
+                    html = `<div style="font-size: 26px; font-weight: 800; color: #0984e3; text-shadow: 0 0 12px rgba(9,132,227,0.6); animation: glowBlue 1.5s infinite alternate;">⭐ ELITE SPEED: ${d.wpm} WPM ⭐</div>`;
+                    confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+                } else if (d.wpm >= 25) {
+                    html = `<div style="font-size: 22px; font-weight: bold; color: var(--orange); text-shadow: 0 0 8px rgba(230,126,34,0.4);">✨ ADVANCED: ${d.wpm} WPM ✨</div>`;
+                    confetti({ particleCount: 80, spread: 55, origin: { y: 0.65 } });
+                } else {
+                    html = `<div style="font-size: 20px; font-weight: bold; color: var(--green);">👍 Congratulation! Speed: ${d.wpm} WPM 👍</div>`;
+                    confetti({ particleCount: 45, spread: 40, origin: { y: 0.7 } });
+                }
             }
-        } else {
-            // যদি পাশ করে (গতি ২০+ এবং ভুল সর্বোচ্চ ৫%), শুধুমাত্র তখনই কাগজ ওড়ার ডাইনামিক অ্যানিমেশন আসবে
-            if (d.wpm >= 35) {
-                feedbackHTML += `<span style="color: var(--green);">☀️ Congratulation, You obtain speed ${d.wpm} WPM! ☀️</span>`;
-                confetti({ particleCount: 150, spread: 80 });
-            } else if (d.wpm >= 30) {
-                feedbackHTML += `<span style="color: var(--blue);">🎉 Congratulation, You obtain speed ${d.wpm} WPM! 🎉</span>`;
-                confetti({ particleCount: 90, spread: 60 });
-            } else if (d.wpm >= 25) {
-                feedbackHTML += `<span style="color: var(--orange);">✨ Congratulation, You obtain speed ${d.wpm} WPM! ✨</span>`;
-                confetti({ particleCount: 60, spread: 45 });
-            } else if (d.wpm >= 20) {
-                feedbackHTML += `<span style="color: var(--purple);">👍 Congratulation, You obtain speed ${d.wpm} WPM! 👍</span>`;
-                confetti({ particleCount: 40, spread: 35 });
+
+            if (maxSkip >= 3) {
+                html += `<div style="color: var(--orange); font-size: 15px; font-weight: bold; margin-top:12px; animation: wobbleLight 1s 1;"><i class="fas fa-exclamation-triangle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার line gap লক্ষ করা যাচ্ছে!</div>`;
             }
-        }
-
-        // রিকোয়েস্ট অনুযায়ী লাইন গ্যাপ নোটিশটি শুধুমাত্র রেজাল্ট পেজে যুক্ত করা হয়েছে
-        if (maxMiss >= 3) {
-            feedbackHTML += `<br><span style="color: var(--orange); font-size: 16px; display:block; margin-top:5px;"><i class="fas fa-exclamation-circle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার লাইন গ্যাপ লক্ষ করা যাচ্ছে!</span>`;
-        }
-
-        f.innerHTML = feedbackHTML;
+            f.innerHTML = html;
+        }, 200);
         
         let rh = ""; 
         const isWordLvl = _g('difficulty-select').value === 'word';
@@ -551,11 +582,21 @@
         _g('result-text-review').innerHTML = rh; 
     }
 
+    function _fireworks() {
+        var duration = 3.5 * 1000;
+        var end = Date.now() + duration;
+        (function frame() {
+            confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0, y: 0.6 } });
+            confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1, y: 0.6 } });
+            if (Date.now() < end) { requestAnimationFrame(frame); }
+        }());
+    }
+
     async function _sP() { const l = _g('db-lang').value, t = _g('db-title').value.trim(), b = _nT(_g('db-body').value.trim()), o = _g('edit-original-title').value; if (!t || !b) return; if (o && o !== t) { delete _p[l][o]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, o); } _p[l][t] = b; if (window.saveGlobalParagraph) await window.saveGlobalParagraph(l, t, b); _g('db-title').value = ""; _g('db-body').value = ""; _g('edit-original-title').value = ""; _lPL(); _rDL(); _sTo("আপডেট সম্পন্ন!"); }
     function _rDL() { const ls = _g('db-list'); ls.innerHTML = ""; ['bn', 'en', 'bj'].forEach(l => { if(!_p[l]) return; for (let t in _p[l]) { const i = document.createElement('div'); i.style.cssText = "padding:12px;background:var(--glass-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;color:var(--text);"; i.innerHTML = `<div><small style="color:var(--blue)">${l.toUpperCase()}</small><br><strong class="${l === 'bj' ? 'bijoy-font' : ''}">${t}</strong></div><div style='display:flex;gap:8px;'><button class='btn-sm' onclick="_eP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--blue); color:var(--btn-text); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button><button class='btn-sm' onclick="_dP('${l}','${t.replace(/'/g, "\\'")}')" style="background:var(--red); color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Del</button></div>`; ls.appendChild(i); } }); }
     function _eP(l, t) { _g('db-lang').value = l; _g('db-title').value = t; _g('db-body').value = _p[l][t]; _g('edit-original-title').value = t; window.scrollTo({ top: 0, behavior: 'smooth' }); }
     async function _dP(l, t) { if (confirm("ডিলিট করবেন?")) { delete _p[l][t]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, t); _rDL(); _lPL(); _sTo("ডিলিট করা হয়েছে!"); } }
-    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : (l === 'en' ? h.lang === 'en' || h.lang === 'English' : h.lang === 'Bijoy (ANSI)'))).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকርድ নেই</td></tr>"); }
+    async function _rL() { const l = _g('leaderboard-lang-select').value, t = _g('leaderboard-table'); t.innerHTML = "<tr><td colspan='5'>লোড হচ্ছে...</td></tr>"; let g = window.getGlobalLeaderboard ? await window.getGlobalLeaderboard() : []; const f = g.filter(h => (l === 'bn' ? h.lang === 'bn' || h.lang === 'Bangla' : (l === 'en' ? h.lang === 'en' || h.lang === 'English' : h.lang === 'Bijoy (ANSI)'))).sort((a, b) => b.wpm - a.wpm); t.innerHTML = "<tr><th>র‍্যাংক</th><th>নাম</th><th>স্পিড</th><th>ভুল</th><th>তারিখ</th></tr>" + (f.length ? f.slice(0, 20).map((h, i) => `<tr><td>#${i + 1}</td><td>${_eH(h.userName)}</td><td><strong style="color:var(--blue)">${h.wpm}</strong></td><td>${h.err}%</td><td>${h.date}</td></tr>`).join('') : "<tr><td colspan='5'>রেকর্ড নেই</td></tr>"); }
 
     function _sHF(e, d) { document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); e.classList.add('active'); _cHF = d; _rHV(d); }
     function _rHV(d) { const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"), n = new Date(), tk = _dK(n), mk = _mK(n), yk = _yK(n); let td = 0, ts = 0, md = 0, ms = 0, yd = 0, ys = 0, tt = 0; h.forEach(x => { const ht = x.timestamp || Date.now(), dk = _dK(ht), mck = _mK(ht), yck = _yK(ht), du = x.duration || 0; tt += du; if (dk === tk) { td += du; ts++; } if (mck === mk) { md += du; ms++; } if (yck === yk) { yd += du; ys++; } }); _g('h-today-time').innerText = _fD(td); _g('h-today-sessions').innerText = `${ts} টি সেশন`; _g('h-month-time').innerText = _fD(md); _g('h-month-sessions').innerText = `${ms} টি সেশন`; _g('h-year-time').innerText = _fD(yd); _g('h-year-sessions').innerText = `${ys} টি সেশন`; _g('h-total-time').innerText = _fD(tt); _g('h-total-sessions').innerText = `${h.length} টি সেশন`; _rHC(h, d); _rHT(h); }
@@ -574,6 +615,18 @@
         } 
     }
 </script>
+
+<style>
+    /* অতিরিক্ত সিএসএস নিয়ন ইফেক্টস */
+    @keyframes glowGold { 
+        from { text-shadow: 0 0 4px #fff, 0 0 10px #DAA520; } 
+        to { text-shadow: 0 0 12px #fff, 0 0 25px #BF953F; } 
+    }
+    @keyframes glowBlue { 
+        from { text-shadow: 0 0 4px #fff, 0 0 8px #0984e3; } 
+        to { text-shadow: 0 0 15px #00a8ff; } 
+    }
+</style>
 <script type="module" src="app.js"></script>
 </body>
 </html>
