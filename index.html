@@ -459,44 +459,36 @@
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
-    function _sT() { 
+  function _sT() { 
         clearInterval(_t1); 
         const v = _g('input-area').value;
         const t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
         
         let cc = 0, cw = 0, e = 0, se = []; 
-        let consecutiveSkip = 0;
-        let maxConsecutiveSkip = 0;
+        let consecutiveMiss = 0, maxConsecutiveMiss = 0;
         
-        _wL.forEach((w, i) => { 
-            if (i < t.length) { 
-                if (_nT(t[i]) === _nT(w)) { 
-                    cc += t[i].length; 
+        // নিখুঁত লজিক: শুধুমাত্র যতটুকু টাইপ করা হয়েছে, তার ওপর ভিত্তি করে চেক হবে
+        t.forEach((w, i) => { 
+            if (i < _wL.length) { 
+                if (_nT(w) === _nT(_wL[i])) { 
+                    cc += w.length; 
                     cw++; 
-                    if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
-                    consecutiveSkip = 0;
+                    if (consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
+                    consecutiveMiss = 0; 
                 } else { 
                     e++; 
-                    se.push({ expected: w, typed: t[i] }); 
-                    if (!t[i] || t[i].trim() === "") {
-                        consecutiveSkip++;
-                    } else {
-                        if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
-                        consecutiveSkip = 0;
-                    }
+                    se.push({ expected: _wL[i], typed: w }); 
+                    // টাইপ করা অংশের ভেতরে পরপর ভুল বা স্কিপ হলেই কাউন্ট হবে
+                    consecutiveMiss++;
+                    if (consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
                 } 
-            } else {
-                consecutiveSkip++;
-                e++; 
-            }
+            } 
         }); 
-        
-        if (consecutiveSkip > maxConsecutiveSkip) maxConsecutiveSkip = consecutiveSkip;
 
         const s = _t3 - _t2, m = s / 60;
         const sw = m > 0 ? Math.round((cc / 5) / m) : 0;
         
-        const rp = _wL.length > 0 ? (e / _wL.length) * 100 : 0; 
+        const rp = t.length > 0 ? (e / t.length) * 100 : 0; 
         const ra = Math.max(0, 100 - rp);
         
         let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
@@ -512,7 +504,7 @@
         }; 
         
         _sR(res); 
-        _dR(res, t, maxConsecutiveSkip); 
+        _dR(res, t, maxConsecutiveMiss); 
     }
 
     function _dR(d, t, maxSkip) { 
@@ -533,7 +525,6 @@
         let totalErrorPercent = parseFloat(d.err);
         let hasFailed = (d.wpm < 20 || totalErrorPercent > 5.0);
 
-        // সিএসএস স্কেল ও অপাসিটি অ্যানিমেশন ইনিশিয়েট
         f.innerHTML = ""; 
         f.style.opacity = "0"; 
         f.style.transform = "scale(0.7)";
@@ -550,7 +541,6 @@
                     html += `<div style="color: var(--red); font-size: 16px; font-weight: bold; margin-top:5px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল!</div>`;
                 }
             } else {
-                // স্পিড অনুযায়ী গ্লোয়িং নিয়ন ও মেডেল ব্যাজ ইফেক্ট
                 if (d.wpm >= 40) {
                     html = `<div style="font-size: 30px; font-weight: 900; color: #DAA520; text-shadow: 0 0 15px rgba(218,165,32,0.7); animation: glowGold 1.5s ease-in-out infinite alternate; letter-spacing: 1px;">🏆 LEGENDARY EXPERT: ${d.wpm} WPM 🏆</div>`;
                     _fireworks(); 
@@ -566,6 +556,7 @@
                 }
             }
 
+            // লাইন গ্যাপ নোটিশ: টাইপ করা অংশের ভেতরে পরপর ৩ শব্দ স্কিপ করলেই কেবল এটি দেখাবে
             if (maxSkip >= 3) {
                 html += `<div style="color: var(--orange); font-size: 15px; font-weight: bold; margin-top:12px; animation: wobbleLight 1s 1;"><i class="fas fa-exclamation-triangle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার line gap লক্ষ করা যাচ্ছে!</div>`;
             }
