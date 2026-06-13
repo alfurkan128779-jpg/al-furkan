@@ -416,7 +416,7 @@
         }); 
         const s = _t3 - _t2, m = s / 60, sw = m > 0 ? Math.round((cc / 5) / m) : 0, rp = t.length > 0 ? (e / t.length) * 100 : 0, ra = 100 - rp;
         
-        let rLang = _g('difficulty-select').value === 'word' ? 'Bijoy (ANSI)' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
+        let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
         
         const res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: rLang, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; 
         _sR(res); _dR(res, t); 

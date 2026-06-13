@@ -71,7 +71,8 @@ window.getGlobalLeaderboard = async () => {
 window.syncGlobalParagraphs = async () => {
     try {
         const snapshot = await getDocs(collection(db, "paragraphs"));
-        let p = { "bn": {}, "en": {} };
+        // লজিক্যাল ফিক্স: bj (বিজয়) ক্যাটাগরি যুক্ত করা হলো
+        let p = { "bn": {}, "en": {}, "bj": {} };
         snapshot.forEach(doc => {
             const data = doc.data();
             if(p[data.lang]) p[data.lang][data.title] = data.body;
