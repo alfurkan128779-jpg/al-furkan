@@ -191,7 +191,7 @@
                 <div class="form-group"><label><i class="fas fa-language"></i> ভাষা নির্বাচন করুন</label><select id="lang-select" onchange="_lPL()"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
                 <div class="form-group"><label><i class="fas fa-file-alt"></i> অনুচ্ছেদ নির্বাচন করুন</label><select id="para-select"><option>লোড হচ্ছে...</option></select></div>
                 <div class="form-group"><label><i class="fas fa-hourglass-half"></i> সময় নির্ধারণ</label><select id="time-select"><option value="180">৩ মিনিট</option><option value="300">৫ মিনিট</option><option value="600">১০ মিনিট</option><option value="900">১৫ মিনিট</option><option value="1200">২০ মিনিট</option></select></div>
-                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select" onchange="_lPL()"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word"> মাইক্রোসফটোর্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
+                <div class="form-group"><label><i class="fas fa-layer-group"></i> লেভেল </label><select id="difficulty-select" onchange="_lPL()"><option value="easy"> নতুন (হাাইলাইটসহ)</option><option value="hard"> বাংলাদেশ কম্পিউটার কাউন্সিলের অনুরূপ</option><option value="word" id="admin-word-option" style="display: none;"> মাইক্রোসফটোর্ড (বিজয় - সুতন্নীএমজে)</option></select></div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <button style="padding: 12px 50px; border-radius: 50px; font-size: 20px;" onclick="_iT()">শুরু করুন <i class="fas fa-play-circle"></i></button>
@@ -622,6 +622,18 @@
             t.innerHTML = "<tr><th style='background:var(--blue)'>সময়</th><th style='background:var(--blue)'>ইউজার</th><th style='background:var(--blue)'>অ্যাকশন</th><th style='background:var(--blue)'>বিস্তারিত</th></tr>" + 
             (d.length ? d.map(x => `<tr><td>${new Date(x.timestamp).toLocaleTimeString('bn-BD')}</td><td>${_eH(x.user)}</td><td><strong style="color:var(--red)">${_eH(x.action)}</strong></td><td>${_eH(x.details)}</td></tr>`).join('') : "<tr><td colspan='4'>রেকর্ড নেই</td></tr>"); 
         } 
+    }
+
+    // অ্যাডমিন ভেরিফিকেশন লজিক
+    const _dbMenu = document.getElementById('menu-database');
+    if (_dbMenu) {
+        const _adminObserver = new MutationObserver(() => {
+            const _wordOpt = document.getElementById('admin-word-option');
+            if (_wordOpt) {
+                _wordOpt.style.display = (_dbMenu.style.display !== 'none') ? 'block' : 'none';
+            }
+        });
+        _adminObserver.observe(_dbMenu, { attributes: true, attributeFilter: ['style'] });
     }
 </script>
 
