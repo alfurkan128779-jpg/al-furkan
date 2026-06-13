@@ -320,13 +320,13 @@
 <script>
     const _g = i => document.getElementById(i), _GC = { u: "https://docs.google.com/forms/d/e/1FAIpQLSf7xxnx_NXziqKvHf3RACS51d3fDCtp5bAbeoSpt1kS_KcoQg/formResponse", e: { l: "entry.1297680054", t: "entry.1063190250", w: "entry.1750728196", a: "entry.1447012889", d: "entry.1811044011", c: "entry.1936188665", cw: "entry.485794403", tw: "entry.2044623366", b: "entry.1306091940", ec: "entry.1212502821" } };
     
+    let _t1, _t2, _t3, _iP = !1, _hS = !1, _wL = [], _lK = 0, _iTT = 0, _bC = 0, _hC = null, _iAR = !1, _cHF = 7;
+    
     let _p = { 
         "bn": { "নমুনা ১": "টাইপিং দক্ষতা বর্তমান যুগে সরকারি চাকরির জন্য অন্যতম প্রধান শর্ত।" }, 
         "en": { "Sample": "Practice makes a man perfect. Typing speed is a crucial skill for every student." },
         "bj": { "বিজয় নমুনা": "UvBwcs `ÿZv eZ©gvb hy‡M miKvwi PvKwii Rb¨ Ab¨Zg cÖavb kZ©|" } 
     };
-    
-    let _t1, _t2, _t3, _iP = !1, _hS = !1, _wL = [], _lK = 0, _iTT = 0, _bC = 0, _hC = null, _iAR = !1, _cHF = 7;
 
     const _nT = t => !t ? "" : t.normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/[\u2018\u2019\u201A\u201B\u275B\u275C]/g, "'").replace(/[\u201C\u201D\u201E\u201F\u275D\u275E]/g, '"').replace(/\s+/g, ' ').trim();
     const _eH = s => { const d = document.createElement('div'); d.appendChild(document.createTextNode(String(s))); return d.innerHTML; };
@@ -459,7 +459,7 @@
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
-  function _sT() { 
+    function _sT() { 
         clearInterval(_t1); 
         const v = _g('input-area').value;
         const t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
@@ -467,7 +467,7 @@
         let cc = 0, cw = 0, e = 0, se = []; 
         let consecutiveMiss = 0, maxConsecutiveMiss = 0;
         
-        // নিখুঁত লজিক: শুধুমাত্র যতটুকু টাইপ করা হয়েছে, তার ওপর ভিত্তি করে চেক হবে
+        // ফিক্স: শুধুমাত্র ইউজারের টাইপ করা অংশের ওপর চেক চলবে
         t.forEach((w, i) => { 
             if (i < _wL.length) { 
                 if (_nT(w) === _nT(_wL[i])) { 
@@ -478,15 +478,16 @@
                 } else { 
                     e++; 
                     se.push({ expected: _wL[i], typed: w }); 
-                    // টাইপ করা অংশের ভেতরে পরপর ভুল বা স্কিপ হলেই কাউন্ট হবে
-                    consecutiveMiss++;
+                    consecutiveMiss++; 
                     if (consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
                 } 
             } 
         }); 
 
-        const s = _t3 - _t2, m = s / 60;
-        const sw = m > 0 ? Math.round((cc / 5) / m) : 0;
+        // অ্যান্টি-ক্র্যাশ ফিক্স: s এর মান যাতে কোনোভাবেই ০ না হয়
+        const s = Math.max(1, _t3 - _t2); 
+        const m = s / 60;
+        const sw = Math.round((cc / 5) / m);
         
         const rp = t.length > 0 ? (e / t.length) * 100 : 0; 
         const ra = Math.max(0, 100 - rp);
@@ -494,16 +495,26 @@
         let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
         
         const res = { 
-            wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, 
-            cws: v.length, cns: v.replace(/\s/g, "").length, 
-            err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, 
-            bs: _bC, duration: s, timestamp: Date.now(), 
-            date: new Date().toLocaleDateString('bn-BD'), errors: se, 
-            lang: rLang, title: _g('para-select').value, 
-            accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e 
+            wpm: sw, 
+            wwpm: Math.round(cw / m), 
+            tw: t.length, 
+            cws: v.length, 
+            cns: v.replace(/\s/g, "").length, 
+            err: rp.toFixed(1), 
+            cons: Math.round(((s - _iTT) / s) * 100), 
+            bs: _bC, 
+            duration: s, 
+            timestamp: Date.now(), 
+            date: new Date().toLocaleDateString('bn-BD'), 
+            errors: se, 
+            lang: rLang, 
+            title: _g('para-select').value, 
+            accuracy: ra.toFixed(1) + "%", 
+            realAcc: ra, 
+            errCount: e 
         }; 
         
-        _sR(res); 
+        try { _sR(res); } catch (err) { console.error(err); }
         _dR(res, t, maxConsecutiveMiss); 
     }
 
@@ -543,20 +554,19 @@
             } else {
                 if (d.wpm >= 40) {
                     html = `<div style="font-size: 30px; font-weight: 900; color: #DAA520; text-shadow: 0 0 15px rgba(218,165,32,0.7); animation: glowGold 1.5s ease-in-out infinite alternate; letter-spacing: 1px;">🏆 LEGENDARY EXPERT: ${d.wpm} WPM 🏆</div>`;
-                    _fireworks(); 
+                    if(typeof _fireworks === 'function') _fireworks(); 
                 } else if (d.wpm >= 30) {
                     html = `<div style="font-size: 26px; font-weight: 800; color: #0984e3; text-shadow: 0 0 12px rgba(9,132,227,0.6); animation: glowBlue 1.5s infinite alternate;">⭐ ELITE SPEED: ${d.wpm} WPM ⭐</div>`;
-                    confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+                    if(typeof confetti === 'function') confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
                 } else if (d.wpm >= 25) {
                     html = `<div style="font-size: 22px; font-weight: bold; color: var(--orange); text-shadow: 0 0 8px rgba(230,126,34,0.4);">✨ ADVANCED: ${d.wpm} WPM ✨</div>`;
-                    confetti({ particleCount: 80, spread: 55, origin: { y: 0.65 } });
+                    if(typeof confetti === 'function') confetti({ particleCount: 80, spread: 55, origin: { y: 0.65 } });
                 } else {
                     html = `<div style="font-size: 20px; font-weight: bold; color: var(--green);">👍 Congratulation! Speed: ${d.wpm} WPM 👍</div>`;
-                    confetti({ particleCount: 45, spread: 40, origin: { y: 0.7 } });
+                    if(typeof confetti === 'function') confetti({ particleCount: 45, spread: 40, origin: { y: 0.7 } });
                 }
             }
 
-            // লাইন গ্যাপ নোটিশ: টাইপ করা অংশের ভেতরে পরপর ৩ শব্দ স্কিপ করলেই কেবল এটি দেখাবে
             if (maxSkip >= 3) {
                 html += `<div style="color: var(--orange); font-size: 15px; font-weight: bold; margin-top:12px; animation: wobbleLight 1s 1;"><i class="fas fa-exclamation-triangle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার line gap লক্ষ করা যাচ্ছে!</div>`;
             }
@@ -581,6 +591,18 @@
             confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1, y: 0.6 } });
             if (Date.now() < end) { requestAnimationFrame(frame); }
         }());
+    }
+
+    function _sR(d) { 
+        let h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); 
+        h.push(d); 
+        localStorage.setItem('furqan_history_v2', JSON.stringify(h)); 
+        if (!window.isGuest && window.saveGlobalLeaderboard) window.saveGlobalLeaderboard({ ...d, userName: window.currentUser ? window.currentUser.displayName || "অজ্ঞাত" : "অজ্ঞাত" }); 
+        if (localStorage.getItem('furqan_sync_on') === 'true') { 
+            const f = new FormData(); 
+            f.append(_GC.e.l, d.lang); f.append(_GC.e.t, d.title); f.append(_GC.e.w, d.wpm); f.append(_GC.e.a, d.accuracy); f.append(_GC.e.d, _fD(d.duration)); f.append(_GC.e.c, d.cns); f.append(_GC.e.cw, d.cws); f.append(_GC.e.tw, d.tw); f.append(_GC.e.b, d.bs); f.append(_GC.e.ec, d.errCount); 
+            fetch(_GC.u, { method: "POST", mode: "no-cors", body: f }).catch(e => console.error(e)); 
+        } 
     }
 
     async function _sP() { const l = _g('db-lang').value, t = _g('db-title').value.trim(), b = _nT(_g('db-body').value.trim()), o = _g('edit-original-title').value; if (!t || !b) return; if (o && o !== t) { delete _p[l][o]; if (window.deleteGlobalParagraph) await window.deleteGlobalParagraph(l, o); } _p[l][t] = b; if (window.saveGlobalParagraph) await window.saveGlobalParagraph(l, t, b); _g('db-title').value = ""; _g('db-body').value = ""; _g('edit-original-title').value = ""; _lPL(); _rDL(); _sTo("আপডেট সম্পন্ন!"); }
