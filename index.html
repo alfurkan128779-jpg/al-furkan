@@ -142,7 +142,6 @@
     .toast-msg { background: var(--toast-bg); backdrop-filter: blur(16px); color: var(--blue); padding: 20px 45px; border-radius: 15px; font-size: 20px; font-weight: bold; box-shadow: var(--glass-shadow); border: 1px solid var(--border); border-left: 6px solid var(--green); display: flex; align-items: center; gap: 15px; opacity: 0; transform: translate(-50%, -60%) scale(0.8); transition: all 0.5s; position: absolute; white-space: nowrap; }
     .toast-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-    /* CSS Specificity Fix for Bijoy */
     .bijoy-font, .bijoy-font * { font-family: 'SutonnyMJ', 'SutonnyOMJ', sans-serif !important; font-size: 24px !important; }
 </style>
 </head>
@@ -179,6 +178,7 @@
                 <div onclick="_sV('error-view')"><i class="fas fa-shield-heart"></i> ভুল বিশ্লেষণ</div>
                 <div onclick="_sCM()"><i class="fas fa-address-card"></i> যোগাযোগ</div>
                 <div id="menu-database" onclick="_sV('database-view')" style="display: none;"><i class="fas fa-server"></i> ডাটাবেজ ম্যানেজমেন্ট</div>
+                <div id="menu-telemetry" onclick="_sV('telemetry-view')" style="display: none;"><i class="fas fa-satellite-dish" style="color:var(--red);"></i> লাইভ ট্র্যাকিং</div>
                 <div id="logout-btn" style="color: var(--red);"><i class="fas fa-sign-out-alt"></i> লগআউট</div>
             </div>
         </div>
@@ -274,6 +274,15 @@
         </div>
         <div class="error-bar-list" id="ea-bar-list"></div><div id="ea-detail-table"></div>
     </div>
+
+    <div id="telemetry-view" class="view-section">
+        <h2 style="color: var(--navy-blue); margin-bottom:16px;"><i class="fas fa-satellite-dish" style="color: var(--red);"></i> লাইভ ইউজার ট্র্যাকিং</h2>
+        <div style="text-align: right; margin-bottom: 15px;">
+            <button onclick="_rTM()" style="background:var(--blue); padding: 8px 15px; font-size: 15px;"><i class="fas fa-sync-alt"></i> রিফ্রেশ করুন</button>
+        </div>
+        <table id="telemetry-table"></table>
+    </div>
+
 </div>
 
 <div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
@@ -356,13 +365,34 @@
         } 
     });
 
-    _g('skip-login-btn').addEventListener('click', () => { window.isGuest = !0; _g('auth-section').style.display = "none"; _g('main-app').style.display = "block"; alert("লগইন ছাড়া হিস্টোরি সেভ হবে না।"); if (!_iAR) window.dispatchEvent(new Event('app-ready')); });
+    _g('skip-login-btn').addEventListener('click', () => { 
+        window.isGuest = !0; 
+        if(!localStorage.getItem('furqan_guest_id')) localStorage.setItem('furqan_guest_id', 'Guest_' + Math.floor(Math.random()*10000));
+        window.guestId = localStorage.getItem('furqan_guest_id');
+        
+        if(window.logUserEvent) window.logUserEvent("লগইন স্কিপ করে প্রবেশ করেছে");
+        
+        _g('auth-section').style.display = "none"; 
+        _g('main-app').style.display = "block"; 
+        alert("লগইন ছাড়া হিস্টোরি সেভ হবে না।"); 
+        if (!_iAR) window.dispatchEvent(new Event('app-ready')); 
+    });
+
     function _tM() { _g('main-menu').classList.toggle('active'); }
     function _sCM() { _g('contact-modal').style.display = 'flex'; _g('main-menu').classList.remove('active'); }
     function _cCM() { _g('contact-modal').style.display = 'none'; }
     document.addEventListener('click', e => { if (!e.target.closest('.menu-container')) _g('main-menu').classList.remove('active'); });
 
-    function _sV(v) { document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active-view')); _g(v).classList.add('active-view'); _g('main-menu').classList.remove('active'); if (v === 'database-view') _rDL(); if (v === 'leaderboard-view') _rL(); if (v === 'history-view') _rHV(_cHF); if (v === 'error-view') _rEA(); }
+    function _sV(v) { 
+        document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active-view')); 
+        _g(v).classList.add('active-view'); 
+        _g('main-menu').classList.remove('active'); 
+        if (v === 'database-view') _rDL(); 
+        if (v === 'leaderboard-view') _rL(); 
+        if (v === 'history-view') _rHV(_cHF); 
+        if (v === 'error-view') _rEA(); 
+        if (v === 'telemetry-view') _rTM();
+    }
     
     function _lPL() { 
         const diff = _g('difficulty-select').value;
@@ -375,11 +405,9 @@
     function _tS() { const i = _g('gs-sync-enabled').checked; localStorage.setItem('furqan_sync_on', i); _uSS(i); _sTo(i ? "অনলাইন সিঙ্ক চালু হয়েছে" : "বন্ধ হয়েছে"); }
     function _uSS(i) { const s = _g('sync-status'); s.innerText = i ? "সক্রিয়" : "বন্ধ"; s.style.color = i ? "var(--green)" : "var(--red)"; }
 
-    // Interceptor Logic added here via fB parameter
     function _iT(fB = !1) { 
         const diff = _g('difficulty-select').value;
         
-        // Modal Trigger condition
         if (diff === 'word' && !fB) {
             _g('bijoy-warning-modal').style.display = 'flex';
             return;
@@ -390,6 +418,8 @@
         
         if (!t) return alert("অনুচ্ছেদ নির্বাচন করুন!"); 
         
+        if(window.logUserEvent) window.logUserEvent("টেস্ট শুরু করেছে", `লেভেল: ${diff}, অনুচ্ছেদ: ${t}`);
+
         _wL = _nT(_p[l][t]).split(/\s+/); 
         const isWord = diff === 'word';
         
@@ -403,6 +433,23 @@
         _sV('typing-view'); setTimeout(() => a.focus(), 100); 
     }
     
+    _g('input-area').addEventListener('paste', e => { e.preventDefault(); _sTo("পেস্ট করা সম্পূর্ণ নিষেধ!"); });
+    _g('input-area').addEventListener('copy', e => e.preventDefault());
+    _g('input-area').addEventListener('cut', e => e.preventDefault());
+    _g('input-area').addEventListener('drop', e => e.preventDefault());
+
+    // অ্যান্টি-ট্যাব চিট ব্লক
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && _hS && !_iP) {
+            _tP();
+            if(window.logUserEvent) window.logUserEvent("চিটিং অ্যালার্ট", "পরীক্ষা চলাকালীন উইন্ডো থেকে বের হয়েছিল");
+            alert("⚠️ অ্যান্টি-চিট সতর্কতা ⚠️\n\nআপনি পরীক্ষার উইন্ডো থেকে বের হয়েছিলেন। আপনার পরীক্ষা সাময়িকভাবে পজ করা হয়েছে!");
+        }
+    });
+
+    // রাইট ক্লিক ও সোর্স কোড ব্লক
+    document.addEventListener('contextmenu', e => { e.preventDefault(); _sTo("রাইট ক্লিক করা নিষেধ!"); });
+
     _g('input-area').addEventListener('input', e => { 
         if (_iP) return; 
         const v = e.target.value, n = Date.now(); 
@@ -419,40 +466,6 @@
     });
 
     _g('input-area').addEventListener('keydown', e => { if (e.key === 'Backspace' && _hS && !_iP) _bC++; });
-    // চিটিং প্রতিরোধ লজিক: কপি, কাট, পেস্ট এবং ড্রপ সম্পূর্ণ ব্লক করা
-    _g('input-area').addEventListener('paste', e => { e.preventDefault(); _sTo("পেস্ট করা সম্পূর্ণ নিষেধ!"); });
-    _g('input-area').addEventListener('copy', e => e.preventDefault());
-    _g('input-area').addEventListener('cut', e => e.preventDefault());
-    _g('input-area').addEventListener('drop', e => e.preventDefault());
-    // ==========================================
-    // অ্যাডভান্সড এক্সাম সিকিউরিটি ও অ্যান্টি-চিট লজিক
-    // ==========================================
-
-    // ১. রাইট ক্লিক সম্পূর্ণ বন্ধ করা
-    document.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        _sTo("রাইট ক্লিক করা নিষেধ!");
-    });
-
-    // ২. সোর্স কোড ও ডেভেলপার টুলস দেখার শর্টকাট ব্লক করা
-    document.addEventListener('keydown', e => {
-        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
-        if (e.key === 'F12' || 
-           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) || 
-           (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
-            e.preventDefault();
-            _sTo("সিকিউরিটি এলার্ট: সোর্স কোড অ্যাক্সেস নিষেধ!");
-        }
-    });
-
-    // ৩. অ্যান্টি-ট্যাব সুইচিং (Tab Visibility API)
-    document.addEventListener('visibilitychange', () => {
-        // যদি ইউজার পরীক্ষা চলাকালীন অন্য ট্যাবে বা অ্যাপে যায়
-        if (document.hidden && _hS && !_iP) {
-            _tP(); // টেস্ট স্বয়ংক্রিয়ভাবে পজ হয়ে যাবে
-            alert("⚠️ অ্যান্টি-চিট সতর্কতা ⚠️\n\nআপনি পরীক্ষার উইন্ডো থেকে বের হয়েছিলেন। আপনার পরীক্ষা সাময়িকভাবে পজ করা হয়েছে!");
-        }
-    });
     function _uTUI() { _g('timer-box').innerText = `${Math.floor(_t2 / 60).toString().padStart(2, '0')}:${(_t2 % 60).toString().padStart(2, '0')}`; }
     function _tP() { if (!_hS) return; _iP = !_iP; _g('pause-btn').innerHTML = _iP ? '<i class="fas fa-play"></i> চালু' : '<i class="fas fa-pause"></i> পজ'; _g('input-area').disabled = _iP; }
 
@@ -469,6 +482,8 @@
         
         let rLang = _g('difficulty-select').value === 'word' ? 'Bangla' : (_g('lang-select').value === 'bn' ? 'Bangla' : 'English');
         
+        if(window.logUserEvent) window.logUserEvent("টেস্ট শেষ করেছে", `স্পিড: ${sw} WPM, নির্ভুলতা: ${ra.toFixed(1)}%`);
+
         const res = { wpm: sw, wwpm: Math.round(cw / m) || 0, tw: t.length, cws: v.length, cns: v.replace(/\s/g, "").length, err: rp.toFixed(1), cons: Math.round(((s - _iTT) / s) * 100) || 0, bs: _bC, duration: s, timestamp: Date.now(), date: new Date().toLocaleDateString('bn-BD'), errors: se, lang: rLang, title: _g('para-select').value, accuracy: ra.toFixed(1) + "%", realAcc: ra, errCount: e }; 
         _sR(res); _dR(res, t); 
     }
@@ -507,6 +522,17 @@
     function _rHT(h) { const b = _g('history-table-container'); if (!h.length) return b.innerHTML = ""; let m = "<h3 style='color:var(--navy-blue);margin-bottom:10px'>সাম্প্রতিক সেশন</h3><table><tr><th>তারিখ</th><th>স্পিড</th><th>ভুল</th></tr>"; h.slice(-15).reverse().forEach(x => m += `<tr><td>${x.date}</td><td><strong style="color:var(--blue)">${x.wpm}</strong></td><td>${x.err}%</td></tr>`); b.innerHTML = m + "</table>"; }
 
     function _rEA() { const h = JSON.parse(localStorage.getItem('furqan_history_v2') || "[]"); let m = {}; h.forEach(x => (x.errors || []).forEach(e => { if (!m[e.expected]) m[e.expected] = { t: 0, ty: {} }; m[e.expected].t++; m[e.expected].ty[e.typed] = (m[e.expected].ty[e.typed] || 0) + 1; })); const s = Object.entries(m).sort((a, b) => b[1].t - a[1].t); _g('ea-total-errors').innerText = s.reduce((c, x) => c + x[1].t, 0); _g('ea-top-word').innerText = s.length ? s[0][0] : "—"; _g('ea-unique-words').innerText = s.length; const b = _g('ea-bar-list'); if (!s.length) return b.innerHTML = "<p>রেকর্ড নেই</p>"; const mx = s[0][1].t; b.innerHTML = "<h3 style='color:var(--blue);margin-bottom:15px'>সর্বাধিক ভুল করা শব্দ</h3>" + s.slice(0, 10).map(([w, d]) => `<div style='margin-bottom:10px; color:var(--text)'><span>${_eH(w)}</span> - <span style='color:var(--blue)'>${d.t} বার</span><div style='height:8px; background:rgba(0,0,0,0.1); border-radius:4px; overflow:hidden;'><div style='width:${(d.t / mx) * 100}%; height:100%; background:var(--red);'></div></div></div>`).join(''); let t = "<table><tr><th>সঠিক</th><th>মোট ভুল</th><th>কী টাইপ করেছেন</th></tr>"; s.slice(0, 20).forEach(([w, d]) => { const tp = Object.entries(d.ty).sort((a, b) => b[1] - a[1])[0]; t += `<tr><td><strong style="color:var(--navy-blue)">${_eH(w)}</strong></td><td>${d.t}</td><td><span style="color:var(--red)">${_eH(tp[0])}</span></td></tr>`; }); _g('ea-detail-table').innerHTML = t + "</table>"; }
+    
+    // টেলিমেট্রি রিফ্রেশ লজিক
+    async function _rTM() { 
+        const t = _g('telemetry-table'); 
+        t.innerHTML = "<tr><td colspan='4'>লোড হচ্ছে...</td></tr>"; 
+        if(window.getTelemetryData) { 
+            const d = await window.getTelemetryData(); 
+            t.innerHTML = "<tr><th style='background:var(--blue)'>সময়</th><th style='background:var(--blue)'>ইউজার</th><th style='background:var(--blue)'>অ্যাকশন</th><th style='background:var(--blue)'>বিস্তারিত</th></tr>" + 
+            (d.length ? d.map(x => `<tr><td>${new Date(x.timestamp).toLocaleTimeString('bn-BD')}</td><td>${_eH(x.user)}</td><td><strong style="color:var(--red)">${_eH(x.action)}</strong></td><td>${_eH(x.details)}</td></tr>`).join('') : "<tr><td colspan='4'>রেকর্ড নেই</td></tr>"); 
+        } 
+    }
 </script>
 <script type="module" src="app.js"></script>
 </body>

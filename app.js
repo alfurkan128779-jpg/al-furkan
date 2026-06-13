@@ -47,11 +47,38 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// ম্যানুয়ালি ডাটা সেভ থাকার পলিসি সেট করা (ক্রস-সাইট কুকি ব্লকিং এড়াতে)
+// ম্যানুয়ালি ডাটা সেভ থাকার পলিসি সেট করা
 setPersistence(auth, browserLocalPersistence).catch(console.error);
 
 // ৪. গ্লোবাল ফাংশনসমূহ (index.html যাতে এগুলো ব্যবহার করতে পারে)
 window.currentUser = null;
+
+// ==========================================
+// নতুন: অ্যাডভান্সড ইউজার টেলিমেট্রি (লাইভ ট্র্যাকিং)
+// ==========================================
+window.logUserEvent = async (action, details = "") => {
+    try {
+        const user = auth.currentUser;
+        const userIdentifier = user ? (user.displayName || user.email) : (window.guestId || "অজ্ঞাত গেস্ট");
+        await addDoc(collection(db, "telemetry"), {
+            user: userIdentifier,
+            action: action,
+            details: details,
+            timestamp: Date.now()
+        });
+    } catch(e) { console.error("Telemetry Save Error:", e); }
+};
+
+window.getTelemetryData = async () => {
+    try {
+        const q = query(collection(db, "telemetry"), orderBy("timestamp", "desc"), limit(50));
+        const snapshot = await getDocs(q);
+        let results = [];
+        snapshot.forEach(doc => results.push(doc.data()));
+        return results;
+    } catch(e) { console.error("Telemetry Fetch Error:", e); return []; }
+};
+// ==========================================
 
 window.saveGlobalLeaderboard = async (data) => {
     try { await addDoc(collection(db, "leaderboard"), data); } 
@@ -71,7 +98,6 @@ window.getGlobalLeaderboard = async () => {
 window.syncGlobalParagraphs = async () => {
     try {
         const snapshot = await getDocs(collection(db, "paragraphs"));
-        // লজিক্যাল ফিক্স: bj (বিজয়) ক্যাটাগরি যুক্ত করা হলো
         let p = { "bn": {}, "en": {}, "bj": {} };
         snapshot.forEach(doc => {
             const data = doc.data();
@@ -108,18 +134,13 @@ const mainApp = document.getElementById('main-app');
 const authError = document.getElementById('auth-error');
 const logoutBtn = document.getElementById('logout-btn');
 const googleLoginBtn = document.getElementById('google-login-btn'); 
-// নতুন: ফলাফল পেজের প্রমোশনাল লগইন বাটন
 const promoLoginBtn = document.getElementById('promo-login-btn');
 
-// =========================================================================
-// লগইন পেজের ল্যান্ডস্কেপ লেআউট ও ফিচার হাইলাইট (Glassmorphism-এর সাথে সিঙ্ক করা)
-// =========================================================================
 window.addEventListener('DOMContentLoaded', () => {
     const authContainer = document.querySelector('.auth-container');
     const skipBtn = document.getElementById('skip-login-btn');
     
     if (authContainer && googleLoginBtn && skipBtn) {
-        // পিসি ইউজারদের জন্য ল্যান্ডস্কেপ গ্রিড লেআউট 
         authContainer.style.maxWidth = '850px';
         authContainer.style.padding = '40px';
         authContainer.style.display = 'flex';
@@ -177,7 +198,6 @@ window.addEventListener('DOMContentLoaded', () => {
         `;
         leftSide.appendChild(featureBox);
 
-        // AppendChild ইভেন্ট লিসেনারগুলো অক্ষুণ্ণ রাখে
         rightSide.appendChild(googleLoginBtn);
         rightSide.appendChild(skipBtn);
         if (authError) rightSide.appendChild(authError);
@@ -197,10 +217,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-// =========================================================================
 
-
-// ৬. রিডাইরেক্ট হয়ে ফিরে আসার পর ডাটা রিকভারি হ্যান্ডেলিং
 if(googleLoginBtn) {
     googleLoginBtn.disabled = true;
     googleLoginBtn.innerHTML = 'অ্যাকাউন্ট চেক করা হচ্ছে...';
@@ -219,13 +236,10 @@ getRedirectResult(auth).then((result) => {
     }
 });
 
-// ৭. হাইব্রিড (স্মার্ট) লগইন ফাংশন
 if(googleLoginBtn) {
     googleLoginBtn.addEventListener('click', () => {
-        // বাটন ডিসেবল বা HTML চেঞ্জ করা যাবে না, করলে ব্রাউজার পপ-আপ ব্লক করে দেয়!
         signInWithPopup(auth, googleProvider).catch((error) => {
             if (error.code === 'auth/popup-blocked') {
-                // পপ-আপ ব্লক হলে অটোমেটিক রিডাইরেক্ট মেথডে ট্রাই করবে
                 googleLoginBtn.innerHTML = 'রিডাইরেক্ট করা হচ্ছে...';
                 signInWithRedirect(auth, googleProvider);
             } else {
@@ -236,7 +250,6 @@ if(googleLoginBtn) {
     });
 }
 
-// নতুন: প্রমোশনাল লগইন বাটনের ইভেন্ট লিসেনার
 if(promoLoginBtn) {
     promoLoginBtn.addEventListener('click', () => {
         signInWithPopup(auth, googleProvider).catch((error) => {
@@ -251,32 +264,34 @@ if(promoLoginBtn) {
     });
 }
 
-// ৮. লগআউট প্রসেস
 if(logoutBtn) {
     logoutBtn.addEventListener('click', () => {
+        if(window.logUserEvent) window.logUserEvent("লগআউট করেছে");
         signOut(auth).catch((error) => { console.error("লগআউট এরর: ", error); });
     });
 }
 
-// ৯. অথেনটিকেশন ও অ্যাডমিন ট্র্যাকার (মেনু নিয়ন্ত্রণ)
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         window.currentUser = user; 
-        window.isGuest = false; // লগইন সফল হলে গেস্ট মোড বাতিল
+        window.isGuest = false; 
         
+        if(window.logUserEvent) window.logUserEvent("সফলভাবে লগইন করেছে");
+
         authSection.style.display = "none";
         mainApp.style.display = "block";
 
         const dbMenu = document.getElementById('menu-database');
-        if (dbMenu) {
-            if (user.email === ADMIN_EMAIL) {
-                dbMenu.style.display = "flex"; 
-            } else {
-                dbMenu.style.display = "none";  
-            }
+        const tmMenu = document.getElementById('menu-telemetry');
+        
+        if (user.email === ADMIN_EMAIL) {
+            if (dbMenu) dbMenu.style.display = "flex"; 
+            if (tmMenu) tmMenu.style.display = "flex"; 
+        } else {
+            if (dbMenu) dbMenu.style.display = "none";  
+            if (tmMenu) tmMenu.style.display = "none"; 
         }
 
-        // নতুন: যদি গেস্ট মোডে পরীক্ষা দিয়ে ডাটা জমা থাকে, তা লিডারবোর্ডে পাঠিয়ে দেওয়া
         if (window.lastGuestResult) {
             if (window.saveGlobalLeaderboard) {
                 await window.saveGlobalLeaderboard({
@@ -285,9 +300,8 @@ onAuthStateChanged(auth, async (user) => {
                     userEmail: user.email
                 });
             }
-            window.lastGuestResult = null; // পাঠানো শেষ, ডাটা মুছে দেওয়া হলো
+            window.lastGuestResult = null; 
             
-            // প্রমোশনাল সেকশনটি হাইড করা
             const guestPromoSection = document.getElementById('guest-promo-section');
             if(guestPromoSection) {
                 guestPromoSection.style.display = "none";
@@ -297,13 +311,10 @@ onAuthStateChanged(auth, async (user) => {
         window.dispatchEvent(new Event('app-ready'));
     } else {
         window.currentUser = null;
-        
-        // গেস্ট মোডে না থাকলে তবেই লগইন পেজে পাঠাবে
         if (!window.isGuest) {
             authSection.style.display = "flex";
             mainApp.style.display = "none";
         }
-        
         if(googleLoginBtn) {
             googleLoginBtn.disabled = false;
             googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width: 24px;"> গুগল দিয়ে লগইন করুন';
@@ -311,7 +322,6 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// ১০. হেল্পার ফাংশন
 function showError(msg) {
     if(authError) {
         authError.innerText = msg;
