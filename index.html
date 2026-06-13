@@ -210,6 +210,7 @@
         <div id="source-box"></div>
         <textarea id="input-area" placeholder="টাইপ শুরু করার সাথে সাথে সময় গণনা শুরু হবে..."></textarea>
     </div>
+    
     <div id="result-view" class="view-section">
         <div class="result-header" style="text-align:center; margin-bottom:30px;">
             <h2 style="color: var(--navy-blue);"><i class="fas fa-chart-pie"></i> ফলাফল বিশ্লেষণ</h2>
@@ -465,29 +466,22 @@
         const t = v.trim() === "" ? [] : v.trim().split(/\s+/); 
         
         let cc = 0, cw = 0, e = 0, se = []; 
-        let consecutiveMiss = 0, maxConsecutiveMiss = 0;
         
-        // ফিক্স: শুধুমাত্র ইউজারের টাইপ করা অংশের ওপর চেক চলবে
         t.forEach((w, i) => { 
             if (i < _wL.length) { 
                 if (_nT(w) === _nT(_wL[i])) { 
                     cc += w.length; 
                     cw++; 
-                    if (consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
-                    consecutiveMiss = 0; 
                 } else { 
                     e++; 
                     se.push({ expected: _wL[i], typed: w }); 
-                    consecutiveMiss++; 
-                    if (consecutiveMiss > maxConsecutiveMiss) maxConsecutiveMiss = consecutiveMiss;
                 } 
             } 
         }); 
 
-        // অ্যান্টি-ক্র্যাশ ফিক্স: s এর মান যাতে কোনোভাবেই ০ না হয়
         const s = Math.max(1, _t3 - _t2); 
         const m = s / 60;
-        const sw = Math.round((cc / 5) / m);
+        const sw = Math.round((cc / 5) / m) || 0;
         
         const rp = t.length > 0 ? (e / t.length) * 100 : 0; 
         const ra = Math.max(0, 100 - rp);
@@ -496,12 +490,12 @@
         
         const res = { 
             wpm: sw, 
-            wwpm: Math.round(cw / m), 
+            wwpm: Math.round(cw / m) || 0, 
             tw: t.length, 
             cws: v.length, 
             cns: v.replace(/\s/g, "").length, 
             err: rp.toFixed(1), 
-            cons: Math.round(((s - _iTT) / s) * 100), 
+            cons: Math.round(((s - _iTT) / s) * 100) || 0, 
             bs: _bC, 
             duration: s, 
             timestamp: Date.now(), 
@@ -514,73 +508,75 @@
             errCount: e 
         }; 
         
-        try { _sR(res); } catch (err) { console.error(err); }
-        _dR(res, t, maxConsecutiveMiss); 
+        try { _sR(res); } catch (err) { console.error("History Save Error:", err); }
+        try { _dR(res, t); } catch (err) { console.error("Result Display Error:", err); _sV('result-view'); } 
     }
 
-    function _dR(d, t, maxSkip) { 
-        _sV('result-view'); 
-        _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
-        
-        _aV(_g('res-swpm'), 0, d.wpm, 1500); 
-        _aV(_g('res-wpm'), 0, d.wwpm, 1500); 
-        _aV(_g('res-tw'), 0, d.tw, 1500); 
-        _aV(_g('res-cws'), 0, d.cws, 1500); 
-        _aV(_g('res-cns'), 0, d.cns, 1500); 
-        _aV(_g('res-bs'), 0, d.bs, 1500); 
-        
-        _aR('ring-acc', d.realAcc, 'var(--green)'); 
-        _aR('ring-pace', d.cons, 'var(--blue)'); 
-        
-        const f = _g('dynamic-feedback');
-        let totalErrorPercent = parseFloat(d.err);
-        let hasFailed = (d.wpm < 20 || totalErrorPercent > 5.0);
-
-        f.innerHTML = ""; 
-        f.style.opacity = "0"; 
-        f.style.transform = "scale(0.7)";
-        
-        setTimeout(() => {
-            f.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-            f.style.opacity = "1"; 
-            f.style.transform = "scale(1)";
+    function _dR(d, t) { 
+        try {
+            _sV('result-view'); 
+            _g('guest-promo-section').style.display = window.isGuest ? "block" : "none"; 
             
-            let html = "";
-            if (hasFailed) {
-                html = `<div style="color: #7f8fa6; font-size: 20px; font-weight: bold;">আপনার টাইপিং গতি: ${d.wpm} WPM</div>`;
-                if (totalErrorPercent > 5.0) {
-                    html += `<div style="color: var(--red); font-size: 16px; font-weight: bold; margin-top:5px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল!</div>`;
-                }
-            } else {
-                if (d.wpm >= 40) {
-                    html = `<div style="font-size: 30px; font-weight: 900; color: #DAA520; text-shadow: 0 0 15px rgba(218,165,32,0.7); animation: glowGold 1.5s ease-in-out infinite alternate; letter-spacing: 1px;">🏆 LEGENDARY EXPERT: ${d.wpm} WPM 🏆</div>`;
-                    if(typeof _fireworks === 'function') _fireworks(); 
-                } else if (d.wpm >= 30) {
-                    html = `<div style="font-size: 26px; font-weight: 800; color: #0984e3; text-shadow: 0 0 12px rgba(9,132,227,0.6); animation: glowBlue 1.5s infinite alternate;">⭐ ELITE SPEED: ${d.wpm} WPM ⭐</div>`;
-                    if(typeof confetti === 'function') confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
-                } else if (d.wpm >= 25) {
-                    html = `<div style="font-size: 22px; font-weight: bold; color: var(--orange); text-shadow: 0 0 8px rgba(230,126,34,0.4);">✨ ADVANCED: ${d.wpm} WPM ✨</div>`;
-                    if(typeof confetti === 'function') confetti({ particleCount: 80, spread: 55, origin: { y: 0.65 } });
-                } else {
-                    html = `<div style="font-size: 20px; font-weight: bold; color: var(--green);">👍 Congratulation! Speed: ${d.wpm} WPM 👍</div>`;
-                    if(typeof confetti === 'function') confetti({ particleCount: 45, spread: 40, origin: { y: 0.7 } });
-                }
-            }
+            _aV(_g('res-swpm'), 0, d.wpm, 1500); 
+            _aV(_g('res-wpm'), 0, d.wwpm, 1500); 
+            _aV(_g('res-tw'), 0, d.tw, 1500); 
+            _aV(_g('res-cws'), 0, d.cws, 1500); 
+            _aV(_g('res-cns'), 0, d.cns, 1500); 
+            _aV(_g('res-bs'), 0, d.bs, 1500); 
+            
+            _aR('ring-acc', d.realAcc, 'var(--green)'); 
+            _aR('ring-pace', d.cons, 'var(--blue)'); 
+            
+            const f = _g('dynamic-feedback');
+            let totalErrorPercent = parseFloat(d.err);
+            let hasFailed = (d.wpm < 20 || totalErrorPercent > 5.0);
 
-            if (maxSkip >= 3) {
-                html += `<div style="color: var(--orange); font-size: 15px; font-weight: bold; margin-top:12px; animation: wobbleLight 1s 1;"><i class="fas fa-exclamation-triangle"></i> আপনি অনুচ্ছেদে যথাযথ মনোযোগ দিন, আপনার line gap লক্ষ করা যাচ্ছে!</div>`;
-            }
-            f.innerHTML = html;
-        }, 200);
-        
-        let rh = ""; 
-        const isWordLvl = _g('difficulty-select').value === 'word';
-        let wrap = txt => isWordLvl ? `<span class="bijoy-font">${txt}</span>` : txt;
-        _wL.forEach((o, i) => { 
-            if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${wrap(o)}</span> ` : `<span class="res-error">${wrap(t[i] || '—')}<small>সঠিক: ${wrap(o)}</small></span> `; 
-            else rh += `<span class="res-missed">${wrap(o)}</span> `; 
-        }); 
-        _g('result-text-review').innerHTML = rh; 
+            f.innerHTML = ""; 
+            f.style.opacity = "0"; 
+            f.style.transform = "scale(0.7)";
+            
+            setTimeout(() => {
+                f.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                f.style.opacity = "1"; 
+                f.style.transform = "scale(1)";
+                
+                let html = "";
+                if (hasFailed) {
+                    html = `<div style="color: #7f8fa6; font-size: 20px; font-weight: bold;">আপনার টাইপিং গতি: ${d.wpm} WPM</div>`;
+                    if (totalErrorPercent > 5.0) {
+                        html += `<div style="color: var(--red); font-size: 16px; font-weight: bold; margin-top:5px;"><i class="fas fa-times-circle"></i> আপনি ${totalErrorPercent.toFixed(1)}% ভুল করেছেন, তাই আপনি ফেইল!</div>`;
+                    }
+                } else {
+                    if (d.wpm >= 40) {
+                        html = `<div style="font-size: 30px; font-weight: 900; color: #DAA520; text-shadow: 0 0 15px rgba(218,165,32,0.7); animation: glowGold 1.5s ease-in-out infinite alternate; letter-spacing: 1px;">🏆 LEGENDARY EXPERT: ${d.wpm} WPM 🏆</div>`;
+                        if(typeof _fireworks === 'function') _fireworks(); 
+                    } else if (d.wpm >= 30) {
+                        html = `<div style="font-size: 26px; font-weight: 800; color: #0984e3; text-shadow: 0 0 12px rgba(9,132,227,0.6); animation: glowBlue 1.5s infinite alternate;">⭐ ELITE SPEED: ${d.wpm} WPM ⭐</div>`;
+                        if(typeof confetti === 'function') confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+                    } else if (d.wpm >= 25) {
+                        html = `<div style="font-size: 22px; font-weight: bold; color: var(--orange); text-shadow: 0 0 8px rgba(230,126,34,0.4);">✨ ADVANCED: ${d.wpm} WPM ✨</div>`;
+                        if(typeof confetti === 'function') confetti({ particleCount: 80, spread: 55, origin: { y: 0.65 } });
+                    } else {
+                        html = `<div style="font-size: 20px; font-weight: bold; color: var(--green);">👍 Congratulation! Speed: ${d.wpm} WPM 👍</div>`;
+                        if(typeof confetti === 'function') confetti({ particleCount: 45, spread: 40, origin: { y: 0.7 } });
+                    }
+                }
+
+                f.innerHTML = html;
+            }, 200);
+            
+            let rh = ""; 
+            const isWordLvl = _g('difficulty-select').value === 'word';
+            let wrap = txt => isWordLvl ? `<span class="bijoy-font">${txt}</span>` : txt;
+            _wL.forEach((o, i) => { 
+                if (i < t.length) rh += _nT(t[i]) === _nT(o) ? `<span class="res-correct">${wrap(o)}</span> ` : `<span class="res-error">${wrap(t[i] || '—')}<small>সঠিক: ${wrap(o)}</small></span> `; 
+                else rh += `<span class="res-missed">${wrap(o)}</span> `; 
+            }); 
+            _g('result-text-review').innerHTML = rh; 
+        } catch(e) {
+            console.error(e);
+            _sV('result-view'); 
+        }
     }
 
     function _fireworks() {
